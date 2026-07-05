@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/*
+  bo2-portfolio design tokens.
+  Single source of truth for color, motion, and shape values.
+  Components consume var(--color-*) / utilities; never hardcode a hex.
+*/
+
+@theme {
+  /* Core surfaces */
+  --color-void: #060809;
+  --color-steel: #0d1114;
+  --color-panel: #141a1f;
+  --color-panel-hover: #1b232a;
+  --color-line-faint: #232c33;
+  --color-line-strong: #3a4750;
+
+  /* Ink */
+  --color-ink: #e8ecef;
+  --color-ink-secondary: #93a1ab;
+  --color-ink-muted: #5c6970;
+
+  /* Signal orange */
+  --color-accent: #ec6f00;
+  --color-accent-bright: #ff9a2e;
+  --color-accent-dim: #8a4200;
+
+  /* Status */
+  --color-online: #4caf50;
+  --color-warn: #e5c15a;
+  --color-danger: #c93b3b;
+  --color-intel: #3e9bc8;
+
+  /* Type scale */
+  --text-label: 0.75rem;
+  --text-body: 1rem;
+  --text-lead: 1.25rem;
+  --text-h3: 1.625rem;
+  --text-h2: 2.125rem;
+  --text-h1: 3rem;
+  --text-display: 4rem;
+
+  /* Motion */
+  --ease-select: cubic-bezier(0.2, 0, 0, 1);
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background: var(--color-void);
+  color: var(--color-ink);
+}
+
+/* Accent glow is a shadow token, not a theme color */
+.selector-glow {
+  box-shadow: 0 0 18px rgba(236, 111, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
