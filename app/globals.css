@@ -43,6 +43,47 @@
   /* Motion */
   --ease-select: cubic-bezier(0.2, 0, 0, 1);
   --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Type micro-sizes */
+  --text-stat-label: 0.6875rem;
+  --text-data: 0.8125rem;
+  --text-button: 0.875rem;
+  --text-hero: 6rem;
+
+  /* Shape */
+  --radius: 2px;
+  --chamfer-sm: 8px;
+  --chamfer-lg: 12px;
+  --skew: -12deg;
+  --edge-highlight: rgba(232, 236, 239, 0.06);
+
+  /* Motion durations */
+  --dur-select: 120ms;
+  --dur-reveal: 240ms;
+  --stagger: 40ms;
+  --dur-route: 260ms;
+  --dur-tab: 180ms;
+  --dur-hit: 90ms;
+  --dur-data: 400ms;
+  --dur-counter: 900ms;
+  --dur-slice: 200ms;
+  --dur-toast-in: 180ms;
+  --dur-toast-out: 200ms;
+  --hold-toast: 2500ms;
+}
+
+/*
+  Font utilities map to the four next/font faces whose CSS variables layout.tsx
+  sets on <html>. @theme inline emits utilities that reference those runtime
+  variables rather than baking a value, and distinct source names
+  (--font-agdasima vs --font-display) avoid the self-reference that would resolve
+  a utility to an empty string.
+*/
+@theme inline {
+  --font-display: var(--font-agdasima);
+  --font-label: var(--font-saira);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
 }
 
 :root {
