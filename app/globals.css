@@ -100,13 +100,70 @@ html {
   box-shadow: 0 0 18px rgba(236, 111, 0, 0.35);
 }
 
+/*
+  Reduce, not delete (A11Y-03): strip keyframe and spatial motion but keep the
+  short opacity/color fades the contract retains. A blanket transition-duration:0
+  on the universal selector would erase those <=180ms fades, so it is
+  deliberately absent; motion is neutralized per class instead.
+*/
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation: none !important;
     scroll-behavior: auto !important;
+  }
+
+  .panel-reveal {
+    transform: none !important;
+    transition-duration: var(--dur-tab) !important;
+  }
+
+  .moving-selector {
+    transition-property: color !important;
+  }
+}
+
+/*
+  Real 2px outline (A11Y-04): an outline, not a box-shadow, so the focus ring
+  survives Windows forced-colors mode. Never outline:none without this
+  replacement.
+*/
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/*
+  Target-sizing contract interactive primitives opt into. Visible size is not
+  target size: a chamfer clips only the visible shape while the padded box holds
+  the floor.
+*/
+@media (any-pointer: coarse) {
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (any-pointer: fine) {
+  .tap-target {
+    min-height: 24px;
+    min-width: 24px;
+  }
+}
+
+/*
+  Forced-colors survival (A11Y-04): the clip-path chamfer flattens and shadows
+  drop, so the edge degrades to a real system-color border and the inner fill
+  covers the whole box.
+*/
+@media (forced-colors: active) {
+  .chamfer {
+    border: 1px solid;
+  }
+
+  .chamfer::before {
+    inset: 0;
   }
 }
