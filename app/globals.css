@@ -101,6 +101,145 @@ html {
 }
 
 /*
+  Safari-safe chamfer border: WebKit does not paint a border on a clip-path'd
+  box, so the visible edge is the 1px reveal between this element (filled with
+  the border color) and an inset ::before (the panel fill). Consumers override
+  --_c for a per-instance chamfer size; forced-colors swaps to a real border.
+*/
+.chamfer {
+  --_c: var(--chamfer-lg);
+  position: relative;
+  background: var(--color-line-faint);
+  clip-path: polygon(
+    var(--_c) 0,
+    100% 0,
+    100% calc(100% - var(--_c)),
+    calc(100% - var(--_c)) 100%,
+    0 100%,
+    0 var(--_c)
+  );
+}
+
+.chamfer::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--color-panel);
+  clip-path: polygon(
+    var(--_c) 0,
+    100% 0,
+    100% calc(100% - var(--_c)),
+    calc(100% - var(--_c)) 100%,
+    0 100%,
+    0 var(--_c)
+  );
+}
+
+.chamfer[data-active] {
+  background: var(--color-line-strong);
+}
+
+.chamfer[data-active]::before {
+  box-shadow: inset 0 1px 0 var(--edge-highlight);
+}
+
+/*
+  Section reveal: opacity + translateY, played once when a consumer sets
+  [data-revealed]. The initial hidden state is gated behind scripting so no-JS
+  visitors get the content immediately. Reduced motion drops the translate and
+  shortens the retained fade (see the reduced-motion block).
+*/
+.panel-reveal {
+  transition:
+    opacity var(--dur-reveal) var(--ease-reveal),
+    transform var(--dur-reveal) var(--ease-reveal);
+}
+
+@media (scripting: enabled) {
+  .panel-reveal {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.panel-reveal[data-revealed] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/*
+  Selection is a move, not a fade: one element transforms along the list axis
+  while the text color cross-fades over the same duration. Reduced motion snaps
+  the position and keeps only the 120ms color fade.
+*/
+.moving-selector {
+  transition:
+    transform var(--dur-select) var(--ease-select),
+    color var(--dur-select) var(--ease-select);
+}
+
+/*
+  Paint-only press feedback (wired in a later phase). The scale pulse is spatial,
+  so the universal animation:none under reduced motion removes it.
+*/
+.hit-flash {
+  animation: hit-flash var(--dur-hit) var(--ease-select);
+}
+
+@keyframes hit-flash {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.97);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/*
+  Faint hex-grid texture, subordinate to the chamfer language. Decorative only;
+  the consuming component sets aria-hidden. Opacity is the 3% ceiling and there
+  is no animation.
+*/
+.hex-overlay {
+  pointer-events: none;
+  opacity: 0.03;
+}
+
+/*
+  Static 1px scanline for the hero surface only, at the 3% ceiling with no drift
+  (WCAG 2.2.2). Decorative; the consuming component sets aria-hidden. Removed
+  below 768px and under reduced motion.
+*/
+.scanline-overlay {
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    var(--color-ink) 2px,
+    var(--color-ink) 3px
+  );
+}
+
+@media (max-width: 767px) {
+  .scanline-overlay {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanline-overlay {
+    display: none;
+  }
+}
+
+/*
   Reduce, not delete (A11Y-03): strip keyframe and spatial motion but keep the
   short opacity/color fades the contract retains. A blanket transition-duration:0
   on the universal selector would erase those <=180ms fades, so it is
