@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <!-- Background -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#bgGradient)"/>
+
+  <!-- Grid pattern -->
+  <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#334155" stroke-width="0.5" opacity="0.2"/>
+  </pattern>
+  <rect width="800" height="600" fill="url(#gridPattern)"/>
+
+  <!-- Self-checkout terminal -->
+  <g transform="translate(220, 80)">
+    <!-- Terminal base -->
+    <rect x="0" y="200" width="360" height="280" rx="12" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+
+    <!-- Terminal screen -->
+    <rect x="20" y="30" width="320" height="240" rx="8" fill="url(#screenGrad)" stroke="url(#accentGrad)" stroke-width="3" filter="url(#glow)"/>
+
+    <!-- Screen header -->
+    <rect x="30" y="40" width="300" height="40" rx="6" fill="#0f172a"/>
+    <text x="180" y="65" fill="#06b6d4" font-size="18" font-weight="bold" text-anchor="middle" font-family="sans-serif">Self-Checkout Station</text>
+
+    <!-- Shopping cart icon -->
+    <g transform="translate(50, 100)">
+      <rect x="0" y="10" width="50" height="40" rx="4" fill="none" stroke="#8b5cf6" stroke-width="3"/>
+      <line x1="10" y1="50" x2="10" y2="60" stroke="#8b5cf6" stroke-width="3"/>
+      <line x1="40" y1="50" x2="40" y2="60" stroke="#8b5cf6" stroke-width="3"/>
+      <circle cx="10" cy="65" r="5" fill="#8b5cf6"/>
+      <circle cx="40" cy="65" r="5" fill="#8b5cf6"/>
+    </g>
+
+    <!-- Item list -->
+    <g transform="translate(120, 100)">
+      <rect x="0" y="0" width="200" height="30" rx="4" fill="#1e293b" stroke="#06b6d4" stroke-width="1" opacity="0.8"/>
+      <text x="10" y="20" fill="#94a3b8" font-size="14" font-family="monospace">Apples × 3</text>
+      <text x="150" y="20" fill="#10b981" font-size="14" font-weight="bold" font-family="monospace">$4.50</text>
+
+      <rect x="0" y="40" width="200" height="30" rx="4" fill="#1e293b" stroke="#06b6d4" stroke-width="1" opacity="0.8"/>
+      <text x="10" y="60" fill="#94a3b8" font-size="14" font-family="monospace">Bread × 1</text>
+      <text x="150" y="60" fill="#10b981" font-size="14" font-weight="bold" font-family="monospace">$2.99</text>
+
+      <rect x="0" y="80" width="200" height="30" rx="4" fill="#1e293b" stroke="#06b6d4" stroke-width="1" opacity="0.8"/>
+      <text x="10" y="100" fill="#94a3b8" font-size="14" font-family="monospace">Milk × 2</text>
+      <text x="150" y="100" fill="#10b981" font-size="14" font-weight="bold" font-family="monospace">$6.00</text>
+    </g>
+
+    <!-- Total display -->
+    <rect x="120" y="220" width="200" height="40" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+    <text x="140" y="245" fill="#94a3b8" font-size="16" font-weight="600" font-family="sans-serif">TOTAL:</text>
+    <text x="280" y="245" fill="#10b981" font-size="20" font-weight="bold" font-family="monospace" text-anchor="end">$13.49</text>
+
+    <!-- Control buttons on terminal -->
+    <g transform="translate(30, 300)">
+      <rect x="0" y="0" width="80" height="50" rx="6" fill="#1e293b" stroke="#06b6d4" stroke-width="2"/>
+      <text x="40" y="32" fill="#06b6d4" font-size="14" font-weight="600" text-anchor="middle" font-family="sans-serif">PAY</text>
+    </g>
+
+    <g transform="translate(130, 300)">
+      <rect x="0" y="0" width="80" height="50" rx="6" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/>
+      <text x="40" y="32" fill="#8b5cf6" font-size="14" font-weight="600" text-anchor="middle" font-family="sans-serif">SCAN</text>
+    </g>
+
+    <g transform="translate(230, 300)">
+      <rect x="0" y="0" width="80" height="50" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+      <text x="40" y="32" fill="#f59e0b" font-size="14" font-weight="600" text-anchor="middle" font-family="sans-serif">HELP</text>
+    </g>
+
+    <!-- Scanner light effect -->
+    <g transform="translate(140, 380)">
+      <ellipse cx="40" cy="20" rx="60" ry="15" fill="#8b5cf6" opacity="0.2">
+        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" repeatCount="indefinite"/>
+      </ellipse>
+      <rect x="20" y="10" width="40" height="8" rx="4" fill="#8b5cf6" opacity="0.8"/>
+    </g>
+  </g>
+
+  <!-- Feature badges -->
+  <g transform="translate(50, 500)">
+    <rect x="0" y="0" width="220" height="70" rx="8" fill="#1e293b" stroke="#06b6d4" stroke-width="1.5" opacity="0.8"/>
+    <text x="110" y="25" fill="#06b6d4" font-size="13" font-weight="600" text-anchor="middle" font-family="sans-serif">Java GUI</text>
+    <text x="110" y="50" fill="#94a3b8" font-size="18" font-weight="bold" text-anchor="middle" font-family="monospace">Swing/AWT</text>
+  </g>
+
+  <g transform="translate(290, 500)">
+    <rect x="0" y="0" width="220" height="70" rx="8" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5" opacity="0.8"/>
+    <text x="110" y="25" fill="#8b5cf6" font-size="13" font-weight="600" text-anchor="middle" font-family="sans-serif">Testing</text>
+    <text x="110" y="50" fill="#94a3b8" font-size="18" font-weight="bold" text-anchor="middle" font-family="monospace">JUnit 100%</text>
+  </g>
+
+  <g transform="translate(530, 500)">
+    <rect x="0" y="0" width="220" height="70" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5" opacity="0.8"/>
+    <text x="110" y="25" fill="#10b981" font-size="13" font-weight="600" text-anchor="middle" font-family="sans-serif">Team Scale</text>
+    <text x="110" y="50" fill="#94a3b8" font-size="18" font-weight="bold" text-anchor="middle" font-family="monospace">20 Members</text>
+  </g>
+
+  <!-- Barcode scanning animation -->
+  <g transform="translate(620, 200)" opacity="0.6">
+    <rect x="0" y="0" width="3" height="60" fill="#8b5cf6">
+      <animate attributeName="x" from="-30" to="60" dur="3s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- Title -->
+  <text x="400" y="50" fill="url(#accentGrad)" font-size="28" font-weight="bold" text-anchor="middle" font-family="sans-serif">Self-Checkout Station Software</text>
+</svg>
