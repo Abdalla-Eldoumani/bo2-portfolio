@@ -52,6 +52,18 @@ describe('getGitHubStats', () => {
     expect(await getGitHubStats()).toEqual(githubFallback);
   });
 
+  it('returns the committed fallback on a null body', async () => {
+    stubFetch({ ok: true, status: 200, json: async () => null });
+
+    expect(await getGitHubStats()).toEqual(githubFallback);
+  });
+
+  it('returns the committed fallback on a non-object (array) body', async () => {
+    stubFetch({ ok: true, status: 200, json: async () => [] });
+
+    expect(await getGitHubStats()).toEqual(githubFallback);
+  });
+
   it('returns the committed fallback when fetch throws (network)', async () => {
     vi.stubGlobal(
       'fetch',
