@@ -84,7 +84,9 @@ export default function RootLayout({
       <body className="bg-void text-ink antialiased">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(personLd).replace(/</g, "\\u003c"),
+          }}
         />
         {children}
       </body>
