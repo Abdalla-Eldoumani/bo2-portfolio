@@ -43,6 +43,47 @@
   /* Motion */
   --ease-select: cubic-bezier(0.2, 0, 0, 1);
   --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Type micro-sizes */
+  --text-stat-label: 0.6875rem;
+  --text-data: 0.8125rem;
+  --text-button: 0.875rem;
+  --text-hero: 6rem;
+
+  /* Shape */
+  --radius: 2px;
+  --chamfer-sm: 8px;
+  --chamfer-lg: 12px;
+  --skew: -12deg;
+  --edge-highlight: rgba(232, 236, 239, 0.06);
+
+  /* Motion durations */
+  --dur-select: 120ms;
+  --dur-reveal: 240ms;
+  --stagger: 40ms;
+  --dur-route: 260ms;
+  --dur-tab: 180ms;
+  --dur-hit: 90ms;
+  --dur-data: 400ms;
+  --dur-counter: 900ms;
+  --dur-slice: 200ms;
+  --dur-toast-in: 180ms;
+  --dur-toast-out: 200ms;
+  --hold-toast: 2500ms;
+}
+
+/*
+  Font utilities map to the four next/font faces whose CSS variables layout.tsx
+  sets on <html>. @theme inline emits utilities that reference those runtime
+  variables rather than baking a value, and distinct source names
+  (--font-agdasima vs --font-display) avoid the self-reference that would resolve
+  a utility to an empty string.
+*/
+@theme inline {
+  --font-display: var(--font-agdasima);
+  --font-label: var(--font-saira);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
 }
 
 :root {
@@ -59,13 +100,211 @@ html {
   box-shadow: 0 0 18px rgba(236, 111, 0, 0.35);
 }
 
+/*
+  Safari-safe chamfer border: WebKit does not paint a border on a clip-path'd
+  box, so the visible edge is the 1px reveal between this element (filled with
+  the border color) and an inset ::before (the panel fill). Consumers override
+  --_c for a per-instance chamfer size; forced-colors swaps to a real border.
+*/
+.chamfer {
+  --_c: var(--chamfer-lg);
+  position: relative;
+  background: var(--color-line-faint);
+  clip-path: polygon(
+    var(--_c) 0,
+    100% 0,
+    100% calc(100% - var(--_c)),
+    calc(100% - var(--_c)) 100%,
+    0 100%,
+    0 var(--_c)
+  );
+}
+
+.chamfer::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--color-panel);
+  clip-path: polygon(
+    var(--_c) 0,
+    100% 0,
+    100% calc(100% - var(--_c)),
+    calc(100% - var(--_c)) 100%,
+    0 100%,
+    0 var(--_c)
+  );
+}
+
+.chamfer[data-active] {
+  background: var(--color-line-strong);
+}
+
+.chamfer[data-active]::before {
+  box-shadow: inset 0 1px 0 var(--edge-highlight);
+}
+
+/*
+  Section reveal: opacity + translateY, played once when a consumer sets
+  [data-revealed]. The initial hidden state is gated behind scripting so no-JS
+  visitors get the content immediately. Reduced motion drops the translate and
+  shortens the retained fade (see the reduced-motion block).
+*/
+.panel-reveal {
+  transition:
+    opacity var(--dur-reveal) var(--ease-reveal),
+    transform var(--dur-reveal) var(--ease-reveal);
+}
+
+@media (scripting: enabled) {
+  .panel-reveal {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.panel-reveal[data-revealed] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/*
+  Selection is a move, not a fade: one element transforms along the list axis
+  while the text color cross-fades over the same duration. Reduced motion snaps
+  the position and keeps only the 120ms color fade.
+*/
+.moving-selector {
+  transition:
+    transform var(--dur-select) var(--ease-select),
+    color var(--dur-select) var(--ease-select);
+}
+
+/*
+  Paint-only press feedback (wired in a later phase). The scale pulse is spatial,
+  so the universal animation:none under reduced motion removes it.
+*/
+.hit-flash {
+  animation: hit-flash var(--dur-hit) var(--ease-select);
+}
+
+@keyframes hit-flash {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.97);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/*
+  Faint hex-grid texture, subordinate to the chamfer language. Decorative only;
+  the consuming component sets aria-hidden. Opacity is the 3% ceiling and there
+  is no animation.
+*/
+.hex-overlay {
+  pointer-events: none;
+  opacity: 0.03;
+}
+
+/*
+  Static 1px scanline for the hero surface only, at the 3% ceiling with no drift
+  (WCAG 2.2.2). Decorative; the consuming component sets aria-hidden. Removed
+  below 768px and under reduced motion.
+*/
+.scanline-overlay {
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    var(--color-ink) 2px,
+    var(--color-ink) 3px
+  );
+}
+
+@media (max-width: 767px) {
+  .scanline-overlay {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanline-overlay {
+    display: none;
+  }
+}
+
+/*
+  Reduce, not delete (A11Y-03): strip keyframe and spatial motion but keep the
+  short opacity/color fades the contract retains. A blanket transition-duration:0
+  on the universal selector would erase those <=180ms fades, so it is
+  deliberately absent; motion is neutralized per class instead.
+*/
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation: none !important;
     scroll-behavior: auto !important;
+  }
+
+  .panel-reveal {
+    transform: none !important;
+    transition-duration: var(--dur-tab) !important;
+  }
+
+  .moving-selector {
+    transition-property: color !important;
+  }
+}
+
+/*
+  Real 2px outline (A11Y-04): an outline, not a box-shadow, so the focus ring
+  survives Windows forced-colors mode. Never outline:none without this
+  replacement.
+*/
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/*
+  Target-sizing contract interactive primitives opt into. Visible size is not
+  target size: a chamfer clips only the visible shape while the padded box holds
+  the floor.
+*/
+@media (any-pointer: fine) {
+  .tap-target {
+    min-height: 24px;
+    min-width: 24px;
+  }
+}
+
+/* coarse last: on hybrid-pointer devices both queries match, so source order
+   breaks the tie — the 44px floor must win for any device with a touch pointer. */
+@media (any-pointer: coarse) {
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/*
+  Forced-colors survival (A11Y-04): the clip-path chamfer flattens and shadows
+  drop, so the edge degrades to a real system-color border and the inner fill
+  covers the whole box.
+*/
+@media (forced-colors: active) {
+  .chamfer {
+    border: 1px solid;
+  }
+
+  .chamfer::before {
+    inset: 0;
   }
 }
