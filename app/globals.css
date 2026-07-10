@@ -357,3 +357,196 @@ html {
     inset: 0;
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 4 (menu-rail) additions — owned by plan 04-02, the single globals.css
+   owner this wave. Consumed by the skip-link (layout.tsx), the server-rendered
+   deploy CTA (plan 04-03, no client JS), and the plan-04-04 NavSheet + rail
+   island. No rule above is re-declared here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/*
+  hit-flash reduced-motion swap (RESEARCH Pitfall 4; resolves the Phase-1 open
+  flag). The universal `* { animation: none !important }` above strips the
+  spatial scale pulse, leaving zero press feedback under reduce. A class
+  selector (.hit-flash, 0,1,0) beats the universal `*` (0,0,0) among !important
+  declarations, so re-enabling a NON-spatial <=120ms keyframe here wins the
+  cascade and restores press feedback without reintroducing motion.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .hit-flash {
+    animation: hit-flash-reduced 120ms steps(1) !important;
+  }
+}
+
+/* Non-spatial press feedback: a background pulse resolving to transparent,
+   never a transform, so it stays within the <=120ms reduce budget. Shared by
+   .hit-flash and .press-flash under reduced motion. */
+@keyframes hit-flash-reduced {
+  0% {
+    background-color: var(--color-panel-hover);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+/*
+  press-flash: CSS-only press feedback for the server-rendered deploy CTA
+  (plan 04-03 — replaces the dropped DeployCta client leaf, RESEARCH WARNING 2).
+  A paint-only :active scale pulse when motion is allowed gives the anchor real
+  press feedback with no island.
+*/
+.press-flash:active {
+  animation: press-flash-pulse var(--dur-hit) var(--ease-select);
+}
+
+@keyframes press-flash-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.97);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Under reduce the spatial pulse is stripped by `*{animation:none}`; re-enable
+   the shared non-spatial keyframe (class beats `*` among !important). */
+@media (prefers-reduced-motion: reduce) {
+  .press-flash:active {
+    animation: hit-flash-reduced 120ms steps(1) !important;
+  }
+}
+
+/*
+  Skip-link (NAV-05): the first focusable element in the DOM (layout.tsx),
+  off-viewport at rest but NOT display:none so it stays focusable, revealed
+  top-left on focus above the sticky bar and any open sheet. Only positioning +
+  stacking live here; the accent-chip look comes from the .chamfer utility and
+  inline --_edge/--_fill props in layout.tsx.
+*/
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -100%;
+  z-index: 100;
+}
+
+.skip-link:focus-visible {
+  top: 8px;
+}
+
+/*
+  Smooth in-page scroll, gated to motion-allowed. This is what makes the
+  server-rendered deploy CTA's native `#dossier` jump (plan 04-03) smooth with
+  no JS. Kept separate from the reduced-motion block above (which forces
+  scroll-behavior: auto) — the two are complementary and must not be merged.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/*
+  Section scroll-margin so a hash/anchor jump never parks a heading under the
+  <1024px 56px sticky bar (WCAG 2.4.11). At >=1024px there is no sticky bar, so
+  no offset. Selector kept minimal; the rail column + content offset are
+  Tailwind lg: utilities on the components (plans 04-03/04-04), not here.
+*/
+@media (max-width: 1023px) {
+  :where(main > section[id], #main-content) {
+    scroll-margin-top: 56px;
+  }
+}
+
+/*
+  scrollbar-gutter reserves the scrollbar track always, so the body-scroll-lock
+  the sheet applies on open does not shift the layout when the scrollbar hides.
+*/
+html {
+  scrollbar-gutter: stable;
+}
+
+/*
+  Mobile-sheet CSS the plan-04-04 NavSheet consumes — authored here so
+  globals.css stays the only stylesheet; the NavSheet component only toggles
+  `open` on its <dialog data-nav-sheet>.
+*/
+
+/*
+  Backdrop scrim (accent-budget load-bearing): darkens the content column while
+  the sheet is open so the section's own accent is suppressed and the sheet's
+  active-row accent is the only live orange. The UI-SPEC rgba(6,8,9,0.7)-class
+  scrim is expressed via color-mix on the existing --color-void token, never a
+  literal. It fades in with the panel (opacity 0 -> 1).
+*/
+dialog[data-nav-sheet]::backdrop {
+  background: color-mix(in srgb, var(--color-void) 70%, transparent);
+  opacity: 0;
+  transition:
+    opacity var(--dur-route) var(--ease-reveal),
+    overlay var(--dur-route) allow-discrete,
+    display var(--dur-route) allow-discrete;
+}
+
+dialog[data-nav-sheet][open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  dialog[data-nav-sheet][open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/*
+  Sheet entry motion: the panel slides translateX(-100%) -> 0 over --dur-route
+  --ease-reveal. @starting-style supplies the entry-start value and
+  transition-behavior: allow-discrete (on display/overlay) is required because
+  <dialog> toggles `display` — without it the panel would pop, not animate,
+  across the discrete display change (entry and exit).
+*/
+dialog[data-nav-sheet] {
+  transform: translateX(-100%);
+  transition:
+    transform var(--dur-route) var(--ease-reveal),
+    overlay var(--dur-route) allow-discrete,
+    display var(--dur-route) allow-discrete;
+}
+
+dialog[data-nav-sheet][open] {
+  transform: translateX(0);
+}
+
+@starting-style {
+  dialog[data-nav-sheet][open] {
+    transform: translateX(-100%);
+  }
+}
+
+/*
+  Reduced-motion strip: drop the panel slide (spatial) entirely — no transform,
+  transform removed from the transition list — while keeping the backdrop
+  opacity fade, clamped to the <=180ms retained-fade budget (A11Y-03). Never
+  reintroduce translateX under reduce.
+*/
+@media (prefers-reduced-motion: reduce) {
+  dialog[data-nav-sheet],
+  dialog[data-nav-sheet][open] {
+    transform: none;
+    transition:
+      overlay var(--dur-tab) allow-discrete,
+      display var(--dur-tab) allow-discrete;
+  }
+
+  dialog[data-nav-sheet]::backdrop {
+    transition-duration: var(--dur-tab);
+  }
+}
