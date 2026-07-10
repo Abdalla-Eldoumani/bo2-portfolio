@@ -43,7 +43,7 @@ export function Footer() {
                 (data-print-hide) — a keyboard shortcut is meaningless printed. */}
             <p
               data-print-hide
-              className="flex items-center gap-2 font-mono text-stat-label uppercase tracking-[0.08em] text-ink-muted"
+              className="flex items-center gap-2 font-mono text-stat-label uppercase tracking-[0.08em] text-ink-secondary"
             >
               Console
               <kbd
@@ -61,10 +61,10 @@ export function Footer() {
                 </span>
               </kbd>
             </p>
-            <p className="font-body text-stat-label leading-[1.4] text-ink-muted">
+            <p className="font-body text-stat-label leading-[1.4] text-ink-secondary">
               {contact.colophon.originalWork}
             </p>
-            <p className="font-body text-stat-label leading-[1.4] text-ink-muted">
+            <p className="font-body text-stat-label leading-[1.4] text-ink-secondary">
               {contact.colophon.builtWith}
             </p>
           </div>
