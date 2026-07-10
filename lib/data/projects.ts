@@ -12,9 +12,12 @@ import aeos from '@/public/images/AEOS.png';
 import selfCheckout from '@/public/images/self-checkout.svg';
 
 /**
- * Portfolio projects — the mission set Phase 6 renders as mission cards.
- * Factual content is unchanged from source; icons are string `insigniaId`
- * keys (no icon-library import) and images are build-checked static imports.
+ * Portfolio projects — the mission set rendered as map-select cards. Content
+ * follows the approved superset rule (2026-07 resume sync): Peregrine and
+ * Qala added, site-only missions kept. Icons are string `insigniaId` keys
+ * (no icon-library import); images are build-checked static imports, and a
+ * mission without captured art (image omitted) renders the designed hatched
+ * placeholder.
  */
 export const projects = [
   {
@@ -166,6 +169,42 @@ export const projects = [
     insigniaId: 'cart',
     category: 'education',
     metrics: '20-member team, 30% productivity boost',
+  },
+  {
+    name: 'Peregrine',
+    description:
+      'Heterogeneous linear algebra for Python: AVX2 CPU kernels and an optional cuBLAS CUDA backend behind one zero-copy, NumPy-compatible API, with per-machine CPU/GPU routing. Reaches 28× NumPy throughput on large workloads.',
+    fullDescription:
+      'Peregrine routes each operation to the fastest available backend per machine — hand-tuned AVX2 CPU kernels or a cuBLAS CUDA path — behind a single zero-copy, NumPy-compatible API. Benchmarked at 28× NumPy throughput on large matrix workloads, with the routing layer choosing CPU or GPU per operation and per machine.',
+    github: 'https://github.com/Abdalla-Eldoumani/peregrine',
+    githubRepo: {
+      owner: 'Abdalla-Eldoumani',
+      repo: 'peregrine',
+    },
+    live: '#',
+    tech: ['C++', 'CUDA', 'AVX2', 'cuBLAS', 'Python', 'NumPy API'],
+    featured: true,
+    insigniaId: 'zap',
+    category: 'performance',
+    metrics: '28× NumPy throughput',
+  },
+  {
+    name: 'Qala',
+    description:
+      'A statically typed teaching language where saying is doing: effect annotations, scope-bound defer, an ARM64 backend, built in Rust with a WebAssembly playground. Published on crates.io.',
+    fullDescription:
+      'Qala is a statically typed teaching language built in Rust. Effect annotations make side effects part of the signature, defer is scope-bound, and programs compile through an ARM64 backend. A WebAssembly build powers the in-browser playground, and the toolchain ships on crates.io.',
+    github: 'https://github.com/Abdalla-Eldoumani/qala-lang',
+    githubRepo: {
+      owner: 'Abdalla-Eldoumani',
+      repo: 'qala-lang',
+    },
+    live: '#',
+    tech: ['Rust', 'WebAssembly', 'ARM64', 'Compilers', 'crates.io'],
+    featured: false,
+    insigniaId: 'cpu',
+    category: 'systems',
+    metrics: 'Language on crates.io',
   },
 ] satisfies readonly Project[];
 
