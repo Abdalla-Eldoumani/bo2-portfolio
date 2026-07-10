@@ -182,6 +182,15 @@ export function MissionDetail({
       .forEach((details) => {
         details.open = false;
       });
+    // The enhanced summary now opens a dialog, not a disclosure — declare that
+    // to assistive tech (WCAG 4.1.2). Applied post-hydration only, so the
+    // no-JS/pre-hydration markup keeps pure details semantics.
+    const triggers = document.querySelectorAll<HTMLElement>(
+      "[data-briefing-trigger]",
+    );
+    triggers.forEach((trigger) => {
+      trigger.setAttribute("aria-haspopup", "dialog");
+    });
     const onClick = (event: MouseEvent) => {
       const trigger = (event.target as HTMLElement).closest<HTMLElement>(
         "[data-briefing-trigger]",
@@ -193,7 +202,12 @@ export function MissionDetail({
       setOpenIndex(index);
     };
     document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
+    return () => {
+      document.removeEventListener("click", onClick);
+      triggers.forEach((trigger) => {
+        trigger.removeAttribute("aria-haspopup");
+      });
+    };
   }, [hydrated]);
 
   const project = openIndex !== null ? projects[openIndex] : null;
