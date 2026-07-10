@@ -32,7 +32,9 @@ export function activate(targetId: string): void {
   });
   history.replaceState(null, "", "#" + targetId);
   const heading = el.querySelector<HTMLElement>("h1, h2");
-  heading?.focus();
+  // preventScroll: focus() otherwise performs its own instant scroll, which
+  // stomps the smooth scrollIntoView above on every activation.
+  heading?.focus({ preventScroll: true });
 }
 
 /**
