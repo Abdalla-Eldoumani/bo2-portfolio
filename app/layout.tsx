@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Agdasima, Saira_Condensed, Inter, JetBrains_Mono } from "next/font/google";
 import { siteConfig } from "@/lib/site-config";
+import { CommandPalette } from "@/components/command-palette";
 import "./globals.css";
 
 // Variable names are the source-font names so they stay distinct from the
@@ -113,6 +114,13 @@ export default function RootLayout({
           }}
         />
         {children}
+        {/*
+          The Cmd+K command palette (SYS-02): one client leaf mounted globally
+          after {children} so its keydown listener and Modal work on every route
+          (home, /resume, the 404). Mounting a client leaf from the Server layout
+          adds no `use client` here — it stays a Server Component.
+        */}
+        <CommandPalette />
       </body>
     </html>
   );
