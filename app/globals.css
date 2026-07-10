@@ -688,3 +688,71 @@ dialog[data-mission-modal][open] {
     transition-duration: var(--dur-tab);
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 10 (dossier-page) addition — the single globals.css change this phase
+   (single-stylesheet rule). The printed artifact is the /resume HTML dossier
+   (RESUME-02); this ONE print block strips the screen theme to a clean,
+   ink-frugal document. No rule above is re-declared here.
+
+   LOAD-BEARING STRATEGY — TOKEN REDEFINITION, not a body-color flip. Every
+   dossier element sets an explicit text-ink / text-ink-secondary / text-ink-muted
+   utility, and an explicit color overrides an inherited body color — so flipping
+   only `body { color }` would leave the light screen ink values painting
+   near-invisible on white paper. Redefining the :root tokens flips every text-*
+   / bg-* utility at the source. Raw print-safe hex is the sanctioned exception,
+   fenced to THIS block only (Satori-style: the dark theme is screen-only).
+   ─────────────────────────────────────────────────────────────────────────── */
+@media print {
+  /* Token flip: light ground, near-black ink, neutral hairlines. Print-safe
+     literals — the sanctioned raw-hex exception, this block only. */
+  :root {
+    --color-void: #fff;
+    --color-steel: #fff;
+    --color-panel: #fff;
+    --color-ink: #111;
+    --color-ink-secondary: #333;
+    --color-ink-muted: #555;
+    --color-accent: #111; /* no orange ink on paper */
+    --color-line-faint: #ccc;
+    --color-line-strong: #999;
+  }
+
+  html,
+  body {
+    background: #fff;
+  }
+
+  /* Chrome that is meaningless on paper: RETURN TO LOBBY, EXTRACT FILE (printing
+     IS the extract), the skip-link, decorative strips — the page marks them. */
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  /* Chamfer flatten: WebKit clip-path silhouettes and the ::before fill are a
+     screen device; print panels as plain blocks with a single hairline edge. */
+  .chamfer {
+    clip-path: none;
+    background: transparent;
+    border: 1px solid #ccc;
+  }
+
+  .chamfer::before {
+    display: none;
+  }
+
+  /* Decorative overlays never print (defensive; /resume mounts none). */
+  .hex-overlay,
+  .scanline-overlay {
+    display: none !important;
+  }
+
+  /* A role/education entry never splits across a page boundary. */
+  [data-resume-entry] {
+    break-inside: avoid;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+}
