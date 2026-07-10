@@ -6,10 +6,11 @@ import { loadout } from "@/lib/data/skills";
 import { bio } from "@/lib/data/bio";
 
 // The /resume dossier — a standalone Server route (a "pulled file" surface). It
-// is fully static: no headers()/cookies()/searchParams, no async, nothing to
-// await, so the Next-16 await guard is N/A and the route stays ○ Static. The
-// root layout.tsx still wraps it (skip-link, fonts, JSON-LD), so this page owns
-// the <main id="main-content" tabIndex={-1}> the skip-link targets.
+// is fully static: it reads no dynamic request APIs (no header, cookie, or
+// search-param access), is not async, and has nothing to await, so the Next-16
+// await guard is N/A and the route stays ○ Static. The root layout.tsx still
+// wraps it (skip-link, fonts, JSON-LD), so this page owns the
+// <main id="main-content" tabIndex={-1}> the skip-link targets.
 //
 // Content is build-time constant from lib/data + site-config — never re-inlined
 // (the hard rule). Only the framing labels (section headings, field labels) are
