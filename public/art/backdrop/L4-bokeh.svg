@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810"><defs><filter id="b5" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5"></feGaussianBlur></filter></defs><g filter="url(#b5)">
+<circle cx="490" cy="650" r="10" fill="#FFC98C" opacity="0.45"></circle>
+<circle cx="605" cy="600" r="5.5" fill="#A9C1CE" opacity="0.4"></circle>
+<circle cx="792" cy="668" r="13" fill="#FF9C1E" opacity="0.3"></circle>
+<circle cx="907" cy="570" r="4.5" fill="#FFC98C" opacity="0.42"></circle>
+<circle cx="1037" cy="638" r="7.5" fill="#A9C1CE" opacity="0.32"></circle>
+<circle cx="1181" cy="540" r="5" fill="#FFC98C" opacity="0.35"></circle>
+<circle cx="1267" cy="684" r="9" fill="#FF9C1E" opacity="0.22"></circle>
+</g></svg>

@@ -1,6 +1,6 @@
 import type { StaticImageData } from 'next/image';
 
-// Mission (project) shapes for the Phase 6 mission cards. Content lives in
+// Mission (project) shapes for the mission-select cards. Content lives in
 // lib/data and conforms to these types via `satisfies` (never a cast).
 
 // Live/at-a-glance performance figures. Every field is optional because each
@@ -18,6 +18,7 @@ export interface ProjectMetrics {
 // a future mission; no current project uses it.
 export type ProjectCategory =
   | 'performance'
+  | 'systems'
   | 'ai'
   | 'web'
   | 'security'
@@ -29,7 +30,9 @@ export interface Project {
   fullDescription?: string;
   // Static import (StaticImageData), never a string path: a missing image file
   // becomes a build error instead of a silent runtime 404 (DATA-03).
-  image: StaticImageData;
+  // Optional: a mission without captured art renders the designed hatched
+  // "AWAITING VISUAL FEED" placeholder instead of invented artwork.
+  image?: StaticImageData;
   github?: string;
   live?: string;
   tech: string[];

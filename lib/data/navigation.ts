@@ -1,52 +1,54 @@
 import type { NavItem } from '@/lib/types/navigation';
 
 /**
- * Section manifest the Phase 4 navigation rail consumes: one entry per lobby
- * section in page order, each deep-linking to its anchor on the single page.
- * Labels/subtitles are original BO2 main-menu voice (there is no source data
- * file for these); labels stay title-case here and the rail uppercases them.
+ * Screen manifest — one entry per destination in lobby-menu order. The site is
+ * screen-based (BO2 menus navigate between full-viewport screens), so every
+ * href is a real route, not an anchor. Labels are original BO2 main-menu
+ * voice; components uppercase them for display.
  */
 export const navigation = [
   {
-    id: 'lobby',
-    label: 'Lobby',
-    subtitle: 'Deploy screen and callsign',
-    href: '#lobby',
-  },
-  {
     id: 'dossier',
     label: 'Service Record',
-    subtitle: 'Classified operator dossier',
-    href: '#dossier',
+    subtitle: 'Operator dossier',
+    href: '/dossier',
   },
   {
     id: 'loadout',
     label: 'Create a Class',
     subtitle: 'Skill loadout and wildcards',
-    href: '#loadout',
+    href: '/loadout',
   },
   {
     id: 'missions',
     label: 'Mission Select',
     subtitle: 'Deployed projects and ops',
-    href: '#missions',
+    href: '/missions',
   },
   {
     id: 'record',
     label: 'Combat Record',
     subtitle: 'Career rank progression',
-    href: '#record',
+    href: '/record',
   },
   {
     id: 'scoreboard',
     label: 'Scoreboard',
     subtitle: 'Live GitHub telemetry',
-    href: '#scoreboard',
+    href: '/scoreboard',
   },
   {
     id: 'comms',
     label: 'Comms',
     subtitle: 'Open a channel',
-    href: '#comms',
+    href: '/comms',
   },
 ] satisfies readonly NavItem[];
+
+/** The lobby itself — used by the mobile overlay and ESC handling. */
+export const lobbyItem = {
+  id: 'lobby',
+  label: 'Lobby',
+  subtitle: 'Main menu',
+  href: '/',
+} satisfies NavItem;
