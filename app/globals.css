@@ -108,8 +108,10 @@ html {
 */
 .chamfer {
   --_c: var(--chamfer-lg);
+  --_edge: var(--color-line-faint);
+  --_fill: var(--color-panel);
   position: relative;
-  background: var(--color-line-faint);
+  background: var(--_edge);
   clip-path: polygon(
     var(--_c) 0,
     100% 0,
@@ -124,7 +126,7 @@ html {
   content: "";
   position: absolute;
   inset: 1px;
-  background: var(--color-panel);
+  background: var(--_fill);
   clip-path: polygon(
     var(--_c) 0,
     100% 0,
@@ -197,6 +199,53 @@ html {
 
   100% {
     transform: scale(1);
+  }
+}
+
+/*
+  Hero fill (HERO-03): vh fallback first, dvh override for modern engines. Use
+  min-height, never height, so content taller than the viewport expands instead
+  of clipping, and the in-flow deploy prompt is never cut by an iOS address-bar
+  collapse. Tailwind's min-h-dvh utility emits no vh fallback, so the
+  two-declaration cascade (pre-Safari-15.4 / pre-Chrome-108) lives here.
+*/
+.hero-fill {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/*
+  One-shot digital-slice boot accent (HERO-02). Spatial displacement only
+  (transform + clip-path + opacity), never a full-frame luminance/white flash.
+  Bound to --dur-slice (200ms, within the 220ms ceiling), iteration-count 1,
+  fill-mode both. Auto-plays on paint, so the element stays a Server Component.
+  Designed 0% displaced -> 100% resting, so the element's natural (no-animation)
+  rendering IS the 100% frame: the universal `animation: none` under
+  prefers-reduced-motion (below) lands it on the finished visual instantly. No
+  per-class reduced-motion override is declared here on purpose.
+*/
+.boot-slice {
+  animation: boot-slice var(--dur-slice) var(--ease-reveal) both;
+  animation-iteration-count: 1;
+}
+
+@keyframes boot-slice {
+  0% {
+    transform: translateX(-6px);
+    clip-path: inset(0 0 55% 0);
+    opacity: 0.4;
+  }
+
+  60% {
+    transform: translateX(2px);
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: none;
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
   }
 }
 
