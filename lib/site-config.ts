@@ -9,6 +9,7 @@ export const siteConfig = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://abdallaeldoumani.vercel.app",
   name: "Abdalla Eldoumani",
   jobTitle: "Software Developer",
+  email: "aamsdoumani@gmail.com",
   github: `https://github.com/${githubHandle}`,
   callsign: githubHandle,
   linkedin: "https://www.linkedin.com/in/abdallaeldoumani/",

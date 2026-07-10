@@ -1,5 +1,7 @@
+import { AfterAction } from "@/components/after-action";
 import { CombatRecord } from "@/components/combat-record";
 import { CreateAClass } from "@/components/create-a-class";
+import { Footer } from "@/components/footer";
 import { LobbyHero } from "@/components/lobby-hero";
 import { MenuRail } from "@/components/menu-rail";
 import { MissionSelect } from "@/components/mission-select";
@@ -21,7 +23,15 @@ export default function Home() {
   return (
     <>
       <MenuRail
-        liveIds={["lobby", "dossier", "loadout", "missions", "record", "scoreboard"]}
+        liveIds={[
+          "lobby",
+          "dossier",
+          "loadout",
+          "missions",
+          "record",
+          "scoreboard",
+          "comms",
+        ]}
       />
       <main id="main-content" tabIndex={-1} className="lg:pl-[280px]">
         <LobbyHero />
@@ -30,7 +40,9 @@ export default function Home() {
         <MissionSelect />
         <CombatRecord />
         <Scoreboard />
+        <AfterAction />
       </main>
+      <Footer />
     </>
   );
 }
