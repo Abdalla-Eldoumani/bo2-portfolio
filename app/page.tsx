@@ -3,6 +3,7 @@ import { CreateAClass } from "@/components/create-a-class";
 import { LobbyHero } from "@/components/lobby-hero";
 import { MenuRail } from "@/components/menu-rail";
 import { MissionSelect } from "@/components/mission-select";
+import { Scoreboard } from "@/components/scoreboard";
 import { ServiceRecord } from "@/components/service-record";
 
 // Section-composition root: one <main> that stacks the lobby sections in page
@@ -19,13 +20,16 @@ import { ServiceRecord } from "@/components/service-record";
 export default function Home() {
   return (
     <>
-      <MenuRail liveIds={["lobby", "dossier", "loadout", "missions", "record"]} />
+      <MenuRail
+        liveIds={["lobby", "dossier", "loadout", "missions", "record", "scoreboard"]}
+      />
       <main id="main-content" tabIndex={-1} className="lg:pl-[280px]">
         <LobbyHero />
         <ServiceRecord />
         <CreateAClass />
         <MissionSelect />
         <CombatRecord />
+        <Scoreboard />
       </main>
     </>
   );

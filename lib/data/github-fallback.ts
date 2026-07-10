@@ -7,8 +7,11 @@ import type { GitHubStats } from '@/lib/types/github';
  * so it has to be static and deterministic: `syncedAt` is a fixed literal rather
  * than a live clock read, so the value does not drift build to build. The numbers were
  * captured manually from the public `/users/{handle}` + `/users/{handle}/repos`
- * endpoints on the date below; Phase 8 extends `stars`/`recent` through their own
- * guarded endpoints, so `recent` ships empty here.
+ * endpoints. `recent` is a hand-committed real snapshot of the six newest rows
+ * from `/users/{handle}/events/public` (no invented events — project honesty
+ * rule); re-seed it with the same curl documented in this directory's CLAUDE.md.
+ * `syncedAt` sits just after the newest event's `created_at` so
+ * `timeAgo(createdAt, syncedAt)` reads a realistic frozen "X ago as of last sync".
  */
 export const githubFallback = {
   source: 'fallback',
@@ -16,6 +19,43 @@ export const githubFallback = {
   followers: 21,
   following: 16,
   stars: 41,
-  recent: [],
-  syncedAt: '2026-07-06T00:00:00Z',
+  recent: [
+    {
+      id: '14582049950',
+      type: 'PushEvent',
+      repo: 'Abdalla-Eldoumani/Abdalla-Eldoumani',
+      createdAt: '2026-07-08T21:27:18Z',
+    },
+    {
+      id: '14569323553',
+      type: 'PushEvent',
+      repo: 'Abdalla-Eldoumani/Abdalla-Eldoumani',
+      createdAt: '2026-07-08T17:16:15Z',
+    },
+    {
+      id: '14567349618',
+      type: 'PushEvent',
+      repo: 'Abdalla-Eldoumani/Abdalla-Eldoumani',
+      createdAt: '2026-07-08T16:40:34Z',
+    },
+    {
+      id: '14567261936',
+      type: 'PushEvent',
+      repo: 'Abdalla-Eldoumani/Abdalla-Eldoumani',
+      createdAt: '2026-07-08T16:39:01Z',
+    },
+    {
+      id: '11522341833',
+      type: 'WatchEvent',
+      repo: 'Younesfdj/gitfut',
+      createdAt: '2026-07-08T16:36:49Z',
+    },
+    {
+      id: '11477343814',
+      type: 'WatchEvent',
+      repo: 'Abdalla-Eldoumani/peregrine',
+      createdAt: '2026-07-07T19:39:14Z',
+    },
+  ],
+  syncedAt: '2026-07-08T22:00:00Z',
 } satisfies GitHubStats;
