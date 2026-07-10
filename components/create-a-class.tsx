@@ -142,7 +142,7 @@ export function CreateAClass() {
                 </h3>
                 <span
                   aria-hidden="true"
-                  className="font-mono text-stat-label tabular-nums text-ink-muted"
+                  className="font-mono text-stat-label tabular-nums text-ink-secondary"
                 >
                   · {pad2(group.skills.length)}
                 </span>
@@ -166,7 +166,7 @@ export function CreateAClass() {
             </h3>
             <span
               aria-hidden="true"
-              className="font-mono text-stat-label tabular-nums text-ink-muted"
+              className="font-mono text-stat-label tabular-nums text-ink-secondary"
             >
               · {pad2(loadout.wildcards.length)}
             </span>
