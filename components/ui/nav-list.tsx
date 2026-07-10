@@ -30,6 +30,13 @@ type NavListProps = {
   activeId?: string;
   /** Post-hydration roving-focus anchor; undefined = natural tab order. */
   rovingId?: string;
+  /**
+   * Render the per-row active tick (default). The desktop rail passes false —
+   * the island overlays ONE absolutely-positioned .moving-selector tick that
+   * glides between rows instead (the BO2 selector move); the sheet and the
+   * no-JS disclosure keep the per-row tick.
+   */
+  tick?: boolean;
   className?: string;
 };
 
@@ -69,7 +76,13 @@ function LiveRow({
   row,
   isActive,
   rovingId,
-}: Readonly<{ row: NavRow; isActive: boolean; rovingId?: string }>) {
+  tick,
+}: Readonly<{
+  row: NavRow;
+  isActive: boolean;
+  rovingId?: string;
+  tick: boolean;
+}>) {
   return (
     <a
       href={row.href}
@@ -79,13 +92,19 @@ function LiveRow({
         rovingId === undefined ? undefined : row.id === rovingId ? 0 : -1
       }
       aria-current={isActive ? "true" : undefined}
-      className={cn(ROW_BASE, isActive ? "text-accent font-bold" : "text-ink")}
+      className={cn(
+        ROW_BASE,
+        // .moving-selector on the anchor gives the 120ms color cross-fade the
+        // spec pairs with the selector move (reduced-motion keeps only this).
+        "moving-selector",
+        isActive ? "text-accent font-bold" : "text-ink",
+      )}
     >
       <span
         aria-hidden
         className={cn(
-          "moving-selector h-5 w-[3px] shrink-0",
-          isActive ? "bg-accent" : "bg-transparent",
+          "h-5 w-[3px] shrink-0",
+          tick && isActive ? "bg-accent" : "bg-transparent",
         )}
       />
       <span className="flex min-w-0 flex-col">
@@ -120,18 +139,28 @@ export function NavList({
   rows,
   activeId,
   rovingId,
+  tick = true,
   className,
 }: Readonly<NavListProps>) {
   return (
     <nav aria-label="Sections" className={className}>
       <ul className="flex flex-col">
-        {rows.map((row) => (
-          <li key={row.id} className="min-w-0">
+        {rows.map((row, index) => (
+          <li
+            key={row.id}
+            className={cn(
+              "min-w-0",
+              // 8px cluster gap where the live block ends and the locked block
+              // begins — groups the operable rows as one BO2 menu cluster.
+              !row.live && index > 0 && rows[index - 1].live && "mt-2",
+            )}
+          >
             {row.live ? (
               <LiveRow
                 row={row}
                 isActive={row.id === activeId}
                 rovingId={rovingId}
+                tick={tick}
               />
             ) : (
               <LockedRow row={row} />
