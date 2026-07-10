@@ -756,3 +756,27 @@ dialog[data-mission-modal][open] {
     margin: 16mm;
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 11 (disconnect-screen) addition — the single globals.css change this
+   phase (single-stylesheet rule). The SYS-02 zombies color-flip easter egg,
+   toggled only via the command palette (no persistence — resets on reload). No
+   rule above is re-declared here.
+
+   SCREEN-SCOPED BY CONSTRUCTION. The flip redefines only the three accent
+   tokens on html[data-zombies] (specificity 0,1,1). The @media print block
+   above redefines --color-accent on :root (0,1,0) — a lower selector — so a
+   bare html[data-zombies] would BEAT the print override and bleed toxic green
+   onto paper. Wrapping the flip in @media screen makes paper immune by
+   construction: the rule simply does not exist in the print context. Raw
+   print-safe... screen-safe hex is the sanctioned exception, fenced to THIS
+   block only (the toxic-lime Element-115 register, AA-verified against the dark
+   grounds where the orange accent already passed).
+   ─────────────────────────────────────────────────────────────────────────── */
+@media screen {
+  html[data-zombies] {
+    --color-accent: #7cb518; /* toxic lime — zombies accent (AA on panel/void) */
+    --color-accent-bright: #a8e05f; /* lighter toxic green — hover/bright pairing */
+    --color-accent-dim: #3e5e14; /* dark green — accent borders at rest */
+  }
+}
