@@ -29,7 +29,8 @@ import {
 const current = getCurrentExperience();
 
 // Steel commendation chip (education) — a small chamfer with a 3px line-strong
-// left tick, ALL-CAPS ink. NEVER border-l-4 / border-left:3px (the scan tell).
+// left tick (border-l-[3px]), ALL-CAPS ink. The thicker 4-step utility is the
+// scan tell and is avoided.
 const CHIP_CHAMFER: CSSProperties = { "--_c": "var(--chamfer-sm)" } as CSSProperties;
 
 // Original steel achievement/highlight marker: a 12-deg-skewed line-strong dash,
