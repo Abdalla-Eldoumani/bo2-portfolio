@@ -10,13 +10,14 @@ import { siteConfig } from "@/lib/site-config";
 // offset applies. A 1px --color-line-faint top hairline separates it from the
 // #comms section above.
 //
-// Subdued, quiet chrome: --color-steel ground, small type, ink-secondary /
-// ink-muted, ZERO orange, ZERO status color, no chamfer drama. The identity line
-// reads from siteConfig (never re-hardcoded); the original-work + built-with
-// lines read from lib/data/contact. NO game wordmarks, no brand logo, no emoji
-// — the original-work statement names the ABSENCE of game assets (the
-// CONTACT-02 affirmation) and quotes no wordmark. ink-muted is confined here, to
-// the non-essential fine print.
+// Subdued, quiet chrome: --color-steel ground, small type, ink-secondary
+// throughout, ZERO orange, ZERO status color, no chamfer drama. The identity
+// line reads from siteConfig (never re-hardcoded); the original-work +
+// built-with lines read from lib/data/contact. NO game wordmarks, no brand
+// logo, no emoji — the original-work statement names the ABSENCE of game
+// assets (the CONTACT-02 affirmation) and quotes no wordmark. ink-muted is
+// banned at text-stat-label size: 3.34:1 on steel fails AA (the Lighthouse
+// closeout catch) — fine print floors at ink-secondary.
 
 export function Footer() {
   return (
