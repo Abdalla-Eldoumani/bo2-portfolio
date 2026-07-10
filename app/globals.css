@@ -108,8 +108,10 @@ html {
 */
 .chamfer {
   --_c: var(--chamfer-lg);
+  --_edge: var(--color-line-faint);
+  --_fill: var(--color-panel);
   position: relative;
-  background: var(--color-line-faint);
+  background: var(--_edge);
   clip-path: polygon(
     var(--_c) 0,
     100% 0,
@@ -124,7 +126,7 @@ html {
   content: "";
   position: absolute;
   inset: 1px;
-  background: var(--color-panel);
+  background: var(--_fill);
   clip-path: polygon(
     var(--_c) 0,
     100% 0,
