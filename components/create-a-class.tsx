@@ -25,7 +25,8 @@ import { loadout } from "@/lib/data/skills";
 
 // Slot groups — three full-width stacked regions mapping the matching `loadout`
 // array in source order. Counts derive from array length so they cannot drift
-// from the data (decorative, aria-hidden, ink-muted).
+// from the data (decorative, aria-hidden; ink-secondary — ink-muted fails AA
+// at text-stat-label size on steel, the Lighthouse closeout catch).
 const slotGroups = [
   { label: "Primary", skills: loadout.primary },
   { label: "Secondary", skills: loadout.secondary },
