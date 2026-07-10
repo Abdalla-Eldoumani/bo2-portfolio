@@ -13,8 +13,7 @@ import { education } from "@/lib/data/experience";
 // Every essential field value uses --color-ink / ink-secondary (never ink-muted).
 // Orange is spent on exactly one element here — the clearance tag.
 
-// Callsign flavor: the GitHub handle is the last URL segment of siteConfig.github.
-const callsign = siteConfig.github.split("/").pop() ?? "";
+const callsign = siteConfig.callsign;
 
 // File field rows — labels are theme framing; values are verbatim data facts
 // composed from site-config + experience.education + bio (no inline copy).
@@ -52,7 +51,10 @@ export function ServiceRecord() {
               Service Record
             </h2>
             <div className="flex flex-col gap-2 sm:items-end">
-              <span className="font-mono text-stat-label tabular-nums text-ink-muted">
+              <span
+                aria-hidden="true"
+                className="font-mono text-stat-label tabular-nums text-ink-muted"
+              >
                 {bio.fileRef}
               </span>
               <span className="border border-accent px-2 py-1 font-label text-stat-label uppercase tracking-[0.08em] text-accent">
@@ -73,7 +75,7 @@ export function ServiceRecord() {
               <dt className="font-label text-stat-label uppercase tracking-[0.08em] text-ink-secondary">
                 {field.label}
               </dt>
-              <dd className="font-mono text-[0.875rem] leading-[1.4] tabular-nums text-ink">
+              <dd className="font-mono text-button leading-[1.4] tabular-nums text-ink">
                 {field.value}
               </dd>
             </div>
