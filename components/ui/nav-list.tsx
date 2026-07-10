@@ -8,9 +8,12 @@ import { cn } from "@/lib/utils/cn";
 // <button>s, so with JS off the live rows are native in-page links (never
 // role=menu). Live-vs-LOCKED is decided upstream by lib/nav/live-sections
 // deriveNav and passed in as the `live` flag — this component never hardcodes
-// which sections exist. Roving tabindex (promoting one live anchor to 0) is the
-// island's job; NavList only defaults every live anchor to -1 and exposes the
-// data-nav-id / data-live hooks. Every state carries a non-color cue that
+// which sections exist. Roving tabindex is prop-driven: with `rovingId`
+// undefined (server render, no-JS, pre-hydration) NO tabindex is emitted, so
+// every live anchor sits in the natural tab order; the island passes `rovingId`
+// only after hydration, which demotes all but one anchor to -1. Never bake
+// tabindex=-1 into server markup — that removes the no-JS tab order entirely.
+// Every state carries a non-color cue that
 // survives forced-colors: active = weight bump + aria-current; locked = "LOCKED"
 // text + lock glyph + aria-disabled.
 
@@ -25,6 +28,8 @@ export type NavRow = {
 type NavListProps = {
   rows: readonly NavRow[];
   activeId?: string;
+  /** Post-hydration roving-focus anchor; undefined = natural tab order. */
+  rovingId?: string;
   className?: string;
 };
 
@@ -63,13 +68,16 @@ function LockGlyph() {
 function LiveRow({
   row,
   isActive,
-}: Readonly<{ row: NavRow; isActive: boolean }>) {
+  rovingId,
+}: Readonly<{ row: NavRow; isActive: boolean; rovingId?: string }>) {
   return (
     <a
       href={row.href}
       data-nav-id={row.id}
       data-live=""
-      tabIndex={-1}
+      tabIndex={
+        rovingId === undefined ? undefined : row.id === rovingId ? 0 : -1
+      }
       aria-current={isActive ? "true" : undefined}
       className={cn(ROW_BASE, isActive ? "text-accent font-bold" : "text-ink")}
     >
@@ -108,14 +116,23 @@ function LockedRow({ row }: Readonly<{ row: NavRow }>) {
   );
 }
 
-export function NavList({ rows, activeId, className }: Readonly<NavListProps>) {
+export function NavList({
+  rows,
+  activeId,
+  rovingId,
+  className,
+}: Readonly<NavListProps>) {
   return (
     <nav aria-label="Sections" className={className}>
       <ul className="flex flex-col">
         {rows.map((row) => (
           <li key={row.id} className="min-w-0">
             {row.live ? (
-              <LiveRow row={row} isActive={row.id === activeId} />
+              <LiveRow
+                row={row}
+                isActive={row.id === activeId}
+                rovingId={rovingId}
+              />
             ) : (
               <LockedRow row={row} />
             )}
