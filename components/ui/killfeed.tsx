@@ -59,9 +59,11 @@ function KillfeedRow({
       <span className="font-mono text-data font-bold leading-[1.5] tabular-nums text-online">
         {callsign}
       </span>
+      {/* mx-2 widens the glyph seam past the word gaps so the means-glyph reads
+          as its own column, the way a killfeed weapon icon does. */}
       <EventGlyph
         type={row.type}
-        className="h-4 w-4 shrink-0 text-ink-secondary"
+        className="mx-2 h-4 w-4 shrink-0 text-ink-secondary"
       />
       <span className="font-mono text-data leading-[1.5] text-ink-secondary">
         {VERBS[row.type] ?? "was active in"}
@@ -70,7 +72,7 @@ function KillfeedRow({
         href={`${GITHUB_ORIGIN}${row.repo}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="tap-target press-flash inline-flex items-center break-all font-mono text-data leading-[1.5] text-intel underline-offset-2 hover:underline focus-visible:underline"
+        className="tap-target press-flash inline-flex items-center [overflow-wrap:anywhere] font-mono text-data leading-[1.5] text-intel underline-offset-2 hover:underline focus-visible:underline"
       >
         {row.repo}
       </a>
