@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { contact } from "@/lib/data/contact";
 import { siteConfig } from "@/lib/site-config";
 
@@ -25,6 +26,14 @@ export function Footer() {
           <p className="font-mono text-data leading-[1.5] text-ink-secondary">
             {siteConfig.name} · {siteConfig.jobTitle}
           </p>
+          {/* Discoverability anchor to the /resume dossier — quiet steel/ink,
+              no orange, consistent with the footer's zero-accent register. */}
+          <Link
+            href="/resume"
+            className="tap-target press-flash font-mono text-data uppercase tracking-[0.08em] text-ink-secondary"
+          >
+            Resume
+          </Link>
           <div className="flex flex-col gap-1 sm:items-end">
             <p className="font-body text-stat-label leading-[1.4] text-ink-muted">
               {contact.colophon.originalWork}
