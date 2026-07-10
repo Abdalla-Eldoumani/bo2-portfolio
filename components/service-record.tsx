@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Panel } from "@/components/ui/panel";
 import { siteConfig } from "@/lib/site-config";
 import { bio } from "@/lib/data/bio";
@@ -72,6 +73,15 @@ export function ServiceRecord() {
                   {bio.clearanceTag}
                 </span>
               </span>
+              {/* Discoverability anchor to the /resume dossier — STEEL, never
+                  orange: the clearance tag stays the section's one accent. */}
+              <Link
+                href="/resume"
+                className="tap-target press-flash inline-flex items-center gap-2 font-label text-stat-label uppercase tracking-[0.08em] text-ink-secondary"
+              >
+                Full Dossier
+                <span aria-hidden="true">→</span>
+              </Link>
             </div>
           </div>
         </Panel>
