@@ -13,8 +13,7 @@ import { bio } from "@/lib/data/bio";
 // collapse shrinks the column without clipping it (HERO-03). Orange is spent on
 // exactly one element here — the deploy CTA — so the insignia stays steel.
 
-// Callsign flavor: the GitHub handle is the last URL segment of siteConfig.github.
-const callsign = siteConfig.github.split("/").pop() ?? "";
+const callsign = siteConfig.callsign;
 
 export function LobbyHero() {
   return (
