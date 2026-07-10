@@ -68,6 +68,7 @@ function isRepoPayload(
 // missing the string `type` / record `repo.name` / string `created_at`.
 function isEventPayload(value: unknown): value is Array<
   Record<string, unknown> & {
+    id: string | number;
     type: string;
     repo: { name: string };
     created_at: string;
@@ -78,6 +79,9 @@ function isEventPayload(value: unknown): value is Array<
     value.every(
       (item) =>
         isRecord(item) &&
+        // id feeds String(event.id) and becomes the React key — an item without
+        // one would coerce to the literal "undefined" and collide with siblings.
+        (typeof item.id === 'string' || typeof item.id === 'number') &&
         typeof item.type === 'string' &&
         isRecord(item.repo) &&
         typeof item.repo.name === 'string' &&
@@ -161,6 +165,10 @@ export async function getGitHubStats(): Promise<GitHubStats> {
     ...profile,
     stars,
     recent,
-    syncedAt: new Date().toISOString(),
+    // The stamp follows the EVENTS surface: its visual job is anchoring the
+    // killfeed's relative times, so frozen fallback rows must age against the
+    // snapshot's own clock (bounded "1d/2d ago"), never a fresh stamp that
+    // would let them drift toward "2y ago" under a persistent events outage.
+    syncedAt: eventsOk ? new Date().toISOString() : githubFallback.syncedAt,
   };
 }
