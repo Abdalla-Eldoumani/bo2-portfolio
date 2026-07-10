@@ -84,15 +84,18 @@ function Pick10Meter() {
 }
 
 // Non-interactive skill chip: a compact chamfered tile with a 3px steel left
-// tick (the equipped-slot cue, never orange). Name renders verbatim in the DOM
-// (uppercased in CSS only) so C/C++, Next.js, OpenAI API keep exact characters.
+// tick (the equipped-slot cue, never orange — ink-muted as a border reads a
+// full step brighter than line-strong over the panel fill, so the slot metaphor
+// registers on screen, not just in the DOM; 3px stays under the scan's
+// thick-left-accent threshold). Name renders verbatim in the DOM (uppercased in
+// CSS only) so C/C++, Next.js, OpenAI API keep exact characters.
 function SkillChip({ name }: { name: string }) {
   return (
     <span
       className="chamfer inline-flex"
       style={{ "--_c": "var(--chamfer-sm)" } as CSSProperties}
     >
-      <span className="relative z-[1] flex items-center border-l-[3px] border-line-strong px-4 py-2 font-display text-body uppercase tracking-[0.04em] text-ink">
+      <span className="relative z-[1] flex items-center border-l-[3px] border-ink-muted px-4 py-2 font-display text-body uppercase tracking-[0.04em] text-ink">
         {name}
       </span>
     </span>
