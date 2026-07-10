@@ -30,21 +30,24 @@ export function LobbyHero() {
       {/* Identity block: vertically centered in the flex-1 region, within the
           1200px content constant, single column with no overflow at 320px. */}
       <div className="relative z-10 flex flex-1 items-center justify-center px-5 py-16">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-4 text-center sm:gap-6">
+        {/* Grouped rhythm, not a uniform gap: name+role read as one unit (24px),
+            the meta pair sits a step further (32px), status hangs off the meta
+            group (16px). All values on the spacing rungs. */}
+        <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center text-center">
           <RankInsignia className="h-[72px] w-[72px] text-ink-secondary" />
 
           <h1
             id="lobby-heading"
-            className="boot-slice text-balance font-display text-[clamp(2.125rem,8vw,6rem)] uppercase leading-[1.05] tracking-[0.04em] text-ink"
+            className="boot-slice mt-8 text-balance font-display text-[clamp(2.125rem,8vw,6rem)] uppercase leading-[1.05] tracking-[0.04em] text-ink"
           >
             {siteConfig.name}
           </h1>
 
-          <p className="font-display text-lead uppercase tracking-[0.04em] text-ink-secondary sm:text-h3">
+          <p className="mt-6 font-display text-lead uppercase tracking-[0.04em] text-ink-secondary sm:text-h3">
             {siteConfig.jobTitle}
           </p>
 
-          <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
+          <div className="mt-8 flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
             <span className="font-label text-label uppercase tracking-[0.08em] text-ink-secondary">
               {bio.station}
             </span>
@@ -53,7 +56,7 @@ export function LobbyHero() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="mt-4 flex items-center gap-2">
             <span
               aria-hidden="true"
               className="h-2 w-2 rounded-full bg-online"
@@ -69,15 +72,26 @@ export function LobbyHero() {
           presentational markup this phase — the Enter/tap wiring lands with the
           Phase-4 rail. The single orange element in this viewport. */}
       <div className="relative z-10 flex justify-center px-5 pb-8 sm:pb-12">
-        <span className="tap-target inline-flex items-center gap-2 border border-accent px-6 py-3 font-label text-data uppercase tracking-[0.08em] text-accent">
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 8 8"
-            className="h-2 w-2 fill-current"
-          >
-            <path d="M1 0 L7 4 L1 8 Z" />
-          </svg>
-          Press Enter / Tap to Deploy
+        <span
+          className="tap-target chamfer inline-flex items-center px-6 py-3"
+          style={
+            {
+              "--_c": "var(--chamfer-sm)",
+              "--_edge": "var(--color-accent)",
+              "--_fill": "var(--color-void)",
+            } as React.CSSProperties
+          }
+        >
+          <span className="relative z-[1] inline-flex items-center gap-2 font-label text-data uppercase tracking-[0.08em] text-accent">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 8 8"
+              className="h-2 w-2 fill-current"
+            >
+              <path d="M1 0 L7 4 L1 8 Z" />
+            </svg>
+            Press Enter / Tap to Deploy
+          </span>
         </span>
       </div>
     </section>
