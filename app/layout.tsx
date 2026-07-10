@@ -82,6 +82,30 @@ export default function RootLayout({
       className={`${agdasima.variable} ${saira.variable} ${inter.variable} ${mono.variable}`}
     >
       <body className="bg-void text-ink antialiased">
+        {/*
+          Skip-link (NAV-05): the FIRST focusable element in the DOM, before the
+          JSON-LD script and all page chrome. A native anchor, so it works with
+          JS off; its target <main id="main-content" tabindex="-1"> is set in
+          plan 04-03. Off-viewport at rest and revealed top-left on focus via
+          the .skip-link rule in globals.css; the accent-chip silhouette is the
+          existing .chamfer utility parametrized to an accent edge on the void
+          fill (inner span in relative z-[1] so it paints over the ::before).
+        */}
+        <a
+          href="#main-content"
+          className="skip-link chamfer tap-target"
+          style={
+            {
+              "--_c": "var(--chamfer-sm)",
+              "--_edge": "var(--color-accent)",
+              "--_fill": "var(--color-void)",
+            } as React.CSSProperties
+          }
+        >
+          <span className="relative z-[1] inline-flex items-center px-4 py-2 font-label text-data uppercase tracking-[0.08em] text-accent">
+            SKIP TO CONTENT
+          </span>
+        </a>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -38,6 +38,7 @@ export function LobbyHero() {
 
           <h1
             id="lobby-heading"
+            tabIndex={-1}
             className="boot-slice mt-8 text-balance font-display text-[clamp(2.125rem,8vw,6rem)] uppercase leading-[1.05] tracking-[0.04em] text-ink"
           >
             {siteConfig.name}
@@ -68,12 +69,15 @@ export function LobbyHero() {
         </div>
       </div>
 
-      {/* Deploy prompt: in-flow LAST flex child (no fixed/absolute). Static
-          presentational markup this phase — the Enter/tap wiring lands with the
-          Phase-4 rail. The single orange element in this viewport. */}
+      {/* Deploy prompt: in-flow LAST flex child (no fixed/absolute). A real
+          server-rendered <a href="#dossier"> — native in-page navigation with
+          JS off, smooth/instant scroll via the globals scroll-behavior gate,
+          and CSS-only .press-flash :active feedback (no client island, per the
+          one-island budget). The single orange element in this viewport. */}
       <div className="relative z-10 flex justify-center px-5 pb-8 sm:pb-12">
-        <span
-          className="tap-target chamfer inline-flex items-center px-6 py-3"
+        <a
+          href="#dossier"
+          className="tap-target chamfer press-flash inline-flex items-center px-6 py-3"
           style={
             {
               "--_c": "var(--chamfer-sm)",
@@ -92,7 +96,7 @@ export function LobbyHero() {
             </svg>
             Press Enter / Tap to Deploy
           </span>
-        </span>
+        </a>
       </div>
     </section>
   );
