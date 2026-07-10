@@ -150,7 +150,13 @@ export function MenuRail({ liveIds }: Readonly<{ liveIds: readonly string[] }>) 
   // controlled activation with press feedback.
   const onRailKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (liveRows.length === 0) return;
-    const current = rovingId ?? activeId ?? firstLiveId;
+    // The focused anchor is the source of truth: scroll can re-point the roving
+    // tabindex (activeId) without moving DOM focus, and Enter must activate what
+    // the user is focused on, not what the observer last highlighted.
+    const focusedId = (event.target as HTMLElement).closest<HTMLElement>(
+      "a[data-nav-id]",
+    )?.dataset.navId;
+    const current = focusedId ?? rovingId ?? activeId ?? firstLiveId;
     const index = liveRows.findIndex((row) => row.id === current);
     if (index === -1) return;
 
@@ -211,8 +217,12 @@ export function MenuRail({ liveIds }: Readonly<{ liveIds: readonly string[] }>) 
     activate(id);
   };
 
-  // Sheet activation: controlled scroll then close the sheet (covers a pointer
-  // click and a keyboard Enter, since the sheet carries no roving keydown).
+  // Sheet activation: close FIRST, then activate. While the dialog is open the
+  // background is inert (activate's heading focus would no-op) and closing
+  // returns focus to the trigger — so the scroll+focus runs in an effect after
+  // the close has settled, landing the user inside the destination.
+  const pendingSheetTarget = useRef<string | null>(null);
+
   const onSheetActivate = (event: React.MouseEvent<HTMLDivElement>) => {
     const anchor = (event.target as HTMLElement).closest<HTMLElement>(
       "a[data-nav-id]",
@@ -220,9 +230,16 @@ export function MenuRail({ liveIds }: Readonly<{ liveIds: readonly string[] }>) 
     const id = anchor?.dataset.navId;
     if (!id) return;
     event.preventDefault();
-    activate(id);
+    pendingSheetTarget.current = id;
     setSheetOpen(false);
   };
+
+  useEffect(() => {
+    if (sheetOpen || pendingSheetTarget.current === null) return;
+    const id = pendingSheetTarget.current;
+    pendingSheetTarget.current = null;
+    activate(id);
+  }, [sheetOpen]);
 
   // Pre-hydration: no roving (natural tab order), no active accent — identical to
   // the server render and the no-JS experience.
