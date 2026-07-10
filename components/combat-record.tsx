@@ -170,15 +170,24 @@ function RankRung({
 }
 
 // Education fields — labels are framing; values are verbatim data facts.
+// minor/honors are OPTIONAL in the contract: guard them so a future one-file
+// content edit that drops either never renders "undefined" or a blank chip.
 const eduFields = [
-  { label: "Program", value: `${education.degree} · ${education.minor}` },
+  {
+    label: "Program",
+    value: education.minor
+      ? `${education.degree} · ${education.minor}`
+      : education.degree,
+  },
   { label: "Institution", value: education.institution },
   { label: "Location", value: education.location },
   { label: "Operation Window", value: education.duration },
 ] as const;
 
-// The two commendation chips — verbatim honors + GPA, steel (zero orange).
-const commendations = [education.honors, `GPA ${education.gpa}`] as const;
+// Commendation chips — verbatim honors (when present) + GPA, steel (zero orange).
+const commendations = [education.honors, `GPA ${education.gpa}`].filter(
+  (value): value is string => Boolean(value),
+);
 
 function ClearanceRecord() {
   return (
