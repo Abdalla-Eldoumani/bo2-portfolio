@@ -51,6 +51,7 @@ function Pick10Meter() {
   return (
     <div
       role="progressbar"
+      aria-label="Pick 10 loadout allocation"
       aria-valuenow={10}
       aria-valuemin={0}
       aria-valuemax={10}
