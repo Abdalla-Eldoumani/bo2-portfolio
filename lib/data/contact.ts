@@ -7,8 +7,9 @@
 // - invitation: the recruiter conversion line (Inter body). The word "email" is
 //   split into its own run so the after-action section can lift it to
 //   --color-ink; concatenating the runs reproduces the sentence verbatim.
-// - colophon.originalWork: the CONTACT-02 affirmation — names the ABSENCE of
-//   game assets, quotes no wordmark.
+// - colophon.originalWork: the CONTACT-02 affirmation. It must contain ZERO
+//   wordmarks — no studio or franchise name appears anywhere in the footer,
+//   even inside a disclaimer (the Phase-12 legal grep scans rendered copy too).
 // - colophon.builtWith: the subdued built-with line.
 
 type ProseRun = { readonly text: string } | { readonly em: string };
@@ -32,7 +33,7 @@ export const contact = {
   ],
   colophon: {
     originalWork:
-      "Original interface — no Activision or Treyarch assets; all art built in-project.",
+      "Original interface — every asset on this site was designed and built in-project.",
     builtWith: "Built with Next.js, React, and Tailwind CSS. Copyright 2026.",
   },
 } satisfies Contact;
