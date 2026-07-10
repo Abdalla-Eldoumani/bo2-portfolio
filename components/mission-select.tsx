@@ -297,7 +297,10 @@ function MissionContent({
 function FeaturedCard({ project, index }: Readonly<{ project: Project; index: number }>) {
   return (
     <Panel active>
-      <div className="grid gap-6 p-5 sm:p-6 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:items-start">
+      {/* items-center: the 16:9 image is far shorter than the content column, so
+          top alignment strands ~350px of blank steel under it on every featured
+          row — centering balances the campaign banner. */}
+      <div className="grid gap-6 p-5 sm:p-6 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:items-center">
         <MissionImage
           image={project.image}
           name={project.name}
