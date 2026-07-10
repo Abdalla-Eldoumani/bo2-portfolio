@@ -46,6 +46,7 @@ export function ServiceRecord() {
           <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <h2
               id="dossier-heading"
+              tabIndex={-1}
               className="font-display text-h2 uppercase tracking-[0.04em] text-ink"
             >
               Service Record
