@@ -82,11 +82,42 @@ export function MenuRail({ liveIds }: Readonly<{ liveIds: readonly string[] }>) 
     HYDRATION_STORE.server,
   );
 
-  const [activeId, setActiveId] = useState<string | undefined>(undefined);
+  // Seeded (load hash if live, else the first live section) so the rail paints
+  // its active state on the first post-hydration frame instead of waiting for
+  // the observer's first async callback. Rendered only when hydrated, so the
+  // seed can read location without a server/client mismatch.
+  const [activeId, setActiveId] = useState<string | undefined>(() => {
+    if (typeof window === "undefined") return firstLiveId;
+    const hashId = window.location.hash.replace(/^#/, "");
+    return hashId && liveIds.includes(hashId) ? hashId : firstLiveId;
+  });
   const [rovingId, setRovingId] = useState<string | undefined>(undefined);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const railRef = useRef<HTMLDivElement>(null);
+  const tickRef = useRef<HTMLSpanElement>(null);
+
+  // The BO2 selector glide: ONE absolutely-positioned tick translates to the
+  // active row (120ms via .moving-selector; reduced-motion snaps position and
+  // keeps only the color fade). Driven by direct style mutation — no state, no
+  // re-render, React-Compiler-safe. offsetTop is relative to the fixed rail
+  // (the nearest positioned ancestor).
+  useEffect(() => {
+    if (!hydrated) return;
+    const tick = tickRef.current;
+    const rail = railRef.current;
+    if (!tick || !rail) return;
+    const anchor = activeId
+      ? rail.querySelector<HTMLElement>(`a[data-nav-id="${activeId}"]`)
+      : null;
+    if (!anchor) {
+      tick.style.opacity = "0";
+      return;
+    }
+    tick.style.opacity = "1";
+    tick.style.height = `${anchor.offsetHeight}px`;
+    tick.style.transform = `translateY(${anchor.offsetTop}px)`;
+  }, [hydrated, activeId]);
   // Latest active id for the IO callback, kept off the observer's dep list so a
   // scroll update never re-subscribes the observer.
   const activeRef = useRef<string | undefined>(undefined);
@@ -269,8 +300,16 @@ export function MenuRail({ liveIds }: Readonly<{ liveIds: readonly string[] }>) 
           rows={rows}
           activeId={listActiveId}
           rovingId={listRovingId}
+          tick={false}
           className="pb-6"
         />
+        {hydrated ? (
+          <span
+            ref={tickRef}
+            aria-hidden
+            className="moving-selector absolute left-0 top-0 w-[3px] bg-accent opacity-0"
+          />
+        ) : null}
       </div>
 
       {/* Mobile nav (<1024px). Pre-hydration/no-JS: a native <details> disclosure
