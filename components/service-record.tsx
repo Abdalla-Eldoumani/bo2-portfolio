@@ -57,8 +57,19 @@ export function ServiceRecord() {
               >
                 {bio.fileRef}
               </span>
-              <span className="border border-accent px-2 py-1 font-label text-stat-label uppercase tracking-[0.08em] text-accent">
-                {bio.clearanceTag}
+              <span
+                className="chamfer inline-block px-2 py-1"
+                style={
+                  {
+                    "--_c": "var(--chamfer-sm)",
+                    "--_edge": "var(--color-accent)",
+                    "--_fill": "var(--color-panel)",
+                  } as React.CSSProperties
+                }
+              >
+                <span className="relative z-[1] font-label text-stat-label uppercase tracking-[0.08em] text-accent">
+                  {bio.clearanceTag}
+                </span>
               </span>
             </div>
           </div>
@@ -68,19 +79,22 @@ export function ServiceRecord() {
             outside every real value so no fact is ever obscured. */}
         <div aria-hidden="true" className="mt-8 h-px w-16 bg-line-strong" />
 
-        {/* File field rows: <dl> grid, 24px gap, 8px label-to-value. */}
-        <dl className="mt-8 grid gap-6 sm:grid-cols-2">
-          {fields.map((field) => (
-            <div key={field.label} className="flex flex-col gap-2">
-              <dt className="font-label text-stat-label uppercase tracking-[0.08em] text-ink-secondary">
-                {field.label}
-              </dt>
-              <dd className="font-mono text-button leading-[1.4] tabular-nums text-ink">
-                {field.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        {/* File field rows: <dl> grid inside a chamfered panel so the body
+            carries the same classified register as the header strip. */}
+        <Panel className="mt-8">
+          <dl className="grid gap-6 p-5 sm:grid-cols-2 sm:p-8">
+            {fields.map((field) => (
+              <div key={field.label} className="flex flex-col gap-2">
+                <dt className="font-label text-stat-label uppercase tracking-[0.08em] text-ink-secondary">
+                  {field.label}
+                </dt>
+                <dd className="font-mono text-button leading-[1.4] tabular-nums text-ink">
+                  {field.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </Panel>
 
         {/* Bio prose: two paragraphs from bio.ts, sentence case, 68ch measure.
             {em} runs lift to --color-ink at weight 500; {text} runs stay
