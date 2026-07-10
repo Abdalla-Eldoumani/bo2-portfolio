@@ -1,3 +1,4 @@
+import { CreateAClass } from "@/components/create-a-class";
 import { LobbyHero } from "@/components/lobby-hero";
 import { MenuRail } from "@/components/menu-rail";
 import { ServiceRecord } from "@/components/service-record";
@@ -16,10 +17,11 @@ import { ServiceRecord } from "@/components/service-record";
 export default function Home() {
   return (
     <>
-      <MenuRail liveIds={["lobby", "dossier"]} />
+      <MenuRail liveIds={["lobby", "dossier", "loadout"]} />
       <main id="main-content" tabIndex={-1} className="lg:pl-[280px]">
         <LobbyHero />
         <ServiceRecord />
+        <CreateAClass />
       </main>
     </>
   );
