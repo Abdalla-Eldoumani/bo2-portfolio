@@ -596,3 +596,89 @@ dialog[data-nav-sheet][open] {
     border-color: var(--color-accent-bright);
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 6 (mission-select) addition — the single globals.css change this phase
+   (single-stylesheet rule). Consumed by the centered detail modal in
+   components/ui/modal.tsx via its <dialog data-mission-modal>. Mirrors the
+   dialog[data-nav-sheet] block above but CENTERED (opacity + translateY entry,
+   not a translateX slide); no rule above is re-declared here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/*
+  Backdrop scrim (accent-budget load-bearing): darkens the section while the modal
+  is open so the "PRIMARY MISSION" marker beneath is suppressed and the modal's
+  own CTA is the only live orange. Expressed via color-mix on --color-void, never
+  a literal. Fades in with the panel (opacity 0 -> 1) over --dur-reveal.
+*/
+dialog[data-mission-modal]::backdrop {
+  background: color-mix(in srgb, var(--color-void) 70%, transparent);
+  opacity: 0;
+  transition:
+    opacity var(--dur-reveal) var(--ease-reveal),
+    overlay var(--dur-reveal) allow-discrete,
+    display var(--dur-reveal) allow-discrete;
+}
+
+dialog[data-mission-modal][open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  dialog[data-mission-modal][open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/*
+  Modal entry motion: the centered panel fades opacity 0 -> 1 and rises
+  translateY(12px) -> 0 over --dur-reveal --ease-reveal (the panel-enter
+  register). margin: auto centers it (overriding the UA left/top defaults the
+  nav-sheet block anchors instead). @starting-style supplies the entry-start
+  values and transition-behavior: allow-discrete (on display/overlay) is required
+  because <dialog> toggles `display` — without it the panel would pop, not
+  animate, across the discrete display change.
+*/
+dialog[data-mission-modal] {
+  margin: auto;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity var(--dur-reveal) var(--ease-reveal),
+    transform var(--dur-reveal) var(--ease-reveal),
+    overlay var(--dur-reveal) allow-discrete,
+    display var(--dur-reveal) allow-discrete;
+}
+
+dialog[data-mission-modal][open] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@starting-style {
+  dialog[data-mission-modal][open] {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/*
+  Reduced-motion strip: drop the panel's translateY (spatial) entirely — no
+  transform, transform removed from the transition list — while keeping only the
+  opacity fade + the backdrop fade, clamped to the <=180ms retained-fade budget
+  (A11Y-03). Never reintroduce translate/scale under reduce.
+*/
+@media (prefers-reduced-motion: reduce) {
+  dialog[data-mission-modal],
+  dialog[data-mission-modal][open] {
+    transform: none;
+    transition:
+      opacity var(--dur-tab) var(--ease-reveal),
+      overlay var(--dur-tab) allow-discrete,
+      display var(--dur-tab) allow-discrete;
+  }
+
+  dialog[data-mission-modal]::backdrop {
+    transition-duration: var(--dur-tab);
+  }
+}
