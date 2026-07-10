@@ -640,6 +640,12 @@ dialog[data-mission-modal][open]::backdrop {
   animate, across the discrete display change.
 */
 dialog[data-mission-modal] {
+  /* Re-assert the UA modal position: the .chamfer utility on this element sets
+     position: relative, which would drop the open dialog into normal flow and
+     make showModal()'s focus call scroll the document to the dialog's in-flow
+     spot. Fixed + inset 0 + margin auto = the intended centered top-layer panel. */
+  position: fixed;
+  inset: 0;
   margin: auto;
   opacity: 0;
   transform: translateY(12px);
