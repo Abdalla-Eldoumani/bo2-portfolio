@@ -550,3 +550,49 @@ dialog[data-nav-sheet][open] {
     transition-duration: var(--dur-tab);
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 5 (create-a-class) addition — the single globals.css change this phase
+   (CONTEXT: "a pip-fill keyframe at most"). Consumed by the Pick 10 meter in
+   components/create-a-class.tsx. No rule above is re-declared here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/*
+  Pick 10 one-shot allocation fill (CLASS-02). A pure-CSS one-shot that
+  auto-plays on paint (the .boot-slice precedent — no JS, no [data-*] trigger,
+  so the section stays a Server Component). Bound to --dur-data (400ms, the data
+  ceiling) with --ease-select, iteration-count 1, fill-mode both. Paint-only:
+  animates opacity/background-color/border-color of a PRE-SIZED pip cell, never
+  width/layout (no CLS). Pips pass transiently through --color-accent en route
+  to the resting --color-accent-bright.
+
+  Designed 0% empty -> 100% filled so the pip's natural (no-animation) styles —
+  the filled --accent-bright frame declared on the element itself — ARE the 100%
+  frame: the universal `animation: none` under prefers-reduced-motion lands every
+  pip on its filled 10/10 resting frame instantly, exactly like .boot-slice. No
+  per-class reduced-motion override is declared here on purpose. Nothing loops.
+*/
+.pip-fill {
+  animation: pip-fill var(--dur-data) var(--ease-select) both;
+  animation-iteration-count: 1;
+}
+
+@keyframes pip-fill {
+  0% {
+    opacity: 0.35;
+    background-color: var(--color-panel);
+    border-color: var(--color-line-faint);
+  }
+
+  55% {
+    opacity: 1;
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  100% {
+    opacity: 1;
+    background-color: var(--color-accent-bright);
+    border-color: var(--color-accent-bright);
+  }
+}
