@@ -1,14 +1,16 @@
 import { LobbyHero } from "@/components/lobby-hero";
+import { ServiceRecord } from "@/components/service-record";
 
 // Section-composition root: one <main> that stacks the lobby sections in page
-// order. The lobby calling card mounts first; later phases append sections
-// (the service-record dossier is appended in this same phase's task 2). Replaces
-// the Phase-1 foundation proof surface. Server Component — no client JS.
+// order — the lobby calling card, then the service-record dossier. Later phases
+// append sections after these two. Replaces the Phase-1 foundation proof
+// surface. Server Component — no client JS.
 
 export default function Home() {
   return (
     <main>
       <LobbyHero />
+      <ServiceRecord />
     </main>
   );
 }
