@@ -118,7 +118,7 @@ function RankRung({
             ) : null}
             <span
               aria-hidden="true"
-              className="font-mono text-stat-label tabular-nums text-ink-muted"
+              className="font-mono text-stat-label uppercase tabular-nums text-ink-muted"
             >
               Rank {ordinal}
             </span>
