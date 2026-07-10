@@ -1,32 +1,53 @@
 import type { Experience, Education } from '@/lib/types/experience';
 
 /**
- * Experience roles + education — the rank ladder Phase 7 renders as rank-up
- * events. Factual content is unchanged from source; the dead presentational
- * palette fields are dropped (styling derives from type/rank), and each role
- * carries a string `insigniaId` rank hook (no icon-library import).
+ * Experience roles + education — the rank ladder rendered as rank-up events,
+ * newest first. Content follows the approved superset rule (2026-07 resume
+ * sync): resume-new roles are added, site-only detail is kept. Each role
+ * carries a string `insigniaId` resolved to enamel rank art in the UI.
  */
 export const experiences = [
+  {
+    role: 'Undergraduate Researcher',
+    company: 'University of Calgary',
+    location: 'Calgary, Alberta',
+    duration: 'May 2026 – Present',
+    type: 'Academic',
+    description:
+      'PURE Award research on proactive task replication for extreme edge computing, alongside a browser-based ARMv8 emulator and visual debugger.',
+    achievements: [
+      'Model proactive task replication for extreme edge computing as a reputation-weighted MILP across unreliable devices.',
+      'Build a browser-based ARMv8 emulator and visual debugger in Rust/WebAssembly and Next.js — validated by 790+ automated tests.',
+    ],
+    skills: [
+      'Rust',
+      'WebAssembly',
+      'MILP Optimization',
+      'Edge Computing',
+      'Next.js',
+    ],
+    insigniaId: 'rank-researcher',
+  },
   {
     role: 'Teaching Assistant',
     company: 'University of Calgary',
     location: 'Calgary, Alberta',
-    duration: 'September 2025 – Present',
+    duration: 'September 2025 – April 2026',
     type: 'Academic',
     description:
       'Head TA for CPSC 355 and tutorial lead for CPSC 413, coordinating TAs and teaching computer architecture, low-level programming, and algorithm design.',
     achievements: [
-      'Serve as Head TA for CPSC 355; coordinate TAs, configure Gradescope auto-graders, and automate grade splitting.',
-      'Teach labs on computer architecture, C, and ARMv8 assembly covering memory management, register allocation, and ISA.',
-      'Lead CPSC 413 tutorials on algorithm design: greedy, divide-and-conquer, dynamic programming, and NP-completeness.',
-      'Debug low-level code and evaluate student assembly programs and C implementations for correctness and efficiency.',
+      'Head TA for 120+ students, coordinating a 5-TA team; owned assignment design and the grading workflow.',
+      'Built Gradescope autograders (Python, Docker, QEMU); authored 12 tutorial decks and 100+ practice problems.',
+      'Taught labs on computer architecture, C, and ARMv8 assembly covering memory management, register allocation, and ISA.',
+      'Led CPSC 413 tutorials on algorithm design: greedy, divide-and-conquer, dynamic programming, and NP-completeness.',
     ],
     skills: [
       'Computer Architecture',
       'C Programming',
       'ARMv8 Assembly',
+      'Autograders',
       'Algorithm Design',
-      'Dynamic Programming',
       'Teaching',
       'Debugging',
       'Code Review',
@@ -128,7 +149,7 @@ export const education = {
 export const getExperienceByType = (type: Experience['type']) =>
   experiences.filter((exp) => exp.type === type);
 
-// The open-ended role: its operation window ends in "Present" (Phase 7 PRESENT state).
+// The open-ended role: its operation window ends in "Present".
 export const getCurrentExperience = () =>
   experiences.find((exp) => exp.duration.includes('Present'));
 
