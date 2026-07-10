@@ -8,7 +8,7 @@ import { ServiceRecord } from "@/components/service-record";
 
 export default function Home() {
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <LobbyHero />
       <ServiceRecord />
     </main>
