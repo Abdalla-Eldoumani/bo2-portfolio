@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><defs><linearGradient id="in" x1="0" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="#8A2D25"></stop><stop offset="1" stop-color="#4D1713"></stop></linearGradient></defs>
+<polygon points="32,2 60,18 60,46 32,62 4,46 4,18" fill="#B03A30"></polygon>
+<polygon points="32,8 55,22 55,42 32,56 9,42 9,22" fill="url(#in)"></polygon>
+<polygon points="32,9 55,22 53,23 32,11 11,23 9,22" fill="rgba(255,255,255,0.25)"></polygon>
+<polyline points="22,31 32,26 42,31" fill="none" stroke="#F2D3CF" stroke-width="3.5"></polyline><polyline points="22,40 32,35 42,40" fill="none" stroke="#F2D3CF" stroke-width="3.5"></polyline>
+</svg>
