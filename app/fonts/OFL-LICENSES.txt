@@ -1,0 +1,18 @@
+Vendored web fonts (woff2, latin subsets) — all licensed under the
+SIL Open Font License, Version 1.1 (https://openfontlicense.org).
+
+- Agdasima (400, 700)
+  Copyright 2023 The Agdasima Project Authors
+  https://github.com/docrepair-fonts/agdasima-fonts
+
+- Saira (400, 500) and Saira Condensed (600, 700)
+  Copyright 2020 The Saira Project Authors
+  https://github.com/Omnibus-Type/Saira
+
+- JetBrains Mono (400, 500)
+  Copyright 2020 The JetBrains Mono Project Authors
+  https://github.com/JetBrains/JetBrainsMono
+
+These fonts are redistributed unmodified (subset packaging by fontsource.org).
+The OFL permits bundling, redistribution and use; the fonts remain under the
+OFL and are not sold separately.
