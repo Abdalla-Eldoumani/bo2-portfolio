@@ -43,6 +43,47 @@
   /* Motion */
   --ease-select: cubic-bezier(0.2, 0, 0, 1);
   --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Type micro-sizes */
+  --text-stat-label: 0.6875rem;
+  --text-data: 0.8125rem;
+  --text-button: 0.875rem;
+  --text-hero: 6rem;
+
+  /* Shape */
+  --radius: 2px;
+  --chamfer-sm: 8px;
+  --chamfer-lg: 12px;
+  --skew: -12deg;
+  --edge-highlight: rgba(232, 236, 239, 0.06);
+
+  /* Motion durations */
+  --dur-select: 120ms;
+  --dur-reveal: 240ms;
+  --stagger: 40ms;
+  --dur-route: 260ms;
+  --dur-tab: 180ms;
+  --dur-hit: 90ms;
+  --dur-data: 400ms;
+  --dur-counter: 900ms;
+  --dur-slice: 200ms;
+  --dur-toast-in: 180ms;
+  --dur-toast-out: 200ms;
+  --hold-toast: 2500ms;
+}
+
+/*
+  Font utilities map to the four next/font faces whose CSS variables layout.tsx
+  sets on <html>. @theme inline emits utilities that reference those runtime
+  variables rather than baking a value, and distinct source names
+  (--font-agdasima vs --font-display) avoid the self-reference that would resolve
+  a utility to an empty string.
+*/
+@theme inline {
+  --font-display: var(--font-agdasima);
+  --font-label: var(--font-saira);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
 }
 
 :root {
@@ -59,13 +100,683 @@ html {
   box-shadow: 0 0 18px rgba(236, 111, 0, 0.35);
 }
 
+/*
+  Safari-safe chamfer border: WebKit does not paint a border on a clip-path'd
+  box, so the visible edge is the 1px reveal between this element (filled with
+  the border color) and an inset ::before (the panel fill). Consumers override
+  --_c for a per-instance chamfer size; forced-colors swaps to a real border.
+*/
+.chamfer {
+  --_c: var(--chamfer-lg);
+  --_edge: var(--color-line-faint);
+  --_fill: var(--color-panel);
+  position: relative;
+  background: var(--_edge);
+  clip-path: polygon(
+    var(--_c) 0,
+    100% 0,
+    100% calc(100% - var(--_c)),
+    calc(100% - var(--_c)) 100%,
+    0 100%,
+    0 var(--_c)
+  );
+}
+
+.chamfer::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--_fill);
+  clip-path: polygon(
+    var(--_c) 0,
+    100% 0,
+    100% calc(100% - var(--_c)),
+    calc(100% - var(--_c)) 100%,
+    0 100%,
+    0 var(--_c)
+  );
+}
+
+.chamfer[data-active] {
+  background: var(--color-line-strong);
+}
+
+.chamfer[data-active]::before {
+  box-shadow: inset 0 1px 0 var(--edge-highlight);
+}
+
+/*
+  Section reveal: opacity + translateY, played once when a consumer sets
+  [data-revealed]. The initial hidden state is gated behind scripting so no-JS
+  visitors get the content immediately. Reduced motion drops the translate and
+  shortens the retained fade (see the reduced-motion block).
+*/
+.panel-reveal {
+  transition:
+    opacity var(--dur-reveal) var(--ease-reveal),
+    transform var(--dur-reveal) var(--ease-reveal);
+}
+
+@media (scripting: enabled) {
+  .panel-reveal {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.panel-reveal[data-revealed] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/*
+  Selection is a move, not a fade: one element transforms along the list axis
+  while the text color cross-fades over the same duration. Reduced motion snaps
+  the position and keeps only the 120ms color fade.
+*/
+.moving-selector {
+  transition:
+    transform var(--dur-select) var(--ease-select),
+    color var(--dur-select) var(--ease-select);
+}
+
+/*
+  Paint-only press feedback (wired in a later phase). The scale pulse is spatial,
+  so the universal animation:none under reduced motion removes it.
+*/
+.hit-flash {
+  animation: hit-flash var(--dur-hit) var(--ease-select);
+}
+
+@keyframes hit-flash {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.97);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/*
+  Hero fill (HERO-03): vh fallback first, dvh override for modern engines. Use
+  min-height, never height, so content taller than the viewport expands instead
+  of clipping, and the in-flow deploy prompt is never cut by an iOS address-bar
+  collapse. Tailwind's min-h-dvh utility emits no vh fallback, so the
+  two-declaration cascade (pre-Safari-15.4 / pre-Chrome-108) lives here.
+*/
+.hero-fill {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/*
+  One-shot digital-slice boot accent (HERO-02). Spatial displacement only
+  (transform + clip-path + opacity), never a full-frame luminance/white flash.
+  Bound to --dur-slice (200ms, within the 220ms ceiling), iteration-count 1,
+  fill-mode both. Auto-plays on paint, so the element stays a Server Component.
+  Designed 0% displaced -> 100% resting, so the element's natural (no-animation)
+  rendering IS the 100% frame: the universal `animation: none` under
+  prefers-reduced-motion (below) lands it on the finished visual instantly. No
+  per-class reduced-motion override is declared here on purpose.
+*/
+.boot-slice {
+  animation: boot-slice var(--dur-slice) var(--ease-reveal) both;
+  animation-iteration-count: 1;
+}
+
+@keyframes boot-slice {
+  0% {
+    transform: translateX(-6px);
+    clip-path: inset(0 0 55% 0);
+    opacity: 0.4;
+  }
+
+  60% {
+    transform: translateX(2px);
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: none;
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+/*
+  Faint hex-grid texture, subordinate to the chamfer language. Decorative only;
+  the consuming component sets aria-hidden. Opacity is the 3% ceiling and there
+  is no animation.
+*/
+.hex-overlay {
+  pointer-events: none;
+  opacity: 0.03;
+}
+
+/*
+  Static 1px scanline for the hero surface only, at the 3% ceiling with no drift
+  (WCAG 2.2.2). Decorative; the consuming component sets aria-hidden. Removed
+  below 768px and under reduced motion.
+*/
+.scanline-overlay {
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    var(--color-ink) 2px,
+    var(--color-ink) 3px
+  );
+}
+
+@media (max-width: 767px) {
+  .scanline-overlay {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanline-overlay {
+    display: none;
+  }
+}
+
+/*
+  Reduce, not delete (A11Y-03): strip keyframe and spatial motion but keep the
+  short opacity/color fades the contract retains. A blanket transition-duration:0
+  on the universal selector would erase those <=180ms fades, so it is
+  deliberately absent; motion is neutralized per class instead.
+*/
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation: none !important;
     scroll-behavior: auto !important;
+  }
+
+  .panel-reveal {
+    transform: none !important;
+    transition-duration: var(--dur-tab) !important;
+  }
+
+  .moving-selector {
+    transition-property: color !important;
+  }
+}
+
+/*
+  Real 2px outline (A11Y-04): an outline, not a box-shadow, so the focus ring
+  survives Windows forced-colors mode. Never outline:none without this
+  replacement.
+*/
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/*
+  Target-sizing contract interactive primitives opt into. Visible size is not
+  target size: a chamfer clips only the visible shape while the padded box holds
+  the floor.
+*/
+@media (any-pointer: fine) {
+  .tap-target {
+    min-height: 24px;
+    min-width: 24px;
+  }
+}
+
+/* coarse last: on hybrid-pointer devices both queries match, so source order
+   breaks the tie — the 44px floor must win for any device with a touch pointer. */
+@media (any-pointer: coarse) {
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/*
+  Forced-colors survival (A11Y-04): the clip-path chamfer flattens and shadows
+  drop, so the edge degrades to a real system-color border and the inner fill
+  covers the whole box.
+*/
+@media (forced-colors: active) {
+  .chamfer {
+    border: 1px solid;
+  }
+
+  .chamfer::before {
+    inset: 0;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 4 (menu-rail) additions — owned by plan 04-02, the single globals.css
+   owner this wave. Consumed by the skip-link (layout.tsx), the server-rendered
+   deploy CTA (plan 04-03, no client JS), and the plan-04-04 NavSheet + rail
+   island. No rule above is re-declared here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/*
+  hit-flash reduced-motion swap (RESEARCH Pitfall 4; resolves the Phase-1 open
+  flag). The universal `* { animation: none !important }` above strips the
+  spatial scale pulse, leaving zero press feedback under reduce. A class
+  selector (.hit-flash, 0,1,0) beats the universal `*` (0,0,0) among !important
+  declarations, so re-enabling a NON-spatial <=120ms keyframe here wins the
+  cascade and restores press feedback without reintroducing motion.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .hit-flash {
+    animation: hit-flash-reduced 120ms steps(1) !important;
+  }
+}
+
+/* Non-spatial press feedback: a background pulse resolving to transparent,
+   never a transform, so it stays within the <=120ms reduce budget. Shared by
+   .hit-flash and .press-flash under reduced motion. */
+@keyframes hit-flash-reduced {
+  0% {
+    background-color: var(--color-panel-hover);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+/*
+  press-flash: CSS-only press feedback for the server-rendered deploy CTA
+  (plan 04-03 — replaces the dropped DeployCta client leaf, RESEARCH WARNING 2).
+  A paint-only :active scale pulse when motion is allowed gives the anchor real
+  press feedback with no island.
+*/
+.press-flash:active {
+  animation: press-flash-pulse var(--dur-hit) var(--ease-select);
+}
+
+@keyframes press-flash-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.97);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Under reduce the spatial pulse is stripped by `*{animation:none}`; re-enable
+   the shared non-spatial keyframe (class beats `*` among !important). */
+@media (prefers-reduced-motion: reduce) {
+  .press-flash:active {
+    animation: hit-flash-reduced 120ms steps(1) !important;
+  }
+}
+
+/*
+  Skip-link (NAV-05): the first focusable element in the DOM (layout.tsx),
+  off-viewport at rest but NOT display:none so it stays focusable, revealed
+  top-left on focus above the sticky bar and any open sheet. Only positioning +
+  stacking live here; the accent-chip look comes from the .chamfer utility and
+  inline --_edge/--_fill props in layout.tsx.
+*/
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -100%;
+  z-index: 100;
+}
+
+.skip-link:focus-visible {
+  top: 8px;
+}
+
+/*
+  Smooth in-page scroll, gated to motion-allowed. This is what makes the
+  server-rendered deploy CTA's native `#dossier` jump (plan 04-03) smooth with
+  no JS. Kept separate from the reduced-motion block above (which forces
+  scroll-behavior: auto) — the two are complementary and must not be merged.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/*
+  Section scroll-margin so a hash/anchor jump never parks a heading under the
+  <1024px 56px sticky bar (WCAG 2.4.11). At >=1024px there is no sticky bar, so
+  no offset. Selector kept minimal; the rail column + content offset are
+  Tailwind lg: utilities on the components (plans 04-03/04-04), not here.
+*/
+@media (max-width: 1023px) {
+  :where(main > section[id], #main-content) {
+    scroll-margin-top: 56px;
+  }
+}
+
+/*
+  scrollbar-gutter reserves the scrollbar track always, so the body-scroll-lock
+  the sheet applies on open does not shift the layout when the scrollbar hides.
+*/
+html {
+  scrollbar-gutter: stable;
+}
+
+/*
+  Mobile-sheet CSS the plan-04-04 NavSheet consumes — authored here so
+  globals.css stays the only stylesheet; the NavSheet component only toggles
+  `open` on its <dialog data-nav-sheet>.
+*/
+
+/*
+  Backdrop scrim (accent-budget load-bearing): darkens the content column while
+  the sheet is open so the section's own accent is suppressed and the sheet's
+  active-row accent is the only live orange. The UI-SPEC rgba(6,8,9,0.7)-class
+  scrim is expressed via color-mix on the existing --color-void token, never a
+  literal. It fades in with the panel (opacity 0 -> 1).
+*/
+dialog[data-nav-sheet]::backdrop {
+  background: color-mix(in srgb, var(--color-void) 70%, transparent);
+  opacity: 0;
+  transition:
+    opacity var(--dur-route) var(--ease-reveal),
+    overlay var(--dur-route) allow-discrete,
+    display var(--dur-route) allow-discrete;
+}
+
+dialog[data-nav-sheet][open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  dialog[data-nav-sheet][open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/*
+  Sheet entry motion: the panel slides translateX(-100%) -> 0 over --dur-route
+  --ease-reveal. @starting-style supplies the entry-start value and
+  transition-behavior: allow-discrete (on display/overlay) is required because
+  <dialog> toggles `display` — without it the panel would pop, not animate,
+  across the discrete display change (entry and exit).
+*/
+dialog[data-nav-sheet] {
+  transform: translateX(-100%);
+  transition:
+    transform var(--dur-route) var(--ease-reveal),
+    overlay var(--dur-route) allow-discrete,
+    display var(--dur-route) allow-discrete;
+}
+
+dialog[data-nav-sheet][open] {
+  transform: translateX(0);
+}
+
+@starting-style {
+  dialog[data-nav-sheet][open] {
+    transform: translateX(-100%);
+  }
+}
+
+/*
+  Reduced-motion strip: drop the panel slide (spatial) entirely — no transform,
+  transform removed from the transition list — while keeping the backdrop
+  opacity fade, clamped to the <=180ms retained-fade budget (A11Y-03). Never
+  reintroduce translateX under reduce.
+*/
+@media (prefers-reduced-motion: reduce) {
+  dialog[data-nav-sheet],
+  dialog[data-nav-sheet][open] {
+    transform: none;
+    transition:
+      overlay var(--dur-tab) allow-discrete,
+      display var(--dur-tab) allow-discrete;
+  }
+
+  dialog[data-nav-sheet]::backdrop {
+    transition-duration: var(--dur-tab);
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 5 (create-a-class) addition — the single globals.css change this phase
+   (CONTEXT: "a pip-fill keyframe at most"). Consumed by the Pick 10 meter in
+   components/create-a-class.tsx. No rule above is re-declared here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/*
+  Pick 10 one-shot allocation fill (CLASS-02). A pure-CSS one-shot that
+  auto-plays on paint (the .boot-slice precedent — no JS, no [data-*] trigger,
+  so the section stays a Server Component). Bound to --dur-data (400ms, the data
+  ceiling) with --ease-select, iteration-count 1, fill-mode both. Paint-only:
+  animates opacity/background-color/border-color of a PRE-SIZED pip cell, never
+  width/layout (no CLS). Pips pass transiently through --color-accent en route
+  to the resting --color-accent-bright.
+
+  Designed 0% empty -> 100% filled so the pip's natural (no-animation) styles —
+  the filled --accent-bright frame declared on the element itself — ARE the 100%
+  frame: the universal `animation: none` under prefers-reduced-motion lands every
+  pip on its filled 10/10 resting frame instantly, exactly like .boot-slice. No
+  per-class reduced-motion override is declared here on purpose. Nothing loops.
+*/
+.pip-fill {
+  animation: pip-fill var(--dur-data) var(--ease-select) both;
+  animation-iteration-count: 1;
+}
+
+@keyframes pip-fill {
+  0% {
+    opacity: 0.35;
+    background-color: var(--color-panel);
+    border-color: var(--color-line-faint);
+  }
+
+  55% {
+    opacity: 1;
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  100% {
+    opacity: 1;
+    background-color: var(--color-accent-bright);
+    border-color: var(--color-accent-bright);
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 6 (mission-select) addition — the single globals.css change this phase
+   (single-stylesheet rule). Consumed by the centered detail modal in
+   components/ui/modal.tsx via its <dialog data-mission-modal>. Mirrors the
+   dialog[data-nav-sheet] block above but CENTERED (opacity + translateY entry,
+   not a translateX slide); no rule above is re-declared here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/*
+  Backdrop scrim (accent-budget load-bearing): darkens the section while the modal
+  is open so the "PRIMARY MISSION" marker beneath is suppressed and the modal's
+  own CTA is the only live orange. Expressed via color-mix on --color-void, never
+  a literal. Fades in with the panel (opacity 0 -> 1) over --dur-reveal.
+*/
+dialog[data-mission-modal]::backdrop {
+  background: color-mix(in srgb, var(--color-void) 70%, transparent);
+  opacity: 0;
+  transition:
+    opacity var(--dur-reveal) var(--ease-reveal),
+    overlay var(--dur-reveal) allow-discrete,
+    display var(--dur-reveal) allow-discrete;
+}
+
+dialog[data-mission-modal][open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  dialog[data-mission-modal][open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/*
+  Modal entry motion: the centered panel fades opacity 0 -> 1 and rises
+  translateY(12px) -> 0 over --dur-reveal --ease-reveal (the panel-enter
+  register). margin: auto centers it (overriding the UA left/top defaults the
+  nav-sheet block anchors instead). @starting-style supplies the entry-start
+  values and transition-behavior: allow-discrete (on display/overlay) is required
+  because <dialog> toggles `display` — without it the panel would pop, not
+  animate, across the discrete display change.
+*/
+dialog[data-mission-modal] {
+  /* Re-assert the UA modal position: the .chamfer utility on this element sets
+     position: relative, which would drop the open dialog into normal flow and
+     make showModal()'s focus call scroll the document to the dialog's in-flow
+     spot. Fixed + inset 0 + margin auto = the intended centered top-layer panel. */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity var(--dur-reveal) var(--ease-reveal),
+    transform var(--dur-reveal) var(--ease-reveal),
+    overlay var(--dur-reveal) allow-discrete,
+    display var(--dur-reveal) allow-discrete;
+}
+
+dialog[data-mission-modal][open] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@starting-style {
+  dialog[data-mission-modal][open] {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/*
+  Reduced-motion strip: drop the panel's translateY (spatial) entirely — no
+  transform, transform removed from the transition list — while keeping only the
+  opacity fade + the backdrop fade, clamped to the <=180ms retained-fade budget
+  (A11Y-03). Never reintroduce translate/scale under reduce.
+*/
+@media (prefers-reduced-motion: reduce) {
+  dialog[data-mission-modal],
+  dialog[data-mission-modal][open] {
+    transform: none;
+    transition:
+      opacity var(--dur-tab) var(--ease-reveal),
+      overlay var(--dur-tab) allow-discrete,
+      display var(--dur-tab) allow-discrete;
+  }
+
+  dialog[data-mission-modal]::backdrop {
+    transition-duration: var(--dur-tab);
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 10 (dossier-page) addition — the single globals.css change this phase
+   (single-stylesheet rule). The printed artifact is the /resume HTML dossier
+   (RESUME-02); this ONE print block strips the screen theme to a clean,
+   ink-frugal document. No rule above is re-declared here.
+
+   LOAD-BEARING STRATEGY — TOKEN REDEFINITION, not a body-color flip. Every
+   dossier element sets an explicit text-ink / text-ink-secondary / text-ink-muted
+   utility, and an explicit color overrides an inherited body color — so flipping
+   only `body { color }` would leave the light screen ink values painting
+   near-invisible on white paper. Redefining the :root tokens flips every text-*
+   / bg-* utility at the source. Raw print-safe hex is the sanctioned exception,
+   fenced to THIS block only (Satori-style: the dark theme is screen-only).
+   ─────────────────────────────────────────────────────────────────────────── */
+@media print {
+  /* Token flip: light ground, near-black ink, neutral hairlines. Print-safe
+     literals — the sanctioned raw-hex exception, this block only. */
+  :root {
+    --color-void: #fff;
+    --color-steel: #fff;
+    --color-panel: #fff;
+    --color-ink: #111;
+    --color-ink-secondary: #333;
+    --color-ink-muted: #555;
+    --color-accent: #111; /* no orange ink on paper */
+    --color-line-faint: #ccc;
+    --color-line-strong: #999;
+  }
+
+  html,
+  body {
+    background: #fff;
+  }
+
+  /* Chrome that is meaningless on paper: RETURN TO LOBBY, EXTRACT FILE (printing
+     IS the extract), the skip-link, decorative strips — the page marks them. */
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  /* Chamfer flatten: WebKit clip-path silhouettes and the ::before fill are a
+     screen device; print panels as plain blocks with a single hairline edge. */
+  .chamfer {
+    clip-path: none;
+    background: transparent;
+    border: 1px solid #ccc;
+  }
+
+  .chamfer::before {
+    display: none;
+  }
+
+  /* Decorative overlays never print (defensive; /resume mounts none). */
+  .hex-overlay,
+  .scanline-overlay {
+    display: none !important;
+  }
+
+  /* A role/education entry never splits across a page boundary. */
+  [data-resume-entry] {
+    break-inside: avoid;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 11 (disconnect-screen) addition — the single globals.css change this
+   phase (single-stylesheet rule). The SYS-02 zombies color-flip easter egg,
+   toggled only via the command palette (no persistence — resets on reload). No
+   rule above is re-declared here.
+
+   SCREEN-SCOPED BY CONSTRUCTION. The flip redefines only the three accent
+   tokens on html[data-zombies] (specificity 0,1,1). The @media print block
+   above redefines --color-accent on :root (0,1,0) — a lower selector — so a
+   bare html[data-zombies] would BEAT the print override and bleed toxic green
+   onto paper. Wrapping the flip in @media screen makes paper immune by
+   construction: the rule simply does not exist in the print context. Raw
+   print-safe... screen-safe hex is the sanctioned exception, fenced to THIS
+   block only (the toxic-lime Element-115 register, AA-verified against the dark
+   grounds where the orange accent already passed).
+   ─────────────────────────────────────────────────────────────────────────── */
+@media screen {
+  html[data-zombies] {
+    --color-accent: #7cb518; /* toxic lime — zombies accent (AA on panel/void) */
+    --color-accent-bright: #a8e05f; /* lighter toxic green — hover/bright pairing */
+    --color-accent-dim: #3e5e14; /* dark green — accent borders at rest */
   }
 }
