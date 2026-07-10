@@ -128,6 +128,34 @@ describe('getGitHubStats', () => {
     expect(stats.recent).toEqual(githubFallback.recent);
   });
 
+  it('rejects an events payload whose item is missing an id (degrades the surface)', async () => {
+    stubByUrl({
+      users: ok(validUser),
+      repos: ok(validRepos),
+      events: ok([
+        { type: 'PushEvent', repo: { name: 'Abdalla-Eldoumani/x' }, created_at: '2026-07-08T00:00:00Z' },
+      ]),
+    });
+
+    const stats = await getGitHubStats();
+    expect(stats.recent).toEqual(githubFallback.recent);
+    expect(stats.source).toBe('fallback');
+  });
+
+  it('anchors syncedAt to the fallback stamp when the events surface degrades', async () => {
+    stubByUrl({ users: ok(validUser), repos: ok(validRepos), events: ok({ not: 'an array' }) });
+
+    const stats = await getGitHubStats();
+    expect(stats.syncedAt).toBe(githubFallback.syncedAt);
+  });
+
+  it('keeps a fresh syncedAt when events are live but repos degrade', async () => {
+    stubByUrl({ users: ok(validUser), repos: ok({ not: 'an array' }), events: ok(validEvents) });
+
+    const stats = await getGitHubStats();
+    expect(stats.syncedAt).not.toBe(githubFallback.syncedAt);
+  });
+
   it('keeps an event row whose type is unknown', async () => {
     stubByUrl({
       users: ok(validUser),
