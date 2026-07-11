@@ -11,7 +11,7 @@ const eslintConfig = defineConfig([
   // The bundled plugin's detector calls the removed context.getFilename(),
   // which throws under ESLint 10; a concrete version bypasses that call.
   { settings: { react: { version: "19.2.7" } } },
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", ".agent/**", ".claude/**"]),
+  globalIgnores([".*/", "out/**", "build/**", "next-env.d.ts"]),
 ]);
 
 export default eslintConfig;
