@@ -9,9 +9,15 @@ import type { NextConfig } from "next";
 // surface a nonce would close does not exist here. frame-ancestors 'none' pairs
 // with X-Frame-Options DENY for clickjacking; object-src 'none' and base-uri /
 // form-action 'self' lock the remaining injection sinks.
+// Dev-only relaxation: React's development mode uses eval() for debugging
+// features (call-stack reconstruction, error overlays); without 'unsafe-eval'
+// the dev console fills with CSP errors and the overlay flags an issue on
+// every page. Production keeps the strict policy — React never evals there.
+const devEval = process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "";
+
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${devEval}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
