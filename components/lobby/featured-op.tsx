@@ -29,10 +29,18 @@ export async function FeaturedOp() {
         <span>01/{String(deployed).padStart(2, '0')}</span>
       </div>
 
-      {/* Map preview: hatched AWAITING VISUAL until capture art lands. */}
-      <div className="hatch mx-3.5 mt-3 flex h-[110px] items-center justify-center border border-white/10 lg:h-[138px]">
-        <span className="font-mono text-[11px] tracking-[0.08em] text-ink-3">
-          [ AWAITING VISUAL FEED ]
+      {/* Map preview: FALCON RIDGE, the Peregrine op art. */}
+      <div className="relative mx-3.5 mt-3 h-[110px] overflow-hidden border border-white/10 lg:h-[138px]">
+        <img
+          src="/art/maps/peregrine.svg"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <span
+          className="absolute bottom-0 left-0 px-2 py-0.5 font-mono text-[8.5px] tracking-[0.14em] text-ink-2"
+          style={{ background: 'rgba(8,12,15,0.72)' }}
+        >
+          FALCON RIDGE
         </span>
       </div>
 
