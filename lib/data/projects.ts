@@ -1,210 +1,146 @@
 import type { Project } from '@/lib/types/project';
 
-// Static image imports (StaticImageData), never string paths: a missing or
-// renamed file fails `next build` instead of 404-ing at runtime (DATA-03).
-import rustServer from '@/public/images/rust-server.svg';
-import matrixMultiplication from '@/public/images/matrix-multiplication.svg';
-import budgetBuddy from '@/public/images/budgetbuddy.png';
-import cybersecuritySite from '@/public/images/cybersecurity-site.png';
-import aiPlatform from '@/public/images/ai-platform.png';
-import dust from '@/public/images/DUST.png';
-import aeos from '@/public/images/AEOS.png';
-import selfCheckout from '@/public/images/self-checkout.svg';
+// Map-preview art: original in-house SVG scenes (public/art/maps), imported
+// statically so a missing file fails `next build` instead of 404-ing.
+import peregrineArt from '@/public/art/maps/peregrine.svg';
+import aeosArt from '@/public/art/maps/aeos.svg';
+import playgroundArt from '@/public/art/maps/aarch64-playground.svg';
+import qalaArt from '@/public/art/maps/qala.svg';
+import rustServerArt from '@/public/art/maps/rust-http-server.svg';
+import dossierArt from '@/public/art/maps/dossier.svg';
+import dustArt from '@/public/art/maps/dust.svg';
+import budgetBuddyArt from '@/public/art/maps/budget-buddy.svg';
 
 /**
- * Portfolio projects — the mission set rendered as map-select cards. Content
- * follows the approved superset rule (2026-07 resume sync): Peregrine and
- * Qala added, site-only missions kept. Icons are string `insigniaId` keys
- * (no icon-library import); images are build-checked static imports, and a
- * mission without captured art (image omitted) renders the designed hatched
- * placeholder.
+ * The mission set — the eight showcased operations, strongest first. Every
+ * factual claim traces to the July 2026 resume or the project's own README
+ * (benchmark figures come from each project's harness); deployments were
+ * verified against the author's portfolio data of the same date. Retired from
+ * rotation: FastMathExt (superseded by Peregrine), the self-checkout team
+ * project, and early hackathon-era sites.
  */
 export const projects = [
   {
-    name: 'Rust HTTP Server',
-    description:
-      'Production-ready HTTP server handling 10,000+ concurrent requests with <10ms response time using Rust and Axum framework. Features comprehensive JWT authentication, role-based access control, and intelligent caching achieving 60% reduction in database queries.',
-    fullDescription:
-      'Enterprise-grade HTTP server architected for high-performance concurrent processing with advanced search engine featuring full-text indexing and fuzzy matching. Includes asynchronous background job processing with retry mechanisms, WebSocket notifications, and comprehensive security features including rate limiting, CORS protection, and SQL injection prevention. Built with modular architecture featuring 15+ middleware components and real-time monitoring dashboards.',
-    image: rustServer,
-    github: 'https://github.com/Abdalla-Eldoumani/rust-http-server',
-    githubRepo: {
-      owner: 'Abdalla-Eldoumani',
-      repo: 'rust-http-server',
-    },
-    live: '#',
-    tech: ['Rust', 'Axum', 'SQLite', 'WebSocket', 'JWT', 'RESTful API', 'Caching', 'Rate Limiting'],
-    featured: true,
-    insigniaId: 'server',
-    category: 'performance',
-    metrics: '10,000+ concurrent requests, <10ms response time',
-    liveMetrics: { requests: 10000, responseTime: 10, cacheReduction: 60 },
-  },
-  {
-    name: 'FastMathExt',
-    description:
-      'High-performance C++ matrix multiplication library achieving 25-41% performance gains over NumPy through advanced optimization techniques including multi-level cache blocking, AVX2 SIMD instructions, and OpenMP parallelization.',
-    fullDescription:
-      "FastMathExt is a cutting-edge mathematical computation library that demonstrates mastery of low-level optimization. The project implements Strassen's algorithm with task-based concurrency, reducing computational complexity from O(n³) to O(n^2.807) for large-scale operations. Features comprehensive benchmarking framework with statistical analysis across 10,000+ iterations.",
-    image: matrixMultiplication,
-    github: 'https://github.com/Abdalla-Eldoumani/FastMathExt',
-    githubRepo: {
-      owner: 'Abdalla-Eldoumani',
-      repo: 'FastMathExt',
-    },
-    live: '#',
-    tech: ['C++', 'Python', 'OpenMP', 'AVX2 SIMD', "Strassen's Algorithm", 'Performance Optimization'],
-    featured: true,
-    insigniaId: 'zap',
-    category: 'performance',
-    metrics: '25-41% faster than NumPy',
-    liveMetrics: { performanceGain: 41, iterations: 10000 },
-  },
-  {
-    name: 'Budget Buddy',
-    description:
-      'Full-stack financial management platform empowering young Canadians to make informed investment decisions. Features real-time stock data, projection tools, and comprehensive budget tracking with modern authentication.',
-    fullDescription:
-      'Budget Buddy addresses the critical issue that 70% of young Canadians avoid stock market investing. Built during CalgaryHacks24, this platform provides up-to-date financial information, real-time stock data across various sectors, and projection tools for investment planning.',
-    image: budgetBuddy,
-    github: 'https://github.com/Abdalla-Eldoumani/CalgaryHacks24',
-    githubRepo: {
-      owner: 'Abdalla-Eldoumani',
-      repo: 'CalgaryHacks24',
-    },
-    live: 'https://calgary-hacks24-budget-buddy.vercel.app',
-    tech: ['Next.js', 'TypeScript', 'TailwindCSS', 'PostgreSQL', 'Clerk Auth', 'Vercel', 'Financial APIs'],
-    featured: true,
-    insigniaId: 'calculator',
-    category: 'web',
-    metrics: 'Hackathon Winner',
-  },
-  {
-    name: 'Interactive Cybersecurity Site',
-    description:
-      'Educational platform combining theoretical cybersecurity lectures with interactive quizzes. Covers cryptography, hashing, malware, and privacy through detailed content and hands-on learning experiences.',
-    fullDescription:
-      'Comprehensive cybersecurity education platform targeting students, professionals, and enthusiasts. Features interactive quizzes on cryptography, hashing, malware, and privacy, complemented by detailed lectures on encryption methods, virus detection, and digital privacy protection.',
-    image: cybersecuritySite,
-    github: 'https://github.com/Abdalla-Eldoumani/Interactive-Cybersecurity-Site',
-    githubRepo: {
-      owner: 'Abdalla-Eldoumani',
-      repo: 'Interactive-Cybersecurity-Site',
-    },
-    live: 'https://interactive-cybersecurity-site.vercel.app',
-    tech: ['HTML5', 'CSS3', 'JavaScript', 'Interactive Design', 'Educational Content'],
-    featured: true,
-    insigniaId: 'shield',
-    category: 'education',
-    metrics: '91 commits, 3 contributors',
-  },
-  {
-    name: 'AI-Platform',
-    description:
-      'Comprehensive AI-driven service platform featuring conversation generation, image/video creation, music composition, and code generation. Built with modern tech stack including OpenAI API integration.',
-    fullDescription:
-      'Full-featured AI platform offering multiple AI tools from a centralized dashboard. Includes conversation AI, image/video generation, music creation, and code generation capabilities. Features secure authentication, API limit monitoring, and subscription management with Stripe integration.',
-    image: aiPlatform,
-    github: 'https://github.com/Abdalla-Eldoumani/AI-Platform',
-    githubRepo: {
-      owner: 'Abdalla-Eldoumani',
-      repo: 'AI-Platform',
-    },
-    live: '#',
-    tech: ['Next.js', 'TypeScript', 'OpenAI API', 'Prisma', 'MySQL', 'Stripe'],
-    featured: true,
-    insigniaId: 'star',
-    category: 'ai',
-    metrics: 'Multiple AI tools integrated',
-  },
-  {
-    name: 'DUST',
-    description:
-      'Web-based game where players become digital archaeologists exploring a decaying internet. Built at Calgary Hacks 2026 with real-time multiplayer featuring both competitive and cooperative modes.',
-    fullDescription:
-      'DUST is a web-based exploration game where players dig through layers of a fictional, crumbling internet to uncover lost data, forgotten websites, and digital artifacts. Features real-time multiplayer powered by Convex, secure authentication via Clerk, and an immersive atmosphere of digital decay and discovery.',
-    image: dust,
-    github: 'https://github.com/Abdalla-Eldoumani/DUST',
-    githubRepo: {
-      owner: 'Abdalla-Eldoumani',
-      repo: 'DUST',
-    },
-    live: 'https://dust-mu.vercel.app',
-    tech: ['Next.js', 'TypeScript', 'Convex', 'Clerk Auth', 'Real-time Multiplayer'],
-    featured: false,
-    insigniaId: 'gamepad',
-    category: 'web',
-    metrics: 'Calgary Hacks 2026',
-  },
-  {
-    name: 'AEOS — Educational OS',
-    description:
-      'Monolithic kernel built from scratch targeting the QEMU virt board on ARM64. An educational exploration of fundamental operating system components including memory management and process scheduling.',
-    fullDescription:
-      "Abdalla's Educational OS (AEOS) is a ground-up operating system kernel written in C/C++ and ARMv8 Assembly. Targeting the QEMU virt board on ARM64, the project explores core OS concepts including bootloading, memory management, interrupt handling, and process scheduling. Built as a hands-on learning project to deepen systems-level understanding.",
-    image: aeos,
-    github: 'https://github.com/Abdalla-Eldoumani/aeos',
-    githubRepo: {
-      owner: 'Abdalla-Eldoumani',
-      repo: 'aeos',
-    },
-    live: '#',
-    tech: ['C/C++', 'ARMv8 Assembly', 'QEMU', 'OS Development', 'Kernel Programming'],
-    featured: false,
-    insigniaId: 'cpu',
-    category: 'performance',
-    metrics: 'In Progress',
-  },
-  {
-    name: 'Self-Checkout Station Software',
-    description:
-      'Enterprise-grade software simulation for retail self-checkout systems built with Java. Developed in a 20-member team using object-oriented programming and comprehensive testing with JUnit.',
-    fullDescription:
-      "Large-scale software engineering project simulating a complete self-checkout station system. Features responsive touchscreen interface using Java's GUI libraries, comprehensive error handling, and comprehensive testing with JUnit. Achieved 30% productivity improvement through effective Git workflows.",
-    image: selfCheckout,
-    github: '#',
-    live: '#',
-    tech: ['Java', 'JUnit', 'GUI Libraries', 'Git', 'Object-Oriented Programming', 'Team Collaboration'],
-    featured: false,
-    insigniaId: 'cart',
-    category: 'education',
-    metrics: '20-member team, 30% productivity boost',
-  },
-  {
     name: 'Peregrine',
     description:
-      'Heterogeneous linear algebra for Python: AVX2 CPU kernels and an optional cuBLAS CUDA backend behind one zero-copy, NumPy-compatible API, with per-machine CPU/GPU routing. Reaches 28× NumPy throughput on large workloads.',
+      'Heterogeneous linear algebra that picks the right silicon for the shape of the problem: AVX2 SIMD on the CPU, cuBLAS on the GPU, one zero-copy NumPy-compatible API above both.',
     fullDescription:
-      'Peregrine routes each operation to the fastest available backend per machine — hand-tuned AVX2 CPU kernels or a cuBLAS CUDA path — behind a single zero-copy, NumPy-compatible API. Benchmarked at 28× NumPy throughput on large matrix workloads, with the routing layer choosing CPU or GPU per operation and per machine.',
+      'Peregrine routes each operation per machine and per shape — offloading to the GPU only past the measured transfer-cost crossover. On its own harness: 28× NumPy on device-resident float32 matmul, 71× unfused NumPy on fused three-op GPU chains, 3.2× on the CPU path. Methodology and harness live in the repo.',
+    image: peregrineArt,
     github: 'https://github.com/Abdalla-Eldoumani/peregrine',
-    githubRepo: {
-      owner: 'Abdalla-Eldoumani',
-      repo: 'peregrine',
-    },
-    live: '#',
-    tech: ['C++', 'CUDA', 'AVX2', 'cuBLAS', 'Python', 'NumPy API'],
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'peregrine' },
+    tech: ['C++', 'AVX2', 'CUDA', 'cuBLAS', 'Python', 'NumPy API'],
     featured: true,
-    insigniaId: 'zap',
+    insigniaId: 'silicon',
     category: 'performance',
-    metrics: '28× NumPy throughput',
+    metrics: '28× NumPy matmul · 71× fused GPU chains · 3.2× fused CPU chains',
+  },
+  {
+    name: 'AEOS',
+    description:
+      'A monolithic ARM64 kernel with a windowed desktop, written from scratch: boots EL2 to EL1 by hand, builds its own identity-mapped MMU, schedules preemptively at 100 Hz, and composites a desktop over a VirtIO GPU at 30 frames per second.',
+    fullDescription:
+      'Buddy allocator and first-fit heap, GICv2 interrupts and the generic timer, a loaded ELF running at EL0 behind a real privilege boundary, four cores online over PSCI, ARP and ICMP answered by its own network stack, eight built-in apps including a vim-style editor and Tetris, 30 shell commands, and a 39-scenario test suite in CI. Deliberately small and honest about its gaps: no kernel W^X, no cross-core preemption, no TCP.',
+    image: aeosArt,
+    github: 'https://github.com/Abdalla-Eldoumani/aeos',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'aeos' },
+    tech: ['C', 'ARMv8 Assembly', 'QEMU', 'VirtIO', 'PSCI'],
+    featured: true,
+    insigniaId: 'kernel',
+    category: 'systems',
+    metrics: '4 cores · 100 Hz preemption · 30 FPS desktop',
+  },
+  {
+    name: 'AArch64 Playground',
+    description:
+      'A browser-based ARM64 emulator and visual debugger, built with a professor and two collaborators under a PURE research award and now used as a teaching aid: paste assembly, step one instruction at a time, watch the registers change their minds.',
+    fullDescription:
+      'Rust compiled to WebAssembly does the emulation; Next.js renders the debugger. Validated by 790+ automated tests and used as a teaching aid for computer architecture at the University of Calgary.',
+    image: playgroundArt,
+    live: 'https://aarch64-playground.vercel.app',
+    tech: ['Rust', 'WebAssembly', 'Next.js', 'ARMv8'],
+    featured: true,
+    insigniaId: 'scope',
+    category: 'education',
+    metrics: '790+ automated tests · CPSC 355 teaching aid',
   },
   {
     name: 'Qala',
     description:
-      'A statically typed teaching language where saying is doing: effect annotations, scope-bound defer, an ARM64 backend, built in Rust with a WebAssembly playground. Published on crates.io.',
+      'A statically typed teaching language where saying is doing: effects like is pure and is io are checked by the compiler, so code is a truthful declaration of behavior. Lexer to typechecker to bytecode VM, plus an ARM64 backend, all in Rust.',
     fullDescription:
-      'Qala is a statically typed teaching language built in Rust. Effect annotations make side effects part of the signature, defer is scope-bound, and programs compile through an ARM64 backend. A WebAssembly build powers the in-browser playground, and the toolchain ships on crates.io.',
+      'Qala ships on crates.io with a WebAssembly build powering the in-browser playground. The ARM64 backend compiles to the same assembly taught in CPSC 355 — the language and the AArch64 Playground form a loop: a language built from scratch, stepped in the emulator built alongside it.',
+    image: qalaArt,
     github: 'https://github.com/Abdalla-Eldoumani/qala-lang',
-    githubRepo: {
-      owner: 'Abdalla-Eldoumani',
-      repo: 'qala-lang',
-    },
-    live: '#',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'qala-lang' },
+    live: 'https://qala-lang.vercel.app',
     tech: ['Rust', 'WebAssembly', 'ARM64', 'Compilers', 'crates.io'],
-    featured: false,
-    insigniaId: 'cpu',
+    featured: true,
+    insigniaId: 'forge',
     category: 'systems',
-    metrics: 'Language on crates.io',
+    metrics: 'Language on crates.io · in-browser playground',
+  },
+  {
+    name: 'Rust HTTP Server',
+    description:
+      'A production-grade server built to hold 10,000+ concurrent connections: JWT auth with role-based access, WebSocket notifications, background jobs with retries, and full-text search with fuzzy matching.',
+    fullDescription:
+      'Fifteen middleware components, each one written rather than imported. Intelligent caching cuts database load by 60%; sub-10ms response latency under concurrent load, measured against the project readme figures of July 2025.',
+    image: rustServerArt,
+    github: 'https://github.com/Abdalla-Eldoumani/rust-http-server',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'rust-http-server' },
+    tech: ['Rust', 'Axum', 'SQLite', 'WebSocket', 'JWT'],
+    featured: true,
+    insigniaId: 'server',
+    category: 'performance',
+    metrics: '10,000+ concurrent · sub-10ms · −60% DB load',
+  },
+  {
+    name: 'Dossier',
+    description:
+      'Privacy-first PDF toolkit: 42 operations, all local, exposed to humans as a web app and to agents over the Model Context Protocol. Nothing you process ever leaves the machine.',
+    fullDescription:
+      'A static-export Next.js app whose entire PDF pipeline runs client-side, with the same operations published as an MCP server so agents can drive them. Forty-two operations, zero uploads.',
+    image: dossierArt,
+    github: 'https://github.com/Abdalla-Eldoumani/dossier',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'dossier' },
+    live: 'https://dossier-web-five.vercel.app',
+    tech: ['TypeScript', 'MCP', 'Next.js', 'Static Export'],
+    featured: true,
+    insigniaId: 'vault',
+    category: 'web',
+    metrics: '42 operations · fully client-side',
+  },
+  {
+    name: 'DUST',
+    description:
+      'A multiplayer game about digging through a decaying internet, built in 24 hours with real-time state sync in both competitive and cooperative modes.',
+    fullDescription:
+      'Players become digital archaeologists uncovering lost data and forgotten websites in a fictional, crumbling internet. Real-time multiplayer is powered by Convex with authentication via Clerk.',
+    image: dustArt,
+    github: 'https://github.com/Abdalla-Eldoumani/DUST',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'DUST' },
+    live: 'https://dust-mu.vercel.app',
+    tech: ['Next.js', 'TypeScript', 'Convex', 'Clerk Auth'],
+    featured: false,
+    insigniaId: 'ruin',
+    category: 'web',
+    metrics: 'Calgary Hacks 2026 · real-time multiplayer',
+  },
+  {
+    name: 'Budget Buddy',
+    description:
+      'Budget tracking, live stock data, and growth projections for the 70% of young Canadians who avoid investing entirely. Built at CalgaryHacks 24.',
+    fullDescription:
+      'A full-stack financial platform with real-time stock data across sectors, projection tools for investment planning, and budget tracking behind modern authentication.',
+    image: budgetBuddyArt,
+    github: 'https://github.com/Abdalla-Eldoumani/CalgaryHacks24',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'CalgaryHacks24' },
+    tech: ['Next.js', 'TypeScript', 'PostgreSQL', 'Clerk Auth'],
+    featured: false,
+    insigniaId: 'ledger',
+    category: 'web',
+    metrics: 'CalgaryHacks 24 · live stock data',
   },
 ] satisfies readonly Project[];
 
