@@ -9,7 +9,7 @@ import type { GitHubStats } from '@/lib/types/github';
  * captured manually from the public `/users/{handle}` + `/users/{handle}/repos`
  * endpoints. `recent` is a hand-committed real snapshot of the six newest rows
  * from `/users/{handle}/events/public` (no invented events — project honesty
- * rule); re-seed it with the same curl documented in this directory's CLAUDE.md.
+ * rule); re-seed it with a fresh curl of that same public endpoint.
  * `syncedAt` sits just after the newest event's `created_at` so
  * `timeAgo(createdAt, syncedAt)` reads a realistic frozen "X ago as of last sync".
  */
