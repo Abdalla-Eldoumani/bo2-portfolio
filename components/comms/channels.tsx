@@ -69,8 +69,15 @@ export function Channels() {
       if (window.getSelection()?.toString()) return; // don't hijack copy
       void copy();
     };
+    const onAction = (e: Event) => {
+      if ((e as CustomEvent).detail === 'copy') void copy();
+    };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener('bo2-action', onAction);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('bo2-action', onAction);
+    };
   }, []);
 
   return (

@@ -101,11 +101,12 @@ export default function LoadoutPage() {
             <div className="p-3.5">
               {/* Featured primary: equipped, render slot + flavor meters. */}
               <div className="tile corner-tick relative p-3.5" data-selected>
-                <div className="hatch flex h-[96px] items-center justify-center border border-white/10">
-                  <span className="px-3 text-center font-mono text-[10px] leading-relaxed tracking-[0.08em] text-ink-3">
-                    [ WEAPON RENDER — {featured.toUpperCase()} DUOTONE ART ]
-                  </span>
-                </div>
+                <img
+                  src="/art/renders/weapon-cpp.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="w-full border border-white/10"
+                />
                 <div className="mt-3 font-display text-[28px] font-bold uppercase leading-none text-ink">
                   {featured}
                 </div>
@@ -125,7 +126,7 @@ export default function LoadoutPage() {
                   ))}
                 </div>
                 <div className="mt-3 border-t border-white/[0.08] pt-2 font-mono text-[10px] tracking-[0.06em] text-orange-core">
-                  EQUIPPED · CPSC 355 / FASTMATHEXT / AEOS
+                  EQUIPPED · CPSC 355 / PEREGRINE / AEOS
                 </div>
               </div>
 

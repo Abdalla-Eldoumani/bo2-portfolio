@@ -16,19 +16,15 @@ import { projects } from '@/lib/data/projects';
 
 // Flavor map-names, one per op (presentational only).
 const MAP_NAMES: Record<string, string> = {
-  'Rust HTTP Server': 'SERVER HALL',
-  FastMathExt: 'MATRIX GRID',
-  'Budget Buddy': 'TRADING FLOOR',
-  'Interactive Cybersecurity Site': 'CIPHER VAULT',
-  'AI-Platform': 'CONTROL ROOM',
-  DUST: 'RUINED NET',
-  'AEOS — Educational OS': 'BARE METAL',
-  'Self-Checkout Station Software': 'CHECKOUT BAY',
-  Peregrine: 'KERNEL RANGE',
+  Peregrine: 'FALCON RIDGE',
+  AEOS: 'BARE METAL',
+  'AArch64 Playground': 'PROVING GROUND',
   Qala: 'THE FORGE',
+  'Rust HTTP Server': 'SERVER HALL',
+  Dossier: 'ARCHIVE VAULT',
+  DUST: 'RUINED NET',
+  'Budget Buddy': 'TRADING FLOOR',
 };
-
-const inProgress = (name: string) => name.startsWith('AEOS');
 
 function MapArt({
   project,
@@ -57,17 +53,13 @@ function MapArt({
         fill
         sizes={large ? '440px' : '(max-width: 1024px) 50vw, 300px'}
         className="object-cover"
-        style={{ filter: 'grayscale(0.65) contrast(1.05) brightness(0.72)' }}
       />
-      {/* Duotone grade: cool shadow floor + warm key from the top-left. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0"
-        style={{
-          background:
-            'linear-gradient(160deg, rgba(255,150,0,0.14), rgba(22,33,42,0.55) 55%, rgba(10,15,19,0.75))',
-        }}
-      />
+      <span
+        className="absolute bottom-0 left-0 px-2 py-0.5 font-mono text-[8.5px] tracking-[0.14em] text-ink-2"
+        style={{ background: 'rgba(8,12,15,0.72)' }}
+      >
+        {MAP_NAMES[project.name] ?? 'OP'}
+      </span>
     </div>
   );
 }
@@ -95,25 +87,19 @@ function Brief({ project }: { project: (typeof projects)[number] }) {
           {project.description}
         </p>
 
-        {inProgress(project.name) ? (
-          <div className="mt-4 inline-flex items-center gap-2 border border-white/[0.14] px-3 py-1 font-mono text-[11px] tracking-[0.08em] text-gold">
-            ◐ IN PROGRESS
-          </div>
-        ) : (
-          chunks.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-              {chunks.map((c) => (
-                <div key={c} className="max-w-[140px]">
-                  <div className="font-display text-[20px] font-bold uppercase leading-tight text-orange-core">
-                    {c.split(' ')[0]}
-                  </div>
-                  <div className="font-label text-[10.5px] font-semibold tracking-[0.08em] text-ink-3">
-                    {c.split(' ').slice(1).join(' ').toUpperCase() || 'VERIFIED'}
-                  </div>
+        {chunks.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+            {chunks.map((c) => (
+              <div key={c} className="max-w-[150px]">
+                <div className="font-display text-[20px] font-bold uppercase leading-tight text-orange-core">
+                  {c.split(' ')[0]}
                 </div>
-              ))}
-            </div>
-          )
+                <div className="font-label text-[10.5px] font-semibold tracking-[0.08em] text-ink-3">
+                  {c.split(' ').slice(1).join(' ').toUpperCase() || 'VERIFIED'}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
         <div className="mt-4 flex flex-wrap gap-1.5">
@@ -202,9 +188,7 @@ export function MissionSelect() {
                       {(p.category ?? 'general').toUpperCase()}
                     </span>
                     <span className="truncate font-mono text-[9px] text-ink-3">
-                      {inProgress(p.name)
-                        ? '◐ IN PROGRESS'
-                        : p.metrics?.toUpperCase()}
+                      {p.metrics?.toUpperCase()}
                     </span>
                   </div>
                 </div>

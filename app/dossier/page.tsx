@@ -49,11 +49,11 @@ export default function DossierPage() {
             <span>SR-0427</span>
           </div>
           <div className="p-3.5">
-            <div className="hatch flex h-[210px] items-center justify-center border border-white/10">
-              <span className="px-4 text-center font-mono text-[10px] leading-relaxed tracking-[0.08em] text-ink-3">
-                [ OPERATOR PORTRAIT — USER PHOTO ]
-              </span>
-            </div>
+            <img
+              src="/art/portrait/operator.svg"
+              alt="Operator portrait of Abdalla Eldoumani, duotone service-record style"
+              className="w-full border border-white/10"
+            />
             <div className="flex items-center justify-between border-x border-b border-white/10 px-2.5 py-1.5 font-mono text-[9.5px] tracking-[0.1em]">
               <span className="text-ink-3">CAPTURED 2026</span>
               <span className="text-green">VERIFIED</span>

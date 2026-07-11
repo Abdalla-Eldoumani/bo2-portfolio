@@ -27,7 +27,7 @@ const EMBLEMS: Record<string, string> = {
 
 // Presentational role qualifiers (ladder display only; data stays factual).
 const QUALIFIERS: Record<string, string> = {
-  'Undergraduate Researcher': 'PURE AWARD',
+  'Undergraduate Researcher': 'TWO PURE AWARDS',
   'Teaching Assistant': 'HEAD TA, CPSC 355',
 };
 

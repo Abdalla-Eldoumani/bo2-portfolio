@@ -41,8 +41,15 @@ export function Resync() {
         return;
       run();
     };
+    const onAction = (e: Event) => {
+      if ((e as CustomEvent).detail === 'resync') run();
+    };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener('bo2-action', onAction);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('bo2-action', onAction);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, cooldown]);
 

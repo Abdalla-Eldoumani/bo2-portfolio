@@ -27,7 +27,7 @@ export const contact = {
   invitation: [
     {
       text:
-        "Open to Summer 2026 internships and conversations about systems, performance, and the web. The fastest way to reach me is ",
+        "Open to new-grad and full-time roles (graduating June 2027) and conversations about systems, performance, and the web. The fastest way to reach me is ",
     },
     { em: "email" },
     { text: " — I read and reply to every message." },
