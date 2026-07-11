@@ -45,21 +45,51 @@ const mono = localFont({
 });
 
 const description =
-  "Software developer working from registers to React: systems programming, full-stack web, and teaching.";
+  "Software developer working from registers to React — systems, compilers, kernels and full-stack web. A portfolio styled as the Black Ops 2 menu system, every pixel original.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: siteConfig.name,
+    default: `${siteConfig.name} — ${siteConfig.jobTitle}`,
     template: `%s | ${siteConfig.name}`,
   },
   description,
+  applicationName: `${siteConfig.name} — Portfolio`,
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
+  keywords: [
+    "Abdalla Eldoumani",
+    "software developer",
+    "systems programming",
+    "compilers",
+    "operating systems",
+    "ARM64",
+    "Rust",
+    "C++",
+    "WebAssembly",
+    "University of Calgary",
+    "Calgary developer",
+    "Black Ops 2 portfolio",
+    "gamified portfolio",
+  ],
+  alternates: { canonical: "/" },
   openGraph: {
-    title: siteConfig.name,
+    title: `${siteConfig.name} — ${siteConfig.jobTitle}`,
     description,
     url: siteConfig.url,
-    siteName: siteConfig.name,
+    siteName: `${siteConfig.name} — Portfolio`,
     type: "website",
+    locale: "en_CA",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} — ${siteConfig.jobTitle}`,
+    description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
 };
 
@@ -68,16 +98,51 @@ export const viewport: Viewport = {
   themeColor: "#0a0f13",
 };
 
-// Static Person graph for search engines. Every field is a compile-time
-// constant from siteConfig, so serializing it into dangerouslySetInnerHTML
-// carries no untrusted input.
-const personLd = {
+// Static Person + WebSite graph for search engines. Every field is a
+// compile-time constant from siteConfig / public facts, so serializing it
+// into dangerouslySetInnerHTML carries no untrusted input.
+const graphLd = {
   "@context": "https://schema.org",
-  "@type": "Person",
-  name: siteConfig.name,
-  url: siteConfig.url,
-  jobTitle: siteConfig.jobTitle,
-  sameAs: [siteConfig.github, siteConfig.linkedin],
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${siteConfig.url}/#person`,
+      name: siteConfig.name,
+      url: siteConfig.url,
+      email: `mailto:${siteConfig.email}`,
+      jobTitle: siteConfig.jobTitle,
+      sameAs: [siteConfig.github, siteConfig.linkedin],
+      alumniOf: {
+        "@type": "CollegeOrUniversity",
+        name: "University of Calgary",
+      },
+      knowsAbout: [
+        "Systems programming",
+        "Compilers",
+        "Operating systems",
+        "ARM64 assembly",
+        "Rust",
+        "C++",
+        "WebAssembly",
+        "Full-stack web development",
+      ],
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Calgary",
+        addressRegion: "AB",
+        addressCountry: "CA",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteConfig.url}/#website`,
+      url: siteConfig.url,
+      name: `${siteConfig.name} — Portfolio`,
+      description:
+        "A software developer portfolio styled as the Black Ops 2 menu system. Every asset original.",
+      publisher: { "@id": `${siteConfig.url}/#person` },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -99,7 +164,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(personLd).replace(/</g, "\\u003c"),
+            __html: JSON.stringify(graphLd).replace(/</g, "\\u003c"),
           }}
         />
         {children}
