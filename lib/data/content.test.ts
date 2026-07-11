@@ -48,8 +48,9 @@ describe('skills loadout', () => {
 });
 
 describe('navigation manifest', () => {
-  it('lists the 6 screen destinations (the lobby itself is separate)', () => {
-    expect(navigation).toHaveLength(6);
+  it('lists the 7 screen destinations (the lobby itself is separate)', () => {
+    expect(navigation).toHaveLength(7);
+    expect(navigation[navigation.length - 1].id).toBe('about');
   });
 
   it('gives every item a label, subtitle, and a route href', () => {
