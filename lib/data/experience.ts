@@ -14,10 +14,10 @@ export const experiences = [
     duration: 'May 2026 – Present',
     type: 'Academic',
     description:
-      'PURE Award research on proactive task replication for extreme edge computing, alongside a browser-based ARMv8 emulator and visual debugger.',
+      'Two PURE Award research projects: proactive task replication for extreme edge computing, and the AArch64 Playground — a browser-based ARMv8 emulator and visual debugger now used as a teaching aid.',
     achievements: [
       'Model proactive task replication for extreme edge computing as a reputation-weighted MILP across unreliable devices.',
-      'Build a browser-based ARMv8 emulator and visual debugger in Rust/WebAssembly and Next.js — validated by 790+ automated tests.',
+      'Build the AArch64 Playground — a browser ARMv8 emulator and visual debugger in Rust/WebAssembly and Next.js, validated by 790+ automated tests.',
     ],
     skills: [
       'Rust',
