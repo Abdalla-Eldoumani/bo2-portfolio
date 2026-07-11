@@ -43,6 +43,12 @@ export const navigation = [
     subtitle: 'Open a channel',
     href: '/comms',
   },
+  {
+    id: 'about',
+    label: 'About',
+    subtitle: 'Why this lobby exists',
+    href: '/about',
+  },
 ] satisfies readonly NavItem[];
 
 /** The lobby itself — used by the mobile overlay and ESC handling. */
