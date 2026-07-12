@@ -63,9 +63,10 @@ Panels are translucent windows over the scene (`.panel`, gradient fills at
 low alpha + 1px hairlines), never opaque cards. Motion uses one easing,
 `--ease-tac: cubic-bezier(0.3, 0, 0, 1)` — fast attack, long settle — with
 short distances (`.rise`, `.screen-enter`, the 140ms commit beat on menu
-selects). `prefers-reduced-motion` collapses entrances/marquee/grain
-flicker to static states; the field sims still animate because a sim only
-ever runs after an explicit user start.
+selects). `prefers-reduced-motion` collapses entrances and grain flicker
+to static states. Two things keep moving on purpose: the INTEL marquee,
+because it is slow ambient chrome with a hover pause, and the field sims,
+because a sim only ever runs after an explicit user start.
 
 ## Print
 

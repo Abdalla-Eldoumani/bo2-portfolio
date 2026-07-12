@@ -603,8 +603,8 @@ body {
    into two identical sets laid side by side; translating the track by
    exactly -50% (one set) and looping reads as one endless stream — the
    repeat is always mid-flow, never a gap. Text moves right → left and
-   slides in under the INTEL plate. Hover/focus pauses (WCAG 2.2.2);
-   reduced motion stops the drift and shows the line as a static strip.
+   slides in under the INTEL plate. Hover/focus pauses (WCAG 2.2.2), and
+   the pause control is why the drift also survives reduced motion below.
    ─────────────────────────────────────────────────────────────────────────── */
 .ticker-track {
   display: flex;
@@ -632,9 +632,13 @@ body {
   }
 }
 
+/*
+  Deliberate exception to the reduced-motion blanket: the INTEL marquee keeps
+  drifting. It is ambient chrome at 80s per loop, pausable on hover/focus,
+  and the lobby reads dead without it. Everything else stays collapsed.
+*/
 @media (prefers-reduced-motion: reduce) {
   .ticker-track {
-    animation: none !important;
-    margin-left: 130px;
+    animation: ticker-scroll 80s linear infinite !important;
   }
 }
