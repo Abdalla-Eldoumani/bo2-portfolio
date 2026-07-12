@@ -72,6 +72,7 @@ export default function Home() {
             className="rise w-full lg:w-[392px] lg:shrink-0"
             style={{ '--i': 4 } as React.CSSProperties}
           >
+            {/* Rotates through every op; click deploys into Mission Select. */}
             <FeaturedOp />
           </div>
         </div>
