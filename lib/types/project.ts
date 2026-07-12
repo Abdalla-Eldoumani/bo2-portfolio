@@ -15,6 +15,8 @@ export type ProjectCategory =
 
 export interface Project {
   name: string;
+  // URL-stable id: art filename, deep-link (?op=slug) and field-sim key.
+  slug: string;
   description: string;
   fullDescription?: string;
   // Static import (StaticImageData), never a string path: a missing image file
