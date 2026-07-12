@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { resyncGitHub } from '@/app/scoreboard/actions';
+import { sfxTick } from '@/lib/sfx';
 
 /*
   R RESYNC control: the keyboard handler behind the hint-bar promise plus a
@@ -19,6 +20,7 @@ export function Resync() {
 
   const run = () => {
     if (pending || cooldown) return;
+    sfxTick();
     setCooldown(true);
     startTransition(async () => {
       await resyncGitHub();
