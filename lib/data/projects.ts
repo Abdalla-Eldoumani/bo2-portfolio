@@ -22,6 +22,7 @@ import budgetBuddyArt from '@/public/art/maps/budget-buddy.svg';
 export const projects = [
   {
     name: 'Peregrine',
+    slug: 'peregrine',
     description:
       'Heterogeneous linear algebra that picks the right silicon for the shape of the problem: AVX2 SIMD on the CPU, cuBLAS on the GPU, one zero-copy NumPy-compatible API above both.',
     fullDescription:
@@ -37,6 +38,7 @@ export const projects = [
   },
   {
     name: 'AEOS',
+    slug: 'aeos',
     description:
       'A monolithic ARM64 kernel with a windowed desktop, written from scratch: boots EL2 to EL1 by hand, builds its own identity-mapped MMU, schedules preemptively at 100 Hz, and composites a desktop over a VirtIO GPU at 30 frames per second.',
     fullDescription:
@@ -52,6 +54,7 @@ export const projects = [
   },
   {
     name: 'AArch64 Playground',
+    slug: 'aarch64-playground',
     description:
       'A browser-based ARM64 emulator and visual debugger, built with a professor and two collaborators under a PURE research award and now used as a teaching aid: paste assembly, step one instruction at a time, watch the registers change their minds.',
     fullDescription:
@@ -66,6 +69,7 @@ export const projects = [
   },
   {
     name: 'Qala',
+    slug: 'qala',
     description:
       'A statically typed teaching language where saying is doing: effects like is pure and is io are checked by the compiler, so code is a truthful declaration of behavior. Lexer to typechecker to bytecode VM, plus an ARM64 backend, all in Rust.',
     fullDescription:
@@ -82,6 +86,7 @@ export const projects = [
   },
   {
     name: 'Rust HTTP Server',
+    slug: 'rust-http-server',
     description:
       'A production-grade server built to hold 10,000+ concurrent connections: JWT auth with role-based access, WebSocket notifications, background jobs with retries, and full-text search with fuzzy matching.',
     fullDescription:
@@ -97,6 +102,7 @@ export const projects = [
   },
   {
     name: 'Dossier',
+    slug: 'dossier',
     description:
       'Privacy-first PDF toolkit: 42 operations, all local, exposed to humans as a web app and to agents over the Model Context Protocol. Nothing you process ever leaves the machine.',
     fullDescription:
@@ -113,6 +119,7 @@ export const projects = [
   },
   {
     name: 'DUST',
+    slug: 'dust',
     description:
       'A multiplayer game about digging through a decaying internet, built in 24 hours with real-time state sync in both competitive and cooperative modes.',
     fullDescription:
@@ -129,6 +136,7 @@ export const projects = [
   },
   {
     name: 'Budget Buddy',
+    slug: 'budget-buddy',
     description:
       'Budget tracking, live stock data, and growth projections for the 70% of young Canadians who avoid investing entirely. Built at CalgaryHacks 24.',
     fullDescription:

@@ -597,3 +597,37 @@ body {
     filter: sepia(0.55) saturate(0.55) brightness(0.85);
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   INTEL ticker marquee (lobby): the line drifts right-to-left and loops.
+   Two copies of the content scroll -50%; hover pauses (WCAG 2.2.2 pause);
+   reduced motion stops the drift and shows the line statically.
+   ─────────────────────────────────────────────────────────────────────────── */
+.ticker-track {
+  display: inline-flex;
+  gap: 48px;
+  padding-right: 48px;
+  white-space: nowrap;
+  animation: ticker-scroll 42s linear infinite;
+  will-change: transform;
+}
+
+.ticker-viewport:hover .ticker-track,
+.ticker-viewport:focus-within .ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none !important;
+  }
+}

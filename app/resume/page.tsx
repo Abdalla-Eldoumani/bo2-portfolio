@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Scene } from '@/components/chrome/scene';
 import { PrintButton } from '@/components/resume/print-button';
 import { siteConfig } from '@/lib/site-config';
@@ -62,6 +63,18 @@ export default function ResumePage() {
         tabIndex={-1}
         className="mx-auto flex min-h-dvh w-full max-w-[1180px] flex-col gap-6 px-4 pb-24 pt-16 sm:px-6 lg:flex-row lg:items-start lg:px-9 lg:pt-[72px] print:block print:p-0"
       >
+        {/* Visible back control — /resume has no hint bar, so the escape
+            route gets a real on-screen button (screen only). */}
+        <Link
+          data-print-hide
+          href="/"
+          className="confirm-punch fixed left-4 top-14 z-40 flex items-center gap-2 sm:left-6 lg:left-9 lg:top-16"
+        >
+          <span className="keycap text-ink">ESC</span>
+          <span className="font-label text-[13px] font-semibold tracking-[0.05em] text-ink-2">
+            RETURN TO LOBBY
+          </span>
+        </Link>
         {/* Paper sheet */}
         <article
           data-resume-sheet
