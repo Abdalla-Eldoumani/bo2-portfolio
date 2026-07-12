@@ -17,7 +17,15 @@ import { navigation } from '@/lib/data/navigation';
 type Hint = {
   key: string;
   label: string;
-  action?: 'back' | 'resume' | 'cycle' | 'copy' | 'resync' | 'print' | 'select';
+  action?:
+    | 'back'
+    | 'resume'
+    | 'cycle'
+    | 'copy'
+    | 'resync'
+    | 'print'
+    | 'select'
+    | 'fieldsim';
 };
 
 const BACK: Hint = { key: 'ESC', label: 'BACK', action: 'back' };
@@ -30,10 +38,16 @@ const HINTS: Record<string, Hint[]> = {
     { key: '↑↓', label: 'NAVIGATE' },
     RESUME,
   ],
-  '/comms': [
-    { key: '↵', label: 'TRANSMIT' },
+  '/missions': [
+    { key: '↑↓', label: 'SELECT OP' },
+    { key: '↵', label: 'FIELD SIM', action: 'fieldsim' },
     BACK,
     CYCLE,
+  ],
+  '/comms': [
+    { key: '↑↓', label: 'CHANNEL' },
+    { key: '↵', label: 'TRANSMIT' },
+    BACK,
     { key: 'C', label: 'COPY ADDRESS', action: 'copy' },
   ],
   '/scoreboard': [BACK, CYCLE, { key: 'R', label: 'RESYNC', action: 'resync' }],
@@ -94,6 +108,7 @@ export function HintBar({ onMenu }: { onMenu: () => void }) {
       }
       case 'copy':
       case 'resync':
+      case 'fieldsim':
         window.dispatchEvent(
           new CustomEvent('bo2-action', { detail: action }),
         );
