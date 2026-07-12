@@ -3,13 +3,13 @@
 Hard rule: **no Activision or Treyarch assets, no game screenshots, no
 Agency FB font file.** Everything under `public/art/` is original SVG
 drawn for this project. The look is achieved by speaking the same visual
-language — palette, lighting, geometry — not by borrowing files.
+language - palette, lighting, geometry - not by borrowing files.
 
 ## Inventory
 
 | Path | What it is |
 | --- | --- |
-| `art/backdrop/` | The scene: four stacked layers (sky/haze/geometry/floor) per variant |
+| `art/backdrop/` | The scene layers: sky haze, floodlights, silhouettes, bokeh (one shared set; the sky layer is spare art, the ground is a CSS gradient) |
 | `art/maps/` | Eight mission preview scenes, one per project |
 | `art/emblems/` | Enamel rank emblems I–V (gold lives here) |
 | `art/icons/` | The 16-glyph interface icon set |
@@ -24,7 +24,7 @@ All scene art follows the same rules the UI does: the scene palette (cool
 blue-grey world, one warm key light), flat vector geometry with 1px
 hairline detail, low-alpha atmospherics, and a single readable subject per
 image. Mission maps are duotone environment scenes with a subtle noise
-pass — dark enough that white map-name labels always sit legible on top.
+pass - dark enough that white map-name labels always sit legible on top.
 
 ## The portrait
 
@@ -39,5 +39,5 @@ The art is checked in as final SVGs; nothing at build time generates it.
 To make your own set, keep the grammar: pick 5-7 scene tones, posterize
 your portrait to ≤5 tones, draw maps as flat duotone scenes, and reserve
 one warm accent for light sources only. Any vector editor (or a small
-script emitting SVG) works — consistency of palette matters far more than
+script emitting SVG) works - consistency of palette matters far more than
 drawing skill.

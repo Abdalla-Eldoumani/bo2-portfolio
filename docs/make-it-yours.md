@@ -2,21 +2,21 @@
 
 The repo is meant to be forked and reskinned into *your* portfolio. There
 is no config wizard; the site is small enough to edit directly, and all
-content is concentrated in `lib/data/`. No contribution needed back —
+content is concentrated in `lib/data/`. No contribution needed back -
 take it and go build.
 
 ## 1. Identity
 
-- `lib/site-config.ts` — name, email, GitHub handle, LinkedIn. This one
+- `lib/site-config.ts` - name, email, GitHub handle, LinkedIn. This one
   file feeds metadata, JSON-LD, comms, the resume header.
-- `app/layout.tsx` — review the metadata keywords and JSON-LD claims;
+- `app/layout.tsx` - review the metadata keywords and JSON-LD claims;
   they describe a specific person, so rewrite them for you.
 
 ## 2. Content
 
 Work through `lib/data/` file by file (see [data.md](data.md)). The
 vitest suite (`npm run test`) encodes counts and rules about *this*
-site's content — update the tests alongside the data; they are meant to
+site's content - update the tests alongside the data; they are meant to
 be edited, not deleted.
 
 ## 3. Art
@@ -28,7 +28,7 @@ Replace `public/resume.pdf` and the portrait, or remove their surfaces.
 
 ## 4. Games
 
-Each project deserves a sim that symbolizes it — that mapping is the
+Each project deserves a sim that symbolizes it - that mapping is the
 charm. Write yours against the four-function contract in
 [field-sims.md](field-sims.md); the harness gives you the clock, input,
 HUD, grain and sound for free.
@@ -55,7 +55,7 @@ npm run typecheck && npm run lint && npm run test && npm run build
 Then the manual pass: every hint-bar key does what it advertises, games
 stay contained (arrows in a sim must never move the menus; one ESC exits
 only the sim), the resume prints as one Letter page, and the 404 degrades
-to sepia. If you keep the theme, keep the honesty — that is the part
+to sepia. If you keep the theme, keep the honesty - that is the part
 people feel.
 
 ## Attribution
