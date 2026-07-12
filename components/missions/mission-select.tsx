@@ -1,17 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { projects } from '@/lib/data/projects';
+import { FieldSim } from '@/components/missions/sim/field-sim';
 
 /*
-  Mission Select — pre-game lobby map-select (approved remap). Map cards in a
-  3-col grid drive the MISSION BRIEF rail; on small screens the brief expands
-  inline under the selected card. Teal is legal ONLY on this screen
-  (classification tags, ops counter).
+  Mission Select — pre-game lobby map-select. Map cards in a 3-col grid
+  drive the MISSION BRIEF rail; on small screens the brief expands inline
+  under the selected card. Teal is legal ONLY on this screen.
 
-  Card art = real project captures through the duotone map-preview treatment;
-  ops without captures render the hatched AWAITING VISUAL FEED slot.
+  Fully keyboard-driven: ↑↓ moves the op selection (wrapping), ↵ launches
+  the selected op's FIELD SIM — a 20-second mini-game symbolizing the
+  project. Deep links (/missions?op=slug) pre-select an op (the lobby
+  carousel routes here). Mouse and touch keep full parity.
 */
 
 // Flavor map-names, one per op (presentational only).
@@ -64,7 +67,13 @@ function MapArt({
   );
 }
 
-function Brief({ project }: { project: (typeof projects)[number] }) {
+function Brief({
+  project,
+  onSim,
+}: {
+  project: (typeof projects)[number];
+  onSim: () => void;
+}) {
   const live = project.live && project.live !== '#' ? project.live : null;
   const source = project.github && project.github !== '#' ? project.github : null;
   const chunks = (project.metrics ?? '')
@@ -113,16 +122,23 @@ function Brief({ project }: { project: (typeof projects)[number] }) {
           ))}
         </div>
 
-        <div className="mt-5 flex gap-2.5">
+        <div className="mt-5 flex flex-wrap gap-2.5">
+          <button
+            type="button"
+            onClick={onSim}
+            className="confirm-punch bg-orange-fill px-4 py-1.5 font-display text-[17px] font-bold uppercase text-on-orange"
+            style={{ boxShadow: '0 0 24px rgba(255,150,0,0.38)' }}
+          >
+            Run Field Sim ▸
+          </button>
           {live ? (
             <a
               href={live}
               target="_blank"
               rel="noreferrer"
-              className="confirm-punch bg-orange-fill px-4 py-1.5 font-display text-[17px] font-bold uppercase text-on-orange"
-              style={{ boxShadow: '0 0 24px rgba(255,150,0,0.38)' }}
+              className="confirm-punch border border-orange-frame px-4 py-1.5 font-display text-[17px] font-bold uppercase text-orange-core hover:bg-orange-fill hover:text-on-orange"
             >
-              Deploy ▸
+              Deploy
             </a>
           ) : (
             <span
@@ -149,13 +165,66 @@ function Brief({ project }: { project: (typeof projects)[number] }) {
 }
 
 export function MissionSelect() {
-  const [selected, setSelected] = useState(0);
+  const params = useSearchParams();
+  const initial = Math.max(
+    0,
+    projects.findIndex((p) => p.slug === params.get('op')),
+  );
+  const [selected, setSelected] = useState(initial);
+  const [simOpen, setSimOpen] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const selRef = useRef(initial);
+  const simRef = useRef(false);
   const current = projects[selected];
+
+  useEffect(() => {
+    selRef.current = selected;
+  }, [selected]);
+  useEffect(() => {
+    simRef.current = simOpen;
+  }, [simOpen]);
+
+  // ↑↓ move the op selection; ↵ runs the selected op's field sim. The open
+  // sim dialog owns its own keys (its handler stops propagation).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (simRef.current) return;
+      if (document.querySelector('dialog[open]')) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const delta = e.key === 'ArrowDown' ? 1 : -1;
+        const next = (selRef.current + delta + projects.length) % projects.length;
+        setSelected(next);
+        gridRef.current
+          ?.querySelectorAll('[role="option"]')
+          [next]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        return;
+      }
+      if (e.key === 'Enter') {
+        const el = document.activeElement as HTMLElement | null;
+        if (el && (el.tagName === 'A' || el.tagName === 'BUTTON')) return;
+        setSimOpen(true);
+      }
+    };
+    const onAction = (e: Event) => {
+      if ((e as CustomEvent).detail === 'fieldsim') setSimOpen(true);
+    };
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('bo2-action', onAction);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('bo2-action', onAction);
+    };
+  }, []);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_420px] xl:grid-cols-[1fr_444px]">
       {/* Map grid */}
       <div
+        ref={gridRef}
         role="listbox"
         aria-label="Deployed operations"
         className="grid grid-cols-1 content-start gap-3 sm:grid-cols-2 xl:grid-cols-3"
@@ -203,7 +272,7 @@ export function MissionSelect() {
                       {String(i + 1).padStart(2, '0')}/{projects.length}
                     </span>
                   </div>
-                  <Brief project={current} />
+                  <Brief project={current} onSim={() => setSimOpen(true)} />
                 </div>
               )}
             </div>
@@ -230,9 +299,16 @@ export function MissionSelect() {
               {String(selected + 1).padStart(2, '0')}/{projects.length}
             </span>
           </div>
-          <Brief project={current} />
+          <Brief project={current} onSim={() => setSimOpen(true)} />
         </div>
       </aside>
+
+      <FieldSim
+        slug={current.slug}
+        name={current.name}
+        open={simOpen}
+        onClose={() => setSimOpen(false)}
+      />
     </div>
   );
 }
