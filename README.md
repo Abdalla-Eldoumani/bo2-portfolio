@@ -1,11 +1,11 @@
-# Abdalla Eldoumani — Portfolio
+# Abdalla Eldoumani - Portfolio
 
 A personal portfolio styled as the **Call of Duty: Black Ops 2 menu system**:
 full-viewport screens navigated like the game's lobby, a lit scene behind
 translucent panels, one hot orange selection language, and keycap hints that
 never lie.
 
-Every asset is original — the scene layers, rank emblems, map-preview art,
+Every asset is original - the scene layers, rank emblems, map-preview art,
 weapon render and operator portrait are all SVG drawn in-project. No game
 assets, fonts, or screenshots are used anywhere. Inspired by the Black Ops 2
 menu UI; not affiliated with Activision or Treyarch.
@@ -17,10 +17,10 @@ menu UI; not affiliated with Activision or Treyarch.
 GitHub telemetry · `/comms` contact · `/about` why this exists ·
 `/resume` printable field dossier (one Letter page).
 
-Every mission carries a **FIELD SIM** — a 20-second canvas mini-game that
+Every mission carries a **FIELD SIM** - a 20-second canvas mini-game that
 symbolizes the project (the SIMD engine is a falcon dash, the educational
 OS boots a kernel, the HTTP server balances queues). Interface sounds are
-synthesized WebAudio cues — no audio assets, no music, and an SFX switch
+synthesized WebAudio cues - no audio assets, no music, and an SFX switch
 in the top bar.
 
 ## Navigation
@@ -32,8 +32,8 @@ resume, C copies the email address on comms, R resyncs the scoreboard.
 
 ## Stack
 
-Next.js (App Router) · React · Tailwind CSS · TypeScript. Fully static
-output; GitHub data revalidates hourly with a committed fallback snapshot.
+Next.js (App Router) · React · Tailwind CSS · TypeScript. Every route
+prerenders; GitHub data revalidates hourly with a committed fallback snapshot.
 Fonts are self-hosted (OFL: Agdasima, Saira, Saira Condensed, JetBrains
 Mono). No trackers, no analytics.
 
@@ -52,6 +52,6 @@ npm run lint / typecheck
 
 ## Documentation
 
-[`docs/`](docs/README.md) explains the whole machine — architecture,
-design system, the field-sim harness, the data layer, the art system —
+[`docs/`](docs/README.md) explains the whole machine - architecture,
+design system, the field-sim harness, the data layer, the art system -
 plus [a guide to forking it into your own portfolio](docs/make-it-yours.md).

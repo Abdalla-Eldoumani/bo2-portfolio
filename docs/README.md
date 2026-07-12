@@ -19,7 +19,7 @@ can take the ideas and make something that is yours.
 A personal portfolio themed as the Call of Duty: Black Ops 2 menu system.
 Not a scrolling page with game-flavored CSS: a scene-first, screen-based
 UI. Every route is a full-viewport "screen" floating over one continuous
-lit environment, navigated the way the game's menus are navigated — arrow
+lit environment, navigated the way the game's menus are navigated - arrow
 keys, Enter, ESC, and honest on-screen hints that double as buttons. All
 art is original SVG produced for this project; there are no Activision or
 Treyarch assets anywhere in the repo.
@@ -32,7 +32,7 @@ npm run dev        # http://localhost:3000
 npm run build      # production build
 npm run test       # vitest (content contract + unit tests)
 npm run lint       # eslint
-npm run typecheck  # tsc --noEmit
+npm run typecheck  # next typegen, then tsc --noEmit
 ```
 
 Set `NEXT_PUBLIC_SITE_URL` when deploying behind a custom domain so

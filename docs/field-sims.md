@@ -13,7 +13,7 @@ One component owns everything game-independent:
 - a native `<dialog>` (focus trap, top layer, ESC-to-close for free),
 - the ready → running → debrief lifecycle and the 20s clock,
 - input collection: keyboard on `window` in the **capture phase** while
-  open — game keys (arrows, space, Enter) are stopped dead with
+  open - game keys (arrows, space, Enter) are stopped dead with
   `stopImmediatePropagation`, so nothing outside the sim ever reacts;
   ESC is deliberately untouched so the native close still works,
 - pointer input mapped into canvas coordinates,
@@ -26,21 +26,21 @@ One component owns everything game-independent:
 
 ## The game contract (`components/missions/sim/games.ts`)
 
-A game is a factory returning four functions — no classes, no React:
+A game is a factory returning four functions - no classes, no React:
 
 ```ts
-interface Game {
+type Game = {
   update(dt: number, input: SimInput): void;
   draw(ctx: CanvasRenderingContext2D): void;
   score(): number;
   hud(): string;
-}
+};
 
-interface SimInput {
+type SimInput = {
   held: boolean;                        // space / pointer held
   pressed: string[];                    // keys pressed this frame
   tap: { x: number; y: number } | null; // canvas-space tap
-}
+};
 ```
 
 Canvas is fixed at 720×380 (`SIM_W`/`SIM_H`), scaled by CSS. `SIM_META`
@@ -51,14 +51,14 @@ ready screen.
 
 | Slug | Game |
 | --- | --- |
-| `peregrine` | Falcon dash — dive through gates at speed |
-| `aeos` | Kernel boot — hit the timing window on real boot-log stages |
-| `aarch64-playground` | Single-step — route instructions, flush the pipeline |
-| `qala` | Effect check — sort expressions PURE ← / → IO |
-| `rust-http-server` | Load balancer — keep three queues under p99 |
-| `dossier` | Redaction pass — clear classified lines |
-| `dust` | Dig site — probe the heat grid |
-| `budget-buddy` | Market run — trade a random walk |
+| `peregrine` | Falcon dash - dive through gates at speed |
+| `aeos` | Kernel boot - hit the timing window on real boot-log stages |
+| `aarch64-playground` | Single-step - route instructions, flush the pipeline |
+| `qala` | Effect check - sort expressions PURE ← / → IO |
+| `rust-http-server` | Load balancer - keep three queues under p99 |
+| `dossier` | Redaction pass - clear classified lines |
+| `dust` | Dig site - probe the heat grid |
+| `budget-buddy` | Market run - trade a random walk |
 
 ## Adding a game
 

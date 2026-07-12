@@ -2,7 +2,7 @@
 
 ## One source of truth
 
-Every word on the site lives in `lib/data/` — projects, experience,
+Every word on the site lives in `lib/data/` - projects, experience,
 skills, navigation, contact, the about copy. Components render data; they
 never carry content inline. Change a fact in one file and every surface
 that shows it (screen, resume sheet, ticker, OG description) updates.
@@ -15,9 +15,11 @@ that shows it (screen, resume sheet, ticker, OG description) updates.
 | `navigation.ts` | The 7 destinations + the lobby item |
 | `contact.ts` | Channels, invitation line, footer colophon |
 | `about.ts` | The why-BO2 story, operator bio, capability→proof table |
+| `bio.ts` | The dossier's classified-file framing: station, origin, status, clearance, bio prose |
+| `github-fallback.ts` | The committed GitHub stats snapshot the scoreboard falls back to |
 
-Types live in `lib/types/` and data conforms via `satisfies` — never a
-cast — so a shape mistake is a compile error.
+Types live in `lib/types/` and data conforms via `satisfies` - never a
+cast - so a shape mistake is a compile error.
 
 ## The contract is tested
 
@@ -32,8 +34,8 @@ convention; the suite is the reviewer that never sleeps.
 `lib/api/github.ts` feeds the scoreboard and the ticker:
 
 - `fetch` with `next: { revalidate: 3600, tags: ['github'] }`,
-- a committed JSON snapshot as fallback, so the site renders complete
-  with the API rate-limited, blocked, or down — the fallback state is a
+- a committed snapshot (`lib/data/github-fallback.ts`) as fallback, so the site renders complete
+  with the API rate-limited, blocked, or down - the fallback state is a
   designed state, not an error page,
 - R / RESYNC on the scoreboard calls a server action that drops the
   tagged cache (`updateTag('github')`) and refreshes.
