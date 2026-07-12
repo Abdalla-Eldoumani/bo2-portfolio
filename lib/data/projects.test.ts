@@ -27,6 +27,12 @@ describe('projects data', () => {
     for (const p of projects) expect(p.image).toBeDefined();
   });
 
+  it('gives every mission a unique url-stable slug', () => {
+    const slugs = projects.map((p) => p.slug);
+    expect(new Set(slugs).size).toBe(projects.length);
+    for (const slug of slugs) expect(slug).toMatch(/^[a-z0-9-]+$/);
+  });
+
   it('gives every mission a string insigniaId (no icon-library import)', () => {
     for (const project of projects) {
       expect(typeof project.insigniaId).toBe('string');
