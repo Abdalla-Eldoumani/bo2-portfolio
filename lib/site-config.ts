@@ -21,6 +21,7 @@ export const siteConfig = {
   name: "Abdalla Eldoumani",
   jobTitle: "Software Developer",
   email: "aamsdoumani@gmail.com",
+  phone: "+1 (403) 708-6931",
   github: `https://github.com/${githubHandle}`,
   callsign: githubHandle,
   linkedin: "https://www.linkedin.com/in/abdallaeldoumani/",

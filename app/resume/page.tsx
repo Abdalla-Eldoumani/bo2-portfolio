@@ -100,7 +100,7 @@ export default function ResumePage() {
               className="mt-2 font-mono text-[11px] leading-relaxed"
               style={{ color: P_INK2 }}
             >
-              {siteConfig.email} · +1 (403) 708-6931 ·
+              {siteConfig.email} · {siteConfig.phone} ·
               github.com/{siteConfig.callsign} · linkedin.com/in/abdallaeldoumani
             </p>
           </header>
