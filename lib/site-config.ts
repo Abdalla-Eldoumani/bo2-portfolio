@@ -17,7 +17,7 @@ const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 export const siteConfig = {
   url:
     process.env.NEXT_PUBLIC_SITE_URL ??
-    (vercelHost ? `https://${vercelHost}` : "https://abdallaeldoumani.vercel.app"),
+    (vercelHost ? `https://${vercelHost}` : "https://bo2-portfolio.vercel.app"),
   name: "Abdalla Eldoumani",
   jobTitle: "Software Developer",
   email: "aamsdoumani@gmail.com",
