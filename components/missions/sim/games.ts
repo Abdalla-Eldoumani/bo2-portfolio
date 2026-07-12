@@ -33,7 +33,6 @@ const RED = '#b03a30';
 const BASE = '#16212a';
 const MID = '#2b3d4a';
 const SHADOW = '#0a0f13';
-const WARM = '#ffc98c';
 
 export const SIM_META: Record<
   string,
