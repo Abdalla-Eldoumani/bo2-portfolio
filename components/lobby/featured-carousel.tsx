@@ -11,8 +11,9 @@ import type { Project } from '@/lib/types/project';
   or focus pauses it; ‹ › step manually; clicking deploys straight into
   Mission Select with that op pre-selected (/missions?op=slug).
 
-  prefers-reduced-motion: no auto-advance (WCAG 2.2.2) — the card is still
-  steppable and clickable. The interval also stops while the tab is hidden.
+  The rotation always runs (a 6s content swap with a 200ms crossfade —
+  pausing is one hover/focus away, and the ‹ › steppers give manual
+  control); the interval stops while the tab is hidden.
 */
 
 const DWELL_MS = 6000;
@@ -26,17 +27,10 @@ export function FeaturedCarousel({
 }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const reduce = useRef(false);
   const router = useRouter();
 
   useEffect(() => {
-    reduce.current = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches;
-  }, []);
-
-  useEffect(() => {
-    if (paused || reduce.current) return;
+    if (paused) return;
     const id = window.setInterval(() => {
       if (document.hidden) return;
       setIndex((i) => (i + 1) % items.length);
