@@ -9,6 +9,7 @@ import {
   type Game,
   type SimInput,
 } from '@/components/missions/sim/games';
+import { sfxEnd, sfxScore, sfxSelect } from '@/lib/sfx';
 
 /*
   FIELD SIM harness — the combat-training modal. Owns the 20-second clock,
@@ -63,12 +64,39 @@ export function FieldSim({
   const keysRef = useRef<string[]>([]);
   const heldRef = useRef(false);
   const tapRef = useRef<{ x: number; y: number } | null>(null);
+  const scoreRef = useRef(0);
+  const noiseRef = useRef<HTMLCanvasElement | null>(null);
+  const patternRef = useRef<CanvasPattern | null>(null);
+  const stillRef = useRef(false);
 
   const meta = SIM_META[slug];
 
   const setPhase = useCallback((p: Phase) => {
     phaseRef.current = p;
     setPhaseState(p);
+  }, []);
+
+  // CRT noise texture: one sparse speckle tile, generated once. The draw
+  // loop tiles it at a random offset every frame for live film grain;
+  // reduced motion pins the offset so the grain is a still texture.
+  useEffect(() => {
+    stillRef.current = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    if (noiseRef.current) return;
+    const tile = document.createElement('canvas');
+    tile.width = 160;
+    tile.height = 90;
+    const tctx = tile.getContext('2d');
+    if (!tctx) return;
+    const img = tctx.createImageData(160, 90);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = (Math.random() * 255) | 0;
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+      img.data[i + 3] = Math.random() < 0.45 ? 255 : 0;
+    }
+    tctx.putImageData(img, 0, 0);
+    noiseRef.current = tile;
   }, []);
 
   // dialog open/close sync
@@ -98,6 +126,8 @@ export function FieldSim({
   const start = useCallback(() => {
     gameRef.current = createGame(slug);
     timeRef.current = 0;
+    scoreRef.current = 0;
+    sfxSelect();
     setPhase('running');
   }, [slug, setPhase]);
 
@@ -195,6 +225,11 @@ export function FieldSim({
         keysRef.current = [];
         tapRef.current = null;
 
+        // Score feedback: one tiny blip per point gained.
+        const sNow = gameRef.current.score();
+        if (sNow > scoreRef.current) sfxScore();
+        scoreRef.current = sNow;
+
         if (timeRef.current >= ROUND_S) {
           const score = gameRef.current.score();
           setFinalScore(score);
@@ -210,6 +245,7 @@ export function FieldSim({
             setBest((b) => Math.max(b, score));
           }
           setPhase('debrief');
+          sfxEnd();
         }
       }
 
@@ -230,6 +266,36 @@ export function FieldSim({
         ctx.font = '11px "JetBrains Mono", monospace';
         ctx.fillStyle = '#9db0ba';
         ctx.fillText(gameRef.current.hud(), 16, 24);
+      }
+
+      // CRT pass: film grain over every frame plus a drifting scanline
+      // band while animating; reduced motion keeps the grain still.
+      const tile = noiseRef.current;
+      if (tile) {
+        if (!patternRef.current) {
+          patternRef.current = ctx.createPattern(tile, 'repeat');
+        }
+        const pat = patternRef.current;
+        if (pat) {
+          const still = stillRef.current;
+          ctx.save();
+          ctx.globalAlpha = still ? 0.05 : 0.03 + Math.random() * 0.045;
+          const ox = still ? 0 : (Math.random() * 160) | 0;
+          const oy = still ? 0 : (Math.random() * 90) | 0;
+          ctx.translate(-ox, -oy);
+          ctx.fillStyle = pat;
+          ctx.fillRect(0, 0, SIM_W + 160, SIM_H + 90);
+          ctx.restore();
+          if (!still) {
+            const y = ((now / 24) % (SIM_H + 60)) - 30;
+            const band = ctx.createLinearGradient(0, y, 0, y + 26);
+            band.addColorStop(0, 'rgba(255,255,255,0)');
+            band.addColorStop(0.5, 'rgba(255,255,255,0.05)');
+            band.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = band;
+            ctx.fillRect(0, y, SIM_W, 26);
+          }
+        }
       }
     };
     raf = requestAnimationFrame(loop);

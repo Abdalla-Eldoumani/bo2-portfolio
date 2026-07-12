@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { navigation } from '@/lib/data/navigation';
+import { sfxBack, sfxMove, sfxSelect } from '@/lib/sfx';
 import { TopBar } from '@/components/chrome/top-bar';
 import { HintBar } from '@/components/chrome/hint-bar';
 import { NavOverlay } from '@/components/chrome/nav-overlay';
@@ -45,13 +46,17 @@ export function Chrome() {
 
       if (e.key === 'Escape') {
         // <dialog> closes itself; only handle screen-level back here.
-        if (!menuOpen && pathname !== '/') router.push('/');
+        if (!menuOpen && pathname !== '/') {
+          sfxBack();
+          router.push('/');
+        }
         return;
       }
 
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
         if (pathname === '/resume') return; // native print
         e.preventDefault();
+        sfxSelect();
         router.push('/resume');
         return;
       }
@@ -65,6 +70,7 @@ export function Chrome() {
         const delta = e.key === 'ArrowRight' ? 1 : -1;
         const next =
           navigation[(i + delta + navigation.length) % navigation.length];
+        sfxMove();
         router.push(next.href);
         return;
       }

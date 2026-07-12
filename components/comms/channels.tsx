@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { siteConfig } from '@/lib/site-config';
+import { sfxMove, sfxSelect, sfxTick } from '@/lib/sfx';
 
 /*
   SECURE CHANNELS — options-style rows with a LIVE selection: ↑↓ moves the
@@ -52,6 +53,7 @@ export function Channels() {
   }, [sel]);
 
   const copy = async () => {
+    sfxTick();
     try {
       await navigator.clipboard.writeText(siteConfig.email);
       setCopied(true);
@@ -78,6 +80,7 @@ export function Channels() {
 
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
+        sfxMove();
         setSel((i) => {
           const next =
             e.key === 'ArrowDown'
@@ -92,6 +95,7 @@ export function Channels() {
         // Only when focus is not already on a link/button (native wins).
         const el = document.activeElement as HTMLElement | null;
         if (el && (el.tagName === 'A' || el.tagName === 'BUTTON')) return;
+        sfxSelect();
         refs.current[selRef.current]?.click();
         return;
       }
@@ -127,8 +131,14 @@ export function Channels() {
               target={ch.external ? '_blank' : undefined}
               rel={ch.external ? 'noreferrer' : undefined}
               data-current={sel === i || undefined}
-              onMouseEnter={() => setSel(i)}
-              onFocus={() => setSel(i)}
+              onMouseEnter={() => {
+                if (sel !== i) sfxMove();
+                setSel(i);
+              }}
+              onFocus={() => {
+                if (sel !== i) sfxMove();
+                setSel(i);
+              }}
               className="menu-row tap-target flex min-h-[56px] items-center gap-3.5 px-4 py-2.5"
             >
               <span

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/lib/site-config';
 import { navigation } from '@/lib/data/navigation';
+import { SfxToggle } from '@/components/chrome/sfx-toggle';
 
 /*
   Persistent top chrome: status cluster left, playercard chip right. The chip
@@ -65,6 +66,8 @@ export function TopBar() {
           {`${status} // ONLINE`}
         </span>
         {time && <span className="hidden text-ink-3 sm:inline">{time} MST</span>}
+        <span aria-hidden="true" className="hidden text-ink-3/60 sm:inline">|</span>
+        <SfxToggle />
       </div>
 
       {/* Playercard chip */}

@@ -17,6 +17,12 @@ menu UI; not affiliated with Activision or Treyarch.
 GitHub telemetry · `/comms` contact · `/about` why this exists ·
 `/resume` printable field dossier (one Letter page).
 
+Every mission carries a **FIELD SIM** — a 20-second canvas mini-game that
+symbolizes the project (the SIMD engine is a falcon dash, the educational
+OS boots a kernel, the HTTP server balances queues). Interface sounds are
+synthesized WebAudio cues — no audio assets, no music, and an SFX switch
+in the top bar.
+
 ## Navigation
 
 Everything is reachable by mouse or touch (the bottom hint bar is a working
@@ -43,3 +49,9 @@ npm run build      # static production build
 npm run test       # content-contract tests
 npm run lint / typecheck
 ```
+
+## Documentation
+
+[`docs/`](docs/README.md) explains the whole machine — architecture,
+design system, the field-sim harness, the data layer, the art system —
+plus [a guide to forking it into your own portfolio](docs/make-it-yours.md).

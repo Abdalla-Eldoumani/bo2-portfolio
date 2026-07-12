@@ -146,12 +146,7 @@ export const education = {
 } satisfies Education;
 
 // Helper functions for filtering and resolving experience entries.
-export const getExperienceByType = (type: Experience['type']) =>
-  experiences.filter((exp) => exp.type === type);
-
 // The open-ended role: its operation window ends in "Present".
 export const getCurrentExperience = () =>
   experiences.find((exp) => exp.duration.includes('Present'));
 
-export const getExperienceByCompany = (company: string) =>
-  experiences.find((exp) => exp.company === company);
