@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { navigation } from '@/lib/data/navigation';
+import { sfxMove, sfxSelect } from '@/lib/sfx';
 
 /*
   The lobby main menu: numbered rows, BO2 selection language. The pointed row
@@ -43,6 +44,7 @@ export function LobbyMenu() {
             ? items.length - 1
             : current - 1;
       items[next].focus();
+      sfxMove();
     };
 
     window.addEventListener('keydown', onKey);
@@ -65,6 +67,7 @@ export function LobbyMenu() {
                   if (isCommitted) return;
                   e.preventDefault();
                   setCommitted(item.id);
+                  sfxSelect();
                   // One beat of the filled state (the game's select thunk),
                   // then commit the navigation.
                   window.setTimeout(() => router.push(item.href), 140);

@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { projects } from '@/lib/data/projects';
 import { FieldSim } from '@/components/missions/sim/field-sim';
+import { sfxClose, sfxMove, sfxOpen } from '@/lib/sfx';
 
 /*
   Mission Select — pre-game lobby map-select. Map cards in a 3-col grid
@@ -180,6 +181,10 @@ export function MissionSelect() {
   useEffect(() => {
     selRef.current = selected;
   }, [selected]);
+  const openSim = useCallback(() => {
+    sfxOpen();
+    setSimOpen(true);
+  }, []);
   useEffect(() => {
     simRef.current = simOpen;
   }, [simOpen]);
@@ -198,6 +203,7 @@ export function MissionSelect() {
         const delta = e.key === 'ArrowDown' ? 1 : -1;
         const next = (selRef.current + delta + projects.length) % projects.length;
         setSelected(next);
+        sfxMove();
         gridRef.current
           ?.querySelectorAll('[role="option"]')
           [next]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -206,11 +212,11 @@ export function MissionSelect() {
       if (e.key === 'Enter') {
         const el = document.activeElement as HTMLElement | null;
         if (el && (el.tagName === 'A' || el.tagName === 'BUTTON')) return;
-        setSimOpen(true);
+        openSim();
       }
     };
     const onAction = (e: Event) => {
-      if ((e as CustomEvent).detail === 'fieldsim') setSimOpen(true);
+      if ((e as CustomEvent).detail === 'fieldsim') openSim();
     };
     window.addEventListener('keydown', onKey);
     window.addEventListener('bo2-action', onAction);
@@ -218,7 +224,7 @@ export function MissionSelect() {
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('bo2-action', onAction);
     };
-  }, []);
+  }, [openSim]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_420px] xl:grid-cols-[1fr_444px]">
@@ -242,8 +248,12 @@ export function MissionSelect() {
                 onClick={() => {
                   // First click selects the op; clicking the selected card
                   // again launches its field sim (the game's double-tap).
-                  if (isSel) setSimOpen(true);
-                  else setSelected(i);
+                  if (isSel) {
+                    openSim();
+                  } else {
+                    sfxMove();
+                    setSelected(i);
+                  }
                 }}
                 className={`tile confirm-punch block w-full text-left ${
                   isSel ? 'corner-tick' : ''
@@ -278,7 +288,7 @@ export function MissionSelect() {
                       {String(i + 1).padStart(2, '0')}/{projects.length}
                     </span>
                   </div>
-                  <Brief project={current} onSim={() => setSimOpen(true)} />
+                  <Brief project={current} onSim={openSim} />
                 </div>
               )}
             </div>
@@ -305,7 +315,7 @@ export function MissionSelect() {
               {String(selected + 1).padStart(2, '0')}/{projects.length}
             </span>
           </div>
-          <Brief project={current} onSim={() => setSimOpen(true)} />
+          <Brief project={current} onSim={openSim} />
         </div>
       </aside>
 
@@ -313,7 +323,10 @@ export function MissionSelect() {
         slug={current.slug}
         name={current.name}
         open={simOpen}
-        onClose={() => setSimOpen(false)}
+        onClose={() => {
+          sfxClose();
+          setSimOpen(false);
+        }}
       />
     </div>
   );

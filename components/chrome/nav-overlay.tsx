@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { navigation, lobbyItem } from '@/lib/data/navigation';
+import { sfxBack, sfxSelect } from '@/lib/sfx';
 
 /*
   Full-screen navigation overlay (the mobile ☰ MENU, per handoff: "☰ opens
@@ -36,7 +37,10 @@ export function NavOverlay({
     <dialog
       ref={ref}
       onClose={onClose}
-      onCancel={onClose}
+      onCancel={() => {
+        sfxBack();
+        onClose();
+      }}
       aria-label="Screen menu"
       className="m-0 h-dvh max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-scene-shadow/80"
     >
@@ -56,6 +60,7 @@ export function NavOverlay({
               data-current={current || undefined}
               className="menu-row tap-target flex items-center justify-between px-4 py-3 text-left font-display text-[21px] font-bold uppercase"
               onClick={() => {
+                sfxSelect();
                 onClose();
                 if (!current) router.push(item.href);
               }}
@@ -71,7 +76,10 @@ export function NavOverlay({
         })}
         <button
           type="button"
-          onClick={onClose}
+          onClick={() => {
+            sfxBack();
+            onClose();
+          }}
           className="mt-6 self-center font-label text-[13px] font-semibold tracking-[0.05em] text-ink-2"
         >
           <span className="keycap mr-2 text-ink">ESC</span>CLOSE

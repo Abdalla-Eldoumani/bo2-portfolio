@@ -155,8 +155,5 @@ export const projects = [
 // Helper functions for filtering projects.
 export const getFeaturedProjects = () => projects.filter((p) => p.featured);
 
-export const getProjectsByCategory = (category: Project['category']) =>
-  projects.filter((p) => p.category === category);
-
 export const getProjectByName = (name: string) =>
   projects.find((p) => p.name === name);
