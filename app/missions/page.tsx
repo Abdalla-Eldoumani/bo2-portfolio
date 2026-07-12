@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { ScreenShell } from '@/components/chrome/screen-shell';
 import { MissionSelect } from '@/components/missions/mission-select';
 import { projects } from '@/lib/data/projects';
@@ -19,7 +20,10 @@ export default function MissionsPage() {
         </span>
       }
     >
-      <MissionSelect />
+      {/* Suspense: MissionSelect reads ?op= via useSearchParams. */}
+      <Suspense fallback={null}>
+        <MissionSelect />
+      </Suspense>
     </ScreenShell>
   );
 }
