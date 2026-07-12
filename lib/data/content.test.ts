@@ -8,8 +8,8 @@ import { loadout } from '@/lib/data/skills';
 import { navigation } from '@/lib/data/navigation';
 
 describe('experience data', () => {
-  it('holds 4 roles and a single education entry', () => {
-    expect(experiences).toHaveLength(4);
+  it('holds 5 roles (2026-07 resume superset) and a single education entry', () => {
+    expect(experiences).toHaveLength(5);
     expect(education.degree).toBeTruthy();
   });
 
@@ -17,7 +17,12 @@ describe('experience data', () => {
     const current = getCurrentExperience();
     expect(current).toBeDefined();
     expect(current?.duration).toContain('Present');
-    expect(current?.role).toBe('Teaching Assistant');
+    expect(current?.role).toBe('Undergraduate Researcher');
+  });
+
+  it('orders the ladder newest-first with the current role on top', () => {
+    expect(experiences[0].duration).toContain('Present');
+    expect(experiences[experiences.length - 1].duration).toContain('2021');
   });
 });
 
@@ -43,16 +48,17 @@ describe('skills loadout', () => {
 });
 
 describe('navigation manifest', () => {
-  it('lists all 7 lobby sections', () => {
+  it('lists the 7 screen destinations (the lobby itself is separate)', () => {
     expect(navigation).toHaveLength(7);
+    expect(navigation[navigation.length - 1].id).toBe('about');
   });
 
-  it('gives every item a label, subtitle, and #-anchored href', () => {
+  it('gives every item a label, subtitle, and a route href', () => {
     for (const item of navigation) {
       expect(item.label.length).toBeGreaterThan(0);
       expect(item.subtitle.length).toBeGreaterThan(0);
-      expect(item.href.startsWith('#')).toBe(true);
-      expect(item.href).toBe(`#${item.id}`);
+      expect(item.href.startsWith('/')).toBe(true);
+      expect(item.href).toBe(`/${item.id}`);
     }
   });
 });

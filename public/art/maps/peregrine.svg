@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="225" viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice"><defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3d4a"/><stop offset="0.5" stop-color="#16212a"/><stop offset="1" stop-color="#0a0f13"/></linearGradient>
+<radialGradient id="warm" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffc98c" stop-opacity="0.85"/><stop offset="0.45" stop-color="#b96a1f" stop-opacity="0.35"/><stop offset="1" stop-color="#b96a1f" stop-opacity="0"/></radialGradient>
+<radialGradient id="cool" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#a9c1ce" stop-opacity="0.5"/><stop offset="1" stop-color="#a9c1ce" stop-opacity="0"/></radialGradient>
+<radialGradient id="vig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#05080b" stop-opacity="0.62"/></radialGradient>
+<filter id="b2"><feGaussianBlur stdDeviation="1.1"/></filter>
+<filter id="b4"><feGaussianBlur stdDeviation="4"/></filter>
+<filter id="b8" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="8"/></filter>
+<filter id="b14" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="14"/></filter>
+<filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0"/></filter>
+</defs>
+<rect width="400" height="225" fill="url(#sky)"/>
+<ellipse cx="300" cy="40" rx="180" ry="90" fill="url(#warm)" filter="url(#b8)"/>
+<ellipse cx="80" cy="180" rx="160" ry="80" fill="url(#cool)" opacity="0.4" filter="url(#b14)"/>
+<g filter="url(#b2)">
+<polygon points="0,168 55,120 90,150 140,96 190,142 240,110 280,150 340,104 400,148 400,225 0,225" fill="#0a0f13" opacity="0.95"/>
+<polygon points="0,190 70,150 130,178 200,140 260,172 330,142 400,176 400,225 0,225" fill="#0d141b" opacity="0.9"/>
+</g>
+<g stroke="#e07f19" stroke-width="1.4" fill="none" opacity="0.85" filter="url(#b2)">
+<polyline points="55,120 90,150 140,96 190,142 240,110"/>
+</g>
+<g stroke="#ff9c1e" stroke-width="1" fill="none" opacity="0.35">
+<path d="M20,205 h60 v-8 h34"/><path d="M140,214 h48 v-10 h70"/><path d="M282,208 h38 v-9 h60"/>
+<circle cx="114" cy="197" r="2" fill="#ff9c1e" stroke="none"/><circle cx="258" cy="204" r="2" fill="#ff9c1e" stroke="none"/>
+</g>
+<path d="M236,58 l46,14 -32,6 14,22 -40,-24 -18,10 8,-16 z" fill="#0a0f13" opacity="0.92" filter="url(#b2)"/>
+<path d="M236,58 l46,14 -32,6" fill="none" stroke="#ff9c1e" stroke-width="1.2" opacity="0.7" filter="url(#b2)"/>
+<circle cx="340" cy="180" r="5" fill="#ffc98c" opacity="0.5" filter="url(#b4)"/>
+<circle cx="60" cy="90" r="4" fill="#a9c1ce" opacity="0.4" filter="url(#b4)"/>
+<circle cx="180" cy="200" r="3" fill="#ff9c1e" opacity="0.45" filter="url(#b4)"/>
+<circle cx="390" cy="120" r="3" fill="#a9c1ce" opacity="0.35" filter="url(#b4)"/>
+<g opacity="0.05"><rect x="0" y="0" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="4" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="8" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="12" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="16" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="20" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="24" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="28" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="32" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="36" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="40" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="44" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="48" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="52" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="56" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="60" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="64" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="68" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="72" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="76" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="80" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="84" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="88" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="92" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="96" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="100" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="104" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="108" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="112" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="116" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="120" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="124" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="128" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="132" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="136" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="140" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="144" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="148" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="152" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="156" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="160" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="164" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="168" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="172" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="176" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="180" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="184" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="188" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="192" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="196" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="200" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="204" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="208" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="212" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="216" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="220" width="400" height="1" fill="#a9c1ce"/><rect x="0" y="224" width="400" height="1" fill="#a9c1ce"/></g>
+<rect width="400" height="225" filter="url(#grain)" opacity="0.55"/>
+<rect width="400" height="225" fill="url(#vig)"/>
+</svg>

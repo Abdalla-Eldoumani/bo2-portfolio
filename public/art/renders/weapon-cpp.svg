@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="170" viewBox="0 0 400 170" preserveAspectRatio="xMidYMid slice"><defs>
+<linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2830"/><stop offset="1" stop-color="#0d141b"/></linearGradient>
+<radialGradient id="w" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffc98c" stop-opacity="0.5"/><stop offset="1" stop-color="#ffc98c" stop-opacity="0"/></radialGradient>
+<filter id="b1"><feGaussianBlur stdDeviation="1"/></filter>
+<filter id="b6" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
+<filter id="gr" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/></filter>
+</defs>
+<rect width="400" height="170" fill="url(#g)"/>
+<ellipse cx="210" cy="70" rx="190" ry="70" fill="url(#w)" filter="url(#b6)"/>
+<g opacity="0.18" stroke="#51697a" stroke-width="0.7">
+<path d="M0,132 H400 M0,144 H400"/>
+<path d="M60,120 v40 M140,120 v40 M220,120 v40 M300,120 v40"/>
+</g>
+
+<!-- rifle silhouette: stock / receiver / mag / handguard / barrel -->
+<g>
+<polygon points="34,72 66,64 74,70 74,96 60,104 40,100 30,86" fill="#0a0f13"/>
+<rect x="74" y="62" width="118" height="34" fill="#0a0f13"/>
+<polygon points="112,96 146,96 138,132 116,132" fill="#0a0f13"/>
+<polygon points="150,96 168,96 164,112 152,112" fill="#0a0f13"/>
+<rect x="192" y="66" width="98" height="24" fill="#0e161d"/>
+<rect x="290" y="72" width="72" height="10" fill="#0a0f13"/>
+<rect x="362" y="70" width="14" height="14" fill="#0a0f13"/>
+<rect x="120" y="50" width="10" height="14" fill="#0a0f13"/>
+<rect x="206" y="52" width="44" height="10" fill="#0a0f13"/>
+<rect x="216" y="42" width="24" height="10" fill="#0e161d"/>
+</g>
+<!-- orange rim light along the top edge -->
+<g stroke="#e07f19" stroke-width="1.4" fill="none" opacity="0.9" filter="url(#b1)">
+<path d="M66,64 L74,62 H192 M192,66 H290 M290,72 H362"/>
+</g>
+<g stroke="#ff9c1e" stroke-width="1" opacity="0.8" filter="url(#b1)">
+<path d="M206,52 h44 M216,42 h24"/>
+</g>
+<!-- receiver detail: pins, port, rail notches -->
+<g fill="#2b3d4a">
+<circle cx="92" cy="80" r="3"/><circle cx="176" cy="80" r="3"/>
+<rect x="120" y="70" width="30" height="9"/>
+</g>
+<rect x="120" y="70" width="30" height="9" fill="#ff9c1e" opacity="0.35" filter="url(#b1)"/>
+<g fill="#51697a" opacity="0.7">
+<rect x="196" y="62" width="4" height="4"/><rect x="208" y="62" width="4" height="4"/><rect x="220" y="62" width="4" height="4"/><rect x="232" y="62" width="4" height="4"/><rect x="244" y="62" width="4" height="4"/><rect x="256" y="62" width="4" height="4"/><rect x="268" y="62" width="4" height="4"/>
+</g>
+<!-- muzzle glow -->
+<circle cx="378" cy="77" r="10" fill="#ffc98c" opacity="0.28" filter="url(#b6)"/>
+<!-- spec tags -->
+<g font-family="monospace" font-size="8" fill="#51697a" opacity="0.85">
+<text x="34" y="156">MODEL C/C++ · SYSTEMS PRIMARY</text>
+<text x="244" y="156" fill="#ff9c1e" opacity="0.9">ZERO-COST ABSTRACTIONS</text>
+</g>
+<g stroke="#51697a" stroke-width="0.6" opacity="0.5">
+<path d="M92,84 v22 h-20" fill="none"/><path d="M240,90 v16 h30" fill="none"/>
+</g>
+<rect width="400" height="170" filter="url(#gr)" opacity="0.5"/>
+<rect width="400" height="170" fill="none" stroke="#000" stroke-opacity="0.4"/>
+</svg>

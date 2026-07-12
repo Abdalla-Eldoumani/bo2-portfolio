@@ -1,10 +1,9 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site-config";
+import { navigation } from "@/lib/data/navigation";
 
-// SYS-04 sitemap: enumerates the two public routes (/ and /resume) from the
-// shared siteConfig.url origin — never a re-hardcoded literal. Evaluated at
-// build time (a file-convention route), so /sitemap.xml stays static. No
-// dynamic request API is read, so it does not dynamic-ize anything.
+// Sitemap: the lobby, the six screen routes (from the shared navigation
+// manifest — never re-hardcoded), and /resume. Evaluated at build time.
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
@@ -12,13 +11,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${siteConfig.url}/`,
       lastModified,
-      changeFrequency: "monthly",
+      changeFrequency: "monthly" as const,
       priority: 1,
     },
+    ...navigation.map((item) => ({
+      url: `${siteConfig.url}${item.href}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     {
       url: `${siteConfig.url}/resume`,
       lastModified,
-      changeFrequency: "monthly",
+      changeFrequency: "monthly" as const,
       priority: 0.8,
     },
   ];

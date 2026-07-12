@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810"><defs>
+<radialGradient id="warm" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFC98C" stop-opacity="0.5"></stop><stop offset="0.55" stop-color="#B96A1F" stop-opacity="0.16"></stop><stop offset="0.78" stop-color="#B96A1F" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="cool" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#A9C1CE" stop-opacity="0.34"></stop><stop offset="0.55" stop-color="#51697A" stop-opacity="0.14"></stop><stop offset="0.78" stop-color="#51697A" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="bounce" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#B96A1F" stop-opacity="0.28"></stop><stop offset="0.75" stop-color="#B96A1F" stop-opacity="0"></stop></radialGradient>
+<linearGradient id="shaft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC98C" stop-opacity="0.16"></stop><stop offset="0.82" stop-color="#FFC98C" stop-opacity="0"></stop></linearGradient>
+<filter id="b14" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="14"></feGaussianBlur></filter></defs>
+<ellipse cx="466" cy="90" rx="380" ry="310" fill="url(#warm)" filter="url(#b14)"></ellipse>
+<ellipse cx="1300" cy="320" rx="360" ry="230" fill="url(#cool)" filter="url(#b14)"></ellipse>
+<g filter="url(#b14)"><rect x="216" y="-60" width="130" height="560" fill="url(#shaft)" transform="skewX(-16)" transform-origin="281 -60"></rect><rect x="374" y="-60" width="70" height="480" fill="url(#shaft)" transform="skewX(-16)" transform-origin="409 -60"></rect></g>
+<ellipse cx="465" cy="810" rx="350" ry="60" fill="url(#bounce)" filter="url(#b14)"></ellipse>
+</svg>
