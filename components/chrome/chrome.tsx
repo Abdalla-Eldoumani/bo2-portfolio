@@ -39,6 +39,10 @@ export function Chrome() {
           target.isContentEditable);
       if (typing) return;
 
+      // An open <dialog> (nav overlay, field sim) owns the keyboard: ESC
+      // closes it natively and arrows are game input, never navigation.
+      if (document.querySelector('dialog[open]')) return;
+
       if (e.key === 'Escape') {
         // <dialog> closes itself; only handle screen-level back here.
         if (!menuOpen && pathname !== '/') router.push('/');
