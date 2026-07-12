@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { siteConfig } from '@/lib/site-config';
 
 /*
-  SECURE CHANNELS — options-style rows. Email is the pre-selected filled-bar
-  row (↵ TRANSMIT opens mailto); GitHub/LinkedIn are rest rows with
-  line-art glyph boxes. C copies the address and raises the ADDRESS COPIED
-  toast (2.5s hold, polite live region). All hints honest.
+  SECURE CHANNELS — options-style rows with a LIVE selection: ↑↓ moves the
+  filled bar (the game's options-row select), ↵ activates the selected
+  channel, C copies the address (with the ADDRESS COPIED toast). Mouse and
+  touch keep working: rows are real anchors, hover shows the strip. All
+  hints honest.
 */
 
 const CHANNELS = [
@@ -18,7 +19,7 @@ const CHANNELS = [
     value: siteConfig.email.toUpperCase(),
     href: `mailto:${siteConfig.email}`,
     action: '↵ TRANSMIT',
-    primary: true,
+    external: false,
   },
   {
     id: 'github',
@@ -27,7 +28,7 @@ const CHANNELS = [
     value: 'GITHUB.COM/ABDALLA-ELDOUMANI',
     href: siteConfig.github,
     action: '↵ OPEN',
-    primary: false,
+    external: true,
   },
   {
     id: 'linkedin',
@@ -36,12 +37,19 @@ const CHANNELS = [
     value: 'LINKEDIN.COM/IN/ABDALLAELDOUMANI',
     href: siteConfig.linkedin,
     action: '↵ OPEN',
-    primary: false,
+    external: true,
   },
 ];
 
 export function Channels() {
   const [copied, setCopied] = useState(false);
+  const [sel, setSel] = useState(0);
+  const refs = useRef<(HTMLAnchorElement | null)[]>([]);
+  // Enter reads the live selection without re-binding the listener.
+  const selRef = useRef(0);
+  useEffect(() => {
+    selRef.current = sel;
+  }, [sel]);
 
   const copy = async () => {
     try {
@@ -55,23 +63,49 @@ export function Channels() {
   };
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() !== 'c' || e.ctrlKey || e.metaKey || e.altKey)
-        return;
-      const target = e.target as HTMLElement | null;
-      if (
-        target &&
-        (target.tagName === 'INPUT' ||
-          target.tagName === 'TEXTAREA' ||
-          target.isContentEditable)
-      )
-        return;
-      if (window.getSelection()?.toString()) return; // don't hijack copy
-      void copy();
+    const typing = (t: EventTarget | null) => {
+      const el = t as HTMLElement | null;
+      return (
+        el &&
+        (el.tagName === 'INPUT' ||
+          el.tagName === 'TEXTAREA' ||
+          el.isContentEditable)
+      );
     };
+
+    const onKey = (e: KeyboardEvent) => {
+      if (typing(e.target)) return;
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSel((i) => {
+          const next =
+            e.key === 'ArrowDown'
+              ? (i + 1) % CHANNELS.length
+              : (i - 1 + CHANNELS.length) % CHANNELS.length;
+          return next;
+        });
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        // Only when focus is not already on a link/button (native wins).
+        const el = document.activeElement as HTMLElement | null;
+        if (el && (el.tagName === 'A' || el.tagName === 'BUTTON')) return;
+        refs.current[selRef.current]?.click();
+        return;
+      }
+
+      if (e.key.toLowerCase() === 'c' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (window.getSelection()?.toString()) return; // don't hijack copy
+        void copy();
+      }
+    };
+
     const onAction = (e: Event) => {
       if ((e as CustomEvent).detail === 'copy') void copy();
     };
+
     window.addEventListener('keydown', onKey);
     window.addEventListener('bo2-action', onAction);
     return () => {
@@ -86,16 +120,21 @@ export function Channels() {
         {CHANNELS.map((ch, i) => (
           <li key={ch.id} className="rise" style={{ '--i': i + 1 } as React.CSSProperties}>
             <a
+              ref={(el) => {
+                refs.current[i] = el;
+              }}
               href={ch.href}
-              target={ch.id === 'email' ? undefined : '_blank'}
-              rel={ch.id === 'email' ? undefined : 'noreferrer'}
-              data-current={ch.primary || undefined}
+              target={ch.external ? '_blank' : undefined}
+              rel={ch.external ? 'noreferrer' : undefined}
+              data-current={sel === i || undefined}
+              onMouseEnter={() => setSel(i)}
+              onFocus={() => setSel(i)}
               className="menu-row tap-target flex min-h-[56px] items-center gap-3.5 px-4 py-2.5"
             >
               <span
                 aria-hidden="true"
                 className={`flex h-9 w-9 shrink-0 items-center justify-center border-2 font-display text-[15px] font-bold ${
-                  ch.primary
+                  sel === i
                     ? 'border-on-orange/60 text-on-orange'
                     : 'border-current text-inherit'
                 }`}
@@ -108,7 +147,7 @@ export function Channels() {
                 </span>
                 <span
                   className={`block truncate font-mono text-[11px] tracking-[0.04em] ${
-                    ch.primary ? 'text-on-orange/80' : 'text-ink-3'
+                    sel === i ? 'text-on-orange/80' : 'text-ink-3'
                   }`}
                 >
                   {ch.value}
@@ -116,7 +155,7 @@ export function Channels() {
               </span>
               <span
                 className={`shrink-0 font-mono text-[10px] tracking-[0.08em] ${
-                  ch.primary ? 'text-on-orange/80' : 'text-ink-3'
+                  sel === i ? 'text-on-orange/80' : 'text-ink-3'
                 }`}
               >
                 {ch.action}
