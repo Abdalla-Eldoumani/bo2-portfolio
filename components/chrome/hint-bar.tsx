@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { navigation } from '@/lib/data/navigation';
+import { sfxBack, sfxMove, sfxOpen, sfxSelect } from '@/lib/sfx';
 
 /*
   Bottom hint bar — the BO2 button-prompt strip, and a real control surface:
@@ -88,19 +89,25 @@ export function HintBar({ onMenu }: { onMenu: () => void }) {
   const act = (action?: Hint['action']) => {
     switch (action) {
       case 'back':
-        if (pathname !== '/') router.push('/');
+        if (pathname !== '/') {
+          sfxBack();
+          router.push('/');
+        }
         return;
       case 'resume':
+        sfxSelect();
         router.push('/resume');
         return;
       case 'cycle': {
         const i = navigation.findIndex((n) => n.href === pathname);
         const next = navigation[(i + 1) % navigation.length];
+        sfxMove();
         router.push(next.href);
         return;
       }
       case 'select': {
         // Lobby: hand focus to the menu so ↑↓/↵ take over.
+        sfxMove();
         document
           .querySelector<HTMLAnchorElement>('a[data-row]')
           ?.focus();
@@ -114,6 +121,7 @@ export function HintBar({ onMenu }: { onMenu: () => void }) {
         );
         return;
       case 'print':
+        sfxSelect();
         window.print();
         return;
     }
@@ -166,7 +174,10 @@ export function HintBar({ onMenu }: { onMenu: () => void }) {
         {pathname !== '/' && renderChip(BACK, true)}
         <button
           type="button"
-          onClick={onMenu}
+          onClick={() => {
+            sfxOpen();
+            onMenu();
+          }}
           className="tap-target confirm-punch flex items-center gap-2"
           aria-label="Open menu"
           aria-haspopup="dialog"
