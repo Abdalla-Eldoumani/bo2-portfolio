@@ -29,6 +29,7 @@ export function LobbyMenu() {
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      if (document.querySelector('dialog[open]')) return;
       const items = rows();
       if (items.length === 0) return;
       e.preventDefault();
