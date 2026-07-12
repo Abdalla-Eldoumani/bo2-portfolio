@@ -238,7 +238,13 @@ export function MissionSelect() {
                 role="option"
                 aria-selected={isSel}
                 data-selected={isSel || undefined}
-                onClick={() => setSelected(i)}
+                title={isSel ? 'Run field sim' : `Select ${p.name}`}
+                onClick={() => {
+                  // First click selects the op; clicking the selected card
+                  // again launches its field sim (the game's double-tap).
+                  if (isSel) setSimOpen(true);
+                  else setSelected(i);
+                }}
                 className={`tile confirm-punch block w-full text-left ${
                   isSel ? 'corner-tick' : ''
                 }`}

@@ -599,16 +599,18 @@ body {
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
-   INTEL ticker marquee (lobby): the line drifts right-to-left and loops.
-   Two copies of the content scroll -50%; hover pauses (WCAG 2.2.2 pause);
-   reduced motion stops the drift and shows the line statically.
+   INTEL ticker marquee (lobby): ONE copy of the line, written once, enters
+   from the right edge, drifts left until it has fully left the screen, then
+   loops. padding-left:100% starts the track fully off-screen right;
+   translateX(-100%) ends it fully off-screen left. Hover pauses (WCAG
+   2.2.2); reduced motion stops the drift and shows a static line.
    ─────────────────────────────────────────────────────────────────────────── */
 .ticker-track {
-  display: inline-flex;
-  gap: 48px;
-  padding-right: 48px;
+  display: inline-block;
+  width: max-content;
+  padding-left: 100%;
   white-space: nowrap;
-  animation: ticker-scroll 42s linear infinite;
+  animation: ticker-scroll 38s linear infinite;
   will-change: transform;
 }
 
@@ -622,12 +624,13 @@ body {
     transform: translateX(0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translateX(-100%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ticker-track {
     animation: none !important;
+    padding-left: 130px;
   }
 }

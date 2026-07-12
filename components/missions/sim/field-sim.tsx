@@ -101,20 +101,26 @@ export function FieldSim({
     setPhase('running');
   }, [slug, setPhase]);
 
-  // Input listeners live on WINDOW while the sim is open: showModal() can
-  // leave focus on <body>, so dialog-scoped listeners would miss keys. The
-  // global chrome and screen handlers already stand down when any dialog is
-  // open, so there is no double-handling.
+  // Input listeners live on WINDOW in the CAPTURE phase while the sim is
+  // open: showModal() can leave focus on <body>, and capture guarantees the
+  // sim sees every key FIRST and stops game keys dead — nothing outside the
+  // window (screen cycling, menu selection, lobby escape) ever reacts to
+  // controls meant for the game. Escape is deliberately left untouched so
+  // the native dialog close still works (one ESC = leave the sim, and only
+  // the sim).
   useEffect(() => {
     if (!open) return;
     const d = dialogRef.current;
     if (!d) return;
 
+    const GAME_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Enter'];
+
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') return; // native close
-      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Enter'].includes(e.key)) {
+      if (e.key === 'Escape') return; // native close, contained to the dialog
+      if (GAME_KEYS.includes(e.key)) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
       }
       if (e.key === ' ') {
         heldRef.current = true;
@@ -152,13 +158,13 @@ export function FieldSim({
       heldRef.current = false;
     };
 
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('keydown', onKeyDown, { capture: true });
+    window.addEventListener('keyup', onKeyUp, { capture: true });
     d.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointerup', onPointerUp);
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('keydown', onKeyDown, { capture: true });
+      window.removeEventListener('keyup', onKeyUp, { capture: true });
       d.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointerup', onPointerUp);
     };

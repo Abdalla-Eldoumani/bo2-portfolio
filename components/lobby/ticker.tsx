@@ -36,10 +36,10 @@ export async function Ticker() {
           'linear-gradient(180deg, rgba(8,12,15,0.55), rgba(8,12,15,0.75))',
       }}
     >
-      {/* The track scrolls the full width; the INTEL plate masks it on the
-          left with a solid ground so text never leaks past the label. */}
-      <div className="ticker-track pl-[110px] sm:pl-[130px]" aria-label={line}>
-        <span aria-hidden="true">{line}</span>
+      {/* One copy of the line: starts fully off-screen right (padding-left
+          100% in .ticker-track), drifts across, exits left, loops. The INTEL
+          plate masks the left edge with a solid ground. */}
+      <div className="ticker-track" aria-label={line}>
         <span aria-hidden="true">{line}</span>
       </div>
       <span className="absolute inset-y-0 left-0 z-10 flex items-center bg-[#0a0f13] pl-4 pr-3 text-orange-core sm:pl-6 lg:pl-9">
