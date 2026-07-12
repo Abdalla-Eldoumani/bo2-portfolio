@@ -2,10 +2,11 @@ import { getGitHubStats } from '@/lib/api/github';
 import { education } from '@/lib/data/experience';
 
 /*
-  INTEL ticker — the static news line above the hint bar (lobby only).
-  Leads with the freshest real GitHub event (live fetch, committed snapshot
-  fallback), then committed CV facts. Static by approved default: no marquee,
-  no loop. Server component.
+  INTEL ticker — the news line above the hint bar (lobby only). Leads with
+  the freshest real GitHub event (live fetch, committed snapshot fallback),
+  then committed CV facts. The line drifts across the screen and loops
+  (marquee: two copies scrolling -50%); hovering pauses it and reduced
+  motion renders it static. Server component — the drift is pure CSS.
 */
 
 export async function Ticker() {
@@ -21,19 +22,29 @@ export async function Ticker() {
     "DEAN'S LIST 2023–24 + 2024–25",
     'HEAD TA, CPSC 355',
     `${education.degree.toUpperCase()} + PHILOSOPHY MINOR, UCALGARY`,
+    'TWO PURE RESEARCH AWARDS',
+    '8 OPS ON ROTATION',
   ];
+  const line = facts.join('  ·  ');
 
   return (
     <div
       data-print-hide
-      className="fixed inset-x-0 bottom-[38px] z-30 flex items-center gap-3 overflow-hidden whitespace-nowrap border-t border-white/[0.08] px-4 py-2 font-mono text-[10px] text-ink-2 sm:gap-4 sm:px-6 sm:text-[11.5px] lg:bottom-[42px] lg:px-9"
+      className="ticker-viewport fixed inset-x-0 bottom-[38px] z-30 overflow-hidden border-t border-white/[0.08] py-2 font-mono text-[10px] text-ink-2 sm:text-[11.5px] lg:bottom-[42px]"
       style={{
         background:
           'linear-gradient(180deg, rgba(8,12,15,0.55), rgba(8,12,15,0.75))',
       }}
     >
-      <span className="shrink-0 text-orange-core">▸ INTEL</span>
-      <span className="truncate">{facts.join(' · ')}</span>
+      {/* The track scrolls the full width; the INTEL plate masks it on the
+          left with a solid ground so text never leaks past the label. */}
+      <div className="ticker-track pl-[110px] sm:pl-[130px]" aria-label={line}>
+        <span aria-hidden="true">{line}</span>
+        <span aria-hidden="true">{line}</span>
+      </div>
+      <span className="absolute inset-y-0 left-0 z-10 flex items-center bg-[#0a0f13] pl-4 pr-3 text-orange-core sm:pl-6 lg:pl-9">
+        ▸ INTEL
+      </span>
     </div>
   );
 }
