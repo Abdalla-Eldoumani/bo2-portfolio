@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ScreenShell } from '@/components/chrome/screen-shell';
 import { RankEntry } from '@/components/record/rank-entry';
+import { CareerPanel } from '@/components/record/career-panel';
 import { experiences } from '@/lib/data/experience';
 
 export const metadata: Metadata = {
@@ -148,6 +149,8 @@ export default function RecordPage() {
               </p>
             </div>
           </div>
+
+          <CareerPanel />
         </aside>
       </div>
     </ScreenShell>
