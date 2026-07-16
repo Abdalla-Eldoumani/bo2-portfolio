@@ -6,6 +6,9 @@ import { useSearchParams } from 'next/navigation';
 import { projects } from '@/lib/data/projects';
 import { FieldSim } from '@/components/missions/sim/field-sim';
 import { sfxClose, sfxMove, sfxOpen } from '@/lib/sfx';
+import { CAREER_CHANGE_EVENT, loadCareer } from '@/lib/career';
+import { BAND_RANKS, challengesForSim } from '@/lib/data/career';
+import type { CareerState } from '@/lib/types/career';
 
 /*
   Mission Select — pre-game lobby map-select. Map cards in a 3-col grid
@@ -71,12 +74,18 @@ function MapArt({
 function Brief({
   project,
   onSim,
+  career,
 }: {
   project: (typeof projects)[number];
   onSim: () => void;
+  career: CareerState | null;
 }) {
   const live = project.live && project.live !== '#' ? project.live : null;
   const source = project.github && project.github !== '#' ? project.github : null;
+  // The meta-layer whisper: the closest unearned challenge for this op.
+  const nextChallenge = career
+    ? challengesForSim(project.slug).find((c) => !career.challenges[c.id])
+    : undefined;
   const chunks = (project.metrics ?? '')
     .split(/\s*·\s*|,\s+/)
     .map((s) => s.trim())
@@ -96,6 +105,13 @@ function Brief({
         <p className="mt-3 text-[14px] leading-relaxed text-ink-2">
           {project.description}
         </p>
+
+        {nextChallenge && (
+          <p className="mt-2 font-mono text-[10px] tracking-[0.08em] text-ink-3">
+            NEXT CHALLENGE: {nextChallenge.name}{' '}
+            {nextChallenge.tier.toUpperCase()} — {nextChallenge.detail}
+          </p>
+        )}
 
         {chunks.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
@@ -173,6 +189,7 @@ export function MissionSelect() {
   );
   const [selected, setSelected] = useState(initial);
   const [simOpen, setSimOpen] = useState(false);
+  const [career, setCareer] = useState<CareerState | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const selRef = useRef(initial);
   const simRef = useRef(false);
@@ -185,9 +202,26 @@ export function MissionSelect() {
     sfxOpen();
     setSimOpen(true);
   }, []);
+  const nextSim = useCallback(() => {
+    sfxMove();
+    setSelected((s) => (s + 1) % projects.length);
+  }, []);
   useEffect(() => {
     simRef.current = simOpen;
   }, [simOpen]);
+
+  // Career whispers (best-rank badges, next challenge) render after mount
+  // from localStorage and follow every round via the store's event.
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setCareer(loadCareer()));
+    const onChange = (e: Event) =>
+      setCareer((e as CustomEvent<CareerState>).detail);
+    window.addEventListener(CAREER_CHANGE_EVENT, onChange);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener(CAREER_CHANGE_EVENT, onChange);
+    };
+  }, []);
 
   // ↑↓ move the op selection; ↵ runs the selected op's field sim. The open
   // sim dialog owns its own keys (its handler stops propagation).
@@ -272,9 +306,15 @@ export function MissionSelect() {
                     <span className="font-mono text-[9px] tracking-[0.12em] text-teal">
                       {(p.category ?? 'general').toUpperCase()}
                     </span>
-                    <span className="truncate font-mono text-[9px] text-ink-3">
-                      {p.metrics?.toUpperCase()}
-                    </span>
+                    {career && (career.bestRanks[p.slug] ?? 0) > 0 ? (
+                      <span className="shrink-0 font-mono text-[9px] tracking-[0.08em] text-orange-core">
+                        BEST: {BAND_RANKS[career.bestRanks[p.slug]]}
+                      </span>
+                    ) : (
+                      <span className="truncate font-mono text-[9px] text-ink-3">
+                        {p.metrics?.toUpperCase()}
+                      </span>
+                    )}
                   </div>
                 </div>
               </button>
@@ -288,7 +328,7 @@ export function MissionSelect() {
                       {String(i + 1).padStart(2, '0')}/{projects.length}
                     </span>
                   </div>
-                  <Brief project={current} onSim={openSim} />
+                  <Brief project={current} onSim={openSim} career={career} />
                 </div>
               )}
             </div>
@@ -315,7 +355,7 @@ export function MissionSelect() {
               {String(selected + 1).padStart(2, '0')}/{projects.length}
             </span>
           </div>
-          <Brief project={current} onSim={openSim} />
+          <Brief project={current} onSim={openSim} career={career} />
         </div>
       </aside>
 
@@ -327,6 +367,7 @@ export function MissionSelect() {
           sfxClose();
           setSimOpen(false);
         }}
+        onNext={nextSim}
       />
     </div>
   );
