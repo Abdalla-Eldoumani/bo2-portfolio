@@ -37,22 +37,10 @@ import {
   (user-initiated motion, so reduced-motion visitors opt in by playing).
 */
 
-const ROUND_S = 20;
-
 type Phase = 'ready' | 'running' | 'debrief';
 
 function rank(slug: string, score: number): string {
-  const bands: Record<string, [number, number]> = {
-    peregrine: [8, 14],
-    aeos: [8, 14],
-    'aarch64-playground': [10, 18],
-    qala: [10, 16],
-    'rust-http-server': [30, 55],
-    dossier: [8, 14],
-    dust: [3, 6],
-    'budget-buddy': [10, 30],
-  };
-  const [good, elite] = bands[slug] ?? [10, 20];
+  const [good, elite] = SIM_META[slug]?.bands ?? [10, 20];
   if (score >= elite) return 'RANK: PRESTIGE';
   if (score >= good) return 'RANK: VETERAN';
   if (score > 0) return 'RANK: RECRUIT';
@@ -144,8 +132,9 @@ export function FieldSim({
   }, [open, slug, setPhase]);
 
   const start = useCallback(() => {
-    fxRef.current = createFx(() => stillRef.current);
-    gameRef.current = createGame(slug);
+    const fx = createFx(() => stillRef.current);
+    fxRef.current = fx;
+    gameRef.current = createGame(slug, fx);
     timeRef.current = 0;
     scoreRef.current = 0;
     tallyRef.current = {};
@@ -289,7 +278,7 @@ export function FieldSim({
           scoreRef.current = sNow;
         }
 
-        if (timeRef.current >= ROUND_S) {
+        if (timeRef.current >= (SIM_META[slug]?.roundS ?? 20)) {
           const score = gameRef.current.score();
           setFinalScore(score);
           try {
@@ -326,7 +315,7 @@ export function FieldSim({
 
       // HUD overlay on canvas (timer)
       if (phaseRef.current === 'running' && gameRef.current) {
-        const remain = Math.max(0, ROUND_S - timeRef.current);
+        const remain = Math.max(0, (SIM_META[slug]?.roundS ?? 20) - timeRef.current);
         ctx.font = 'bold 22px Agdasima, sans-serif';
         ctx.fillStyle = remain < 5 ? '#b03a30' : '#eef3f5';
         ctx.fillText(`0:${String(Math.ceil(remain)).padStart(2, '0')}`, SIM_W - 64, 30);
@@ -410,7 +399,9 @@ export function FieldSim({
                 >
                   Start Sim ▸
                 </button>
-                <p className="font-mono text-[10px] text-ink-3">20 SECONDS ON THE CLOCK</p>
+                <p className="font-mono text-[10px] text-ink-3">
+                  {meta.roundS} SECONDS ON THE CLOCK
+                </p>
               </>
             ) : (
               <>
