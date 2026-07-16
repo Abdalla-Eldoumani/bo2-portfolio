@@ -193,6 +193,25 @@ export function sfxMilestone() {
   tone(1040, 1040, 0.09, 'square', 0.04, 0.12);
 }
 
+/** Medal earned — short bright fanfare over a low thump. */
+export function sfxMedal() {
+  if (!on()) return;
+  noiseBurst(0.09, 900, 0.03);
+  tone(880, 880, 0.07, 'triangle', 0.05);
+  tone(1175, 1175, 0.07, 'triangle', 0.048, 0.07);
+  tone(1760, 1760, 0.11, 'triangle', 0.045, 0.14);
+}
+
+/** Career rank up — the full promotion beat. */
+export function sfxRankUp() {
+  if (!on()) return;
+  tone(392, 392, 0.09, 'square', 0.05);
+  tone(523, 523, 0.09, 'square', 0.05, 0.09);
+  tone(659, 659, 0.09, 'square', 0.05, 0.18);
+  tone(784, 784, 0.16, 'square', 0.055, 0.27);
+  noiseBurst(0.14, 1600, 0.035, 0.27);
+}
+
 export function sfxEnabled(): boolean {
   return on();
 }
