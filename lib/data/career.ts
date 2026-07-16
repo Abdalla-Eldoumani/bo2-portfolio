@@ -44,6 +44,12 @@ export const MISTAKES: Record<string, (t: RoundTallies) => number> = {
   dossier: (t) => (t.leaks ?? 0) + (t.decoysHit ?? 0),
   dust: (t) => ((t.artifacts ?? 0) > 0 ? 0 : 1),
   'budget-buddy': (t) => ((t.pl ?? 0) > 0 ? 0 : 1),
+  lattice: (t) => t.conflicts ?? 0,
+  whittle: (t) => (t.wrongKills ?? 0) + (t.bloat ?? 0),
+  credence: (t) => (t.ticks ?? 0) - (t.hits ?? 0),
+  'regex-fsm': (t) => t.rejects ?? 0,
+  qalam: (t) => t.wipes ?? 0,
+  'cloud-practitioner-prep': (t) => (t.judged ?? 0) - (t.correct ?? 0),
 };
 
 const streak = (t: RoundTallies) => t.bestStreak ?? t.bestChain ?? 0;
@@ -132,6 +138,48 @@ export const MEDALS: readonly MedalDef[] = [
     description: 'Book two clean exits and finish green.',
     check: ({ stats }) => (stats.cleanExits ?? 0) >= 2 && (stats.pl ?? 0) > 0,
   },
+  {
+    id: 'fixpoint',
+    name: 'FIXPOINT',
+    sim: 'lattice',
+    description: 'Solve two grids without a single conflict.',
+    check: ({ stats }) => (stats.cleanGrids ?? 0) >= 2,
+  },
+  {
+    id: 'obs-eq',
+    name: 'OBSERVATIONAL EQUIVALENCE',
+    sim: 'whittle',
+    description: 'Merge 3 duplicate candidates in one round.',
+    check: ({ stats }) => (stats.merges ?? 0) >= 3,
+  },
+  {
+    id: 'tight-posterior',
+    name: 'TIGHT POSTERIOR',
+    sim: 'credence',
+    description: 'Land 4 sharp-band hits in one round.',
+    check: ({ stats }) => (stats.sharpHits ?? 0) >= 4,
+  },
+  {
+    id: 'lambda-closure',
+    name: 'λ-CLOSURE',
+    sim: 'regex-fsm',
+    description: 'Thread 4 λ-moves in one round.',
+    check: ({ stats }) => (stats.lambdaMoves ?? 0) >= 4,
+  },
+  {
+    id: 'golden-frame',
+    name: 'GOLDEN FRAME',
+    sim: 'qalam',
+    description: 'Lock 4 regions with zero repaints.',
+    check: ({ stats }) => (stats.regions ?? 0) >= 4 && (stats.wipes ?? 0) === 0,
+  },
+  {
+    id: 'ready-signal',
+    name: 'READY SIGNAL',
+    sim: 'cloud-practitioner-prep',
+    description: 'Master all four exam domains in one round.',
+    check: ({ stats }) => (stats.readySignal ?? 0) >= 1,
+  },
 ] satisfies readonly MedalDef[];
 
 const tiers = (
@@ -160,6 +208,12 @@ export const CHALLENGES: readonly ChallengeDef[] = [
   ...tiers('dossier', 'CHAIN OF CUSTODY', 'cleanPages', (n) => `Finish ${n} ${n === 1 ? 'page' : 'pages'} with zero leaks in one run.`, [1, 2, 3]),
   ...tiers('dust', 'EXCAVATION', 'artifacts', (n) => `Recover ${n} artifacts in one dig.`, [3, 5, 7]),
   ...tiers('budget-buddy', 'THE BOOK', 'pl', (n) => `Close the round $${n} or better in profit.`, [10, 25, 40]),
+  ...tiers('lattice', 'PROPAGATION', 'eliminations', (n) => `Eliminate ${n} candidate values in one round.`, [16, 24, 34]),
+  ...tiers('whittle', 'SEARCH PRESSURE', 'pruned', (n) => `Prune ${n} contradicting candidates in one round.`, [8, 14, 20]),
+  ...tiers('credence', 'CALIBRATION', 'hits', (n) => `Land ${n} calibrated ticks in one round.`, [6, 9, 12]),
+  ...tiers('regex-fsm', 'RUN LENGTH', 'transitions', (n) => `Take ${n} transitions in one round.`, [14, 24, 34]),
+  ...tiers('qalam', 'FRAME BUDGET', 'regions', (n) => `Lock ${n} regions in one round.`, [3, 5, 7]),
+  ...tiers('cloud-practitioner-prep', 'MOCK EXAM', 'correct', (n) => `Judge ${n} statements correctly in one round.`, [10, 16, 22]),
 ] satisfies readonly ChallengeDef[];
 
 /** Per-sim band-rank labels, indexed by bandRank() in lib/career.ts. */

@@ -87,7 +87,7 @@ describe('recordRound', () => {
   it('summarizes totals for the record panel', () => {
     const totals = careerTotals(loadCareer());
     expect(totals.rank.level).toBeGreaterThanOrEqual(1);
-    expect(totals.challengeTotal).toBe(24);
+    expect(totals.challengeTotal).toBe(42);
     expect(totals.medalCount).toBeGreaterThan(0);
   });
 });
