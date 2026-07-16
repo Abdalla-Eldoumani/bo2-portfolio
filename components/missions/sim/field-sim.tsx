@@ -7,6 +7,7 @@ import {
   SIM_W,
   SIM_H,
   type Game,
+  type RoundStats,
   type SimInput,
 } from '@/components/missions/sim/games';
 import {
@@ -21,12 +22,17 @@ import {
   sfxComboBreak,
   sfxEnd,
   sfxHazard,
+  sfxMedal,
   sfxMilestone,
   sfxNear,
   sfxPerfect,
+  sfxRankUp,
   sfxScore,
   sfxSelect,
 } from '@/lib/sfx';
+import { enterPrestige, recordRound, RANK_CAP_XP } from '@/lib/career';
+import { RANKS } from '@/lib/data/career';
+import type { RoundReport } from '@/lib/types/career';
 
 /*
   FIELD SIM harness — the combat-training modal. Owns the 20-second clock,
@@ -52,11 +58,14 @@ export function FieldSim({
   name,
   open,
   onClose,
+  onNext,
 }: {
   slug: string;
   name: string;
   open: boolean;
   onClose: () => void;
+  /** Cycle to the next op's sim without leaving the dialog. */
+  onNext?: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -65,6 +74,15 @@ export function FieldSim({
   const [phase, setPhaseState] = useState<Phase>('ready');
   const [finalScore, setFinalScore] = useState(0);
   const [best, setBest] = useState(0);
+  const [report, setReport] = useState<RoundReport | null>(null);
+  const [roundStats, setRoundStats] = useState<RoundStats | null>(null);
+  const [shownScore, setShownScore] = useState(0);
+  const [xpAnim, setXpAnim] = useState(false);
+  const [prestiged, setPrestiged] = useState(false);
+  const onNextRef = useRef(onNext);
+  useEffect(() => {
+    onNextRef.current = onNext;
+  }, [onNext]);
   const timeRef = useRef(0);
   const keysRef = useRef<string[]>([]);
   const heldRef = useRef(false);
@@ -107,6 +125,28 @@ export function FieldSim({
     noiseRef.current = tile;
   }, []);
 
+  // Next Sim keeps the dialog open while the slug changes: reset to the
+  // new op's ready screen. Deferred a frame (no sync setState in effects).
+  useEffect(() => {
+    const d = dialogRef.current;
+    if (!d?.open) return;
+    const raf = requestAnimationFrame(() => {
+      gameRef.current = null;
+      fxRef.current = null;
+      timeRef.current = 0;
+      setReport(null);
+      setRoundStats(null);
+      setPrestiged(false);
+      setPhase('ready');
+      try {
+        setBest(Number(sessionStorage.getItem(`sim-${slug}`) ?? 0));
+      } catch {
+        setBest(0);
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [slug, setPhase]);
+
   // dialog open/close sync
   useEffect(() => {
     const d = dialogRef.current;
@@ -120,6 +160,9 @@ export function FieldSim({
       // Deferred: state writes happen outside the effect body proper.
       raf = requestAnimationFrame(() => {
         setPhase('ready');
+        setReport(null);
+        setRoundStats(null);
+        setPrestiged(false);
         try {
           setBest(Number(sessionStorage.getItem(`sim-${slug}`) ?? 0));
         } catch {
@@ -172,6 +215,13 @@ export function FieldSim({
           if (phaseRef.current === 'ready') start();
           else if (phaseRef.current === 'debrief') start();
         }
+        // N from the debrief chains into the next op's sim.
+        if (
+          phaseRef.current === 'debrief' &&
+          (e.key === 'n' || e.key === 'N')
+        ) {
+          onNextRef.current?.();
+        }
         return;
       }
       if (!e.repeat) keysRef.current.push(e.key);
@@ -210,6 +260,32 @@ export function FieldSim({
       window.removeEventListener('pointerup', onPointerUp);
     };
   }, [open, start]);
+
+  // Debrief theater: count the score up and fill the XP bar a frame in.
+  // Reduced motion lands both instantly.
+  useEffect(() => {
+    if (phase !== 'debrief') return;
+    if (stillRef.current) {
+      setShownScore(finalScore);
+      setXpAnim(true);
+      return;
+    }
+    setShownScore(0);
+    setXpAnim(false);
+    const t0 = performance.now();
+    let raf = 0;
+    const step = (now: number) => {
+      const k = Math.min(1, (now - t0) / 800);
+      setShownScore(Math.round(finalScore * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    const raf2 = requestAnimationFrame(() => setXpAnim(true));
+    return () => {
+      cancelAnimationFrame(raf);
+      cancelAnimationFrame(raf2);
+    };
+  }, [phase, finalScore]);
 
   // game loop
   useEffect(() => {
@@ -292,8 +368,25 @@ export function FieldSim({
           } catch {
             setBest((b) => Math.max(b, score));
           }
+          // Fold the round into the career — the meta-layer's single
+          // storage write happens here, at round end.
+          const stats = gameRef.current.onRoundEnd?.() ?? {
+            display: [],
+            tallies: {},
+          };
+          const rep = recordRound(
+            slug,
+            score,
+            SIM_META[slug]?.bands ?? [10, 20],
+            stats.tallies,
+            tallyRef.current,
+          );
+          setRoundStats(stats);
+          setReport(rep);
           setPhase('debrief');
           sfxEnd();
+          if (rep.rankedUp) sfxRankUp();
+          else if (rep.newMedals.length > 0) sfxMedal();
         }
       }
 
@@ -360,6 +453,18 @@ export function FieldSim({
 
   if (!meta) return null;
 
+  // XP bar window: the stretch of ladder the current rank occupies.
+  const nextRank = report
+    ? RANKS.find((r) => r.level === report.rankAfter.level + 1)
+    : undefined;
+  const win0 = report ? report.rankAfter.xp : 0;
+  const win1 = nextRank ? nextRank.xp : RANK_CAP_XP;
+  const xpFrac = (xp: number) =>
+    win1 > win0 ? Math.min(1, Math.max(0, (xp - win0) / (win1 - win0))) : 1;
+  const xpPct = report
+    ? Math.round(xpFrac(xpAnim ? report.xpAfter : Math.max(win0, report.xpBefore)) * 100)
+    : 0;
+
   return (
     <dialog
       ref={dialogRef}
@@ -382,7 +487,11 @@ export function FieldSim({
         />
 
         {phase !== 'running' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-scene-shadow/80 px-8 text-center">
+          <div
+            className={`absolute inset-0 flex flex-col items-center justify-center ${
+              phase === 'debrief' ? 'gap-1.5' : 'gap-3'
+            } bg-scene-shadow/80 px-8 text-center`}
+          >
             {phase === 'ready' ? (
               <>
                 <p className="max-w-[46ch] text-[14px] leading-relaxed text-ink-2">
@@ -405,16 +514,121 @@ export function FieldSim({
               </>
             ) : (
               <>
-                <p className="font-mono text-[11px] tracking-[0.16em] text-ink-3">
+                {report?.rankedUp && (
+                  <div aria-hidden="true" className="promo-flash" />
+                )}
+                <p className="font-mono text-[10px] tracking-[0.16em] text-ink-3">
                   SIM COMPLETE
                 </p>
-                <p className="font-display text-[44px] font-bold leading-none text-orange-core">
-                  {finalScore}
+                <p className="font-display text-[38px] font-bold leading-none text-orange-core">
+                  {shownScore}
                 </p>
-                <p className="font-mono text-[11px] tracking-[0.1em] text-ink-2">
+                <p className="font-mono text-[10px] tracking-[0.08em] text-ink-2">
                   {rank(slug, finalScore)} · SESSION BEST {best}
+                  {report ? ` · ALL-TIME ${report.allTimeBest}` : ''}
+                  {report?.isNewBest ? ' · NEW BEST' : ''}
                 </p>
-                <div className="mt-2 flex gap-2.5">
+
+                {roundStats && roundStats.display.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-0.5">
+                    {roundStats.display.map((d) => (
+                      <span
+                        key={d.label}
+                        className="font-mono text-[9px] tracking-[0.04em] text-ink-3"
+                      >
+                        {d.label} <span className="text-ink-menu">{d.value}</span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {report && report.newMedals.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-1.5">
+                    {report.newMedals.map((m) => (
+                      <span
+                        key={m.id}
+                        title={m.description}
+                        className="border border-orange-frame px-2 py-0.5 font-label text-[10px] font-semibold tracking-[0.08em] text-orange-hot"
+                      >
+                        ◈ {m.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {report && (
+                  <div className="w-[min(400px,86%)]">
+                    <div className="mb-1 flex items-center justify-between font-mono text-[9px] tracking-[0.06em]">
+                      <span className="flex items-center gap-1.5 text-ink-2">
+                        <img
+                          src={report.rankAfter.emblem}
+                          alt=""
+                          className="h-4 w-4"
+                        />
+                        {report.rankAfter.name}
+                        {report.prestige > 0 && (
+                          <span className="text-gold">P{report.prestige}</span>
+                        )}
+                      </span>
+                      <span className="text-orange-core">
+                        +{report.xpGained} XP
+                      </span>
+                      <span className="text-ink-3">
+                        {nextRank ? nextRank.name : 'CAP'}
+                      </span>
+                    </div>
+                    <div className="meter-track h-1.5 w-full">
+                      <div
+                        className="ease-tac h-full w-full origin-left bg-orange-fill transition-transform duration-[800ms]"
+                        style={{ transform: `scaleX(${xpPct / 100})` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {report?.rankedUp && (
+                  <p className="font-display text-[19px] font-bold uppercase leading-none text-orange-hot">
+                    Promoted — {report.rankAfter.name}
+                  </p>
+                )}
+
+                {report && report.newChallenges.length > 0 && (
+                  <p className="font-mono text-[9px] tracking-[0.06em] text-green">
+                    {report.newChallenges
+                      .map((c) => `${c.name} ${c.tier.toUpperCase()} COMPLETE`)
+                      .join(' · ')}
+                  </p>
+                )}
+                {report?.nextChallenge && (
+                  <p className="max-w-[54ch] font-mono text-[9px] tracking-[0.04em] text-ink-3">
+                    NEXT: {report.nextChallenge.def.name}{' '}
+                    {report.nextChallenge.def.tier.toUpperCase()} —{' '}
+                    {report.nextChallenge.def.detail} (
+                    {report.nextChallenge.progress}/
+                    {report.nextChallenge.def.target})
+                  </p>
+                )}
+
+                {report?.atCap && !prestiged && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      enterPrestige();
+                      setPrestiged(true);
+                      sfxRankUp();
+                    }}
+                    className="confirm-punch border border-gold px-4 py-1 font-display text-[15px] font-bold uppercase text-gold"
+                  >
+                    Enter Prestige {report.prestige + 1}
+                  </button>
+                )}
+                {prestiged && (
+                  <p className="font-display text-[16px] font-bold uppercase text-gold">
+                    Prestige earned — ladder reset
+                  </p>
+                )}
+
+                <div className="mt-1 flex gap-2.5">
                   <button
                     type="button"
                     onClick={start}
@@ -422,6 +636,15 @@ export function FieldSim({
                   >
                     Run It Back
                   </button>
+                  {onNext && (
+                    <button
+                      type="button"
+                      onClick={() => onNextRef.current?.()}
+                      className="confirm-punch border border-orange-frame px-5 py-1.5 font-display text-[17px] font-bold uppercase text-orange-core hover:bg-orange-fill hover:text-on-orange"
+                    >
+                      Next Sim
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => dialogRef.current?.close()}
@@ -430,6 +653,9 @@ export function FieldSim({
                     Exit
                   </button>
                 </div>
+                <p className="font-mono text-[9px] tracking-[0.08em] text-ink-3">
+                  ↵ RUN IT BACK{onNext ? ' · N NEXT SIM' : ''} · ESC EXIT
+                </p>
               </>
             )}
           </div>
