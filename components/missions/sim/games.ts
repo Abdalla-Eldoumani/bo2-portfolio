@@ -19,6 +19,12 @@ import { loadBalancer } from '@/components/missions/sim/games/rust-http-server';
 import { redactionPass } from '@/components/missions/sim/games/dossier';
 import { digSite } from '@/components/missions/sim/games/dust';
 import { marketRun } from '@/components/missions/sim/games/budget-buddy';
+import { domainCollapse } from '@/components/missions/sim/games/lattice';
+import { pruningPass } from '@/components/missions/sim/games/whittle';
+import { posteriorHunt } from '@/components/missions/sim/games/credence';
+import { stateRunner } from '@/components/missions/sim/games/regex-fsm';
+import { floodFill } from '@/components/missions/sim/games/qalam';
+import { cloudTriage } from '@/components/missions/sim/games/cloud-practitioner-prep';
 
 export type {
   Game,
@@ -101,6 +107,54 @@ export const SIM_META: Record<string, SimMeta> = {
     roundS: 25,
     bands: [15, 35],
   },
+  lattice: {
+    title: 'DOMAIN COLLAPSE',
+    brief:
+      'Every variable holds a domain. Eliminate the values its constraint forbids — a domain of one locks, and ALL-DIFF marks that value teal in every other row. Reach fixpoint before the search clock backtracks.',
+    controls: '← → ↑ ↓ MOVE · ↵ / TAP — ELIMINATE',
+    roundS: 25,
+    bands: [28, 50],
+  },
+  whittle: {
+    title: 'PRUNING PASS',
+    brief:
+      'The enumerator streams candidate programs against the spec. Kill anything that contradicts an example — and any duplicate of a kept program. Whatever crosses the keep line joins the set.',
+    controls: '↵ / TAP — KILL · LET IT RISE — KEEP',
+    roundS: 24,
+    bands: [18, 36],
+  },
+  credence: {
+    title: 'POSTERIOR HUNT',
+    brief:
+      'Noisy samples rain in around a hidden value. Keep your belief band on it: every inference tick pays for tight-and-right and nothing for tight-and-wrong. It drifts, then it jumps regimes.',
+    controls: '← → / TAP — MOVE BAND · HOLD SPACE / POINTER — TIGHTEN',
+    roundS: 25,
+    bands: [16, 30],
+  },
+  'regex-fsm': {
+    title: 'STATE RUNNER',
+    brief:
+      'You are the automaton. Pick the arc that consumes each tape symbol and keep the run alive — the accept state cashes the whole word. When no arc matches, λ is the move.',
+    controls: '↑ → ↓ / TAP AN ARC — TRANSITION',
+    roundS: 22,
+    bands: [18, 34],
+  },
+  qalam: {
+    title: 'FLOOD FILL',
+    brief:
+      'Seed a flood fill inside the target region and it spreads on its own. The scanline sweep repaints anything half-painted — finish before the beam lands or lose the frame.',
+    controls: 'ARROWS + ↵ / TAP A CELL — SEED FILL',
+    roundS: 24,
+    bands: [16, 32],
+  },
+  'cloud-practitioner-prep': {
+    title: 'CLOUD TRIAGE',
+    brief:
+      'True or false, fast. Three right calls master a domain and retire its cards — one wrong call resets its meter. Master all four for the READY SIGNAL and the deck reshuffles at double points.',
+    controls: '← FALSE · → TRUE (TAP LEFT / RIGHT)',
+    roundS: 22,
+    bands: [16, 32],
+  },
 };
 
 export function createGame(slug: string, fx: Fx): Game {
@@ -113,6 +167,12 @@ export function createGame(slug: string, fx: Fx): Game {
     case 'dossier': return redactionPass(fx);
     case 'dust': return digSite(fx);
     case 'budget-buddy': return marketRun(fx);
+    case 'lattice': return domainCollapse(fx);
+    case 'whittle': return pruningPass(fx);
+    case 'credence': return posteriorHunt(fx);
+    case 'regex-fsm': return stateRunner(fx);
+    case 'qalam': return floodFill(fx);
+    case 'cloud-practitioner-prep': return cloudTriage(fx);
     default: return falconDash(fx);
   }
 }
