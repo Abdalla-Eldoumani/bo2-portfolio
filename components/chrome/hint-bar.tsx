@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { navigation } from '@/lib/data/navigation';
+import { projects } from '@/lib/data/projects';
 import { sfxBack, sfxMove, sfxOpen, sfxSelect } from '@/lib/sfx';
 
 /*
@@ -62,10 +63,12 @@ const DEFAULT_HINTS: Hint[] = [
   RESUME,
 ];
 
+const LIVE_OPS = projects.filter((p) => p.live && p.live !== '#').length;
+
 /* Per-screen footprint line (right side). */
 const FOOTPRINTS: Record<string, string> = {
   '/loadout': '37 SKILLS COMMITTED · 2 WILDCARDS ACTIVE',
-  '/missions': '8 OPS ON ROTATION · 4 LIVE DEPLOYMENTS',
+  '/missions': `${projects.length} OPS ON ROTATION · ${LIVE_OPS} LIVE DEPLOYMENTS`,
   '/record': 'RANKS I–V · NEXT PROMOTION JUN 2027',
   '/scoreboard': 'DATA: LIVE GITHUB API · FALLBACK SNAPSHOT COMMITTED',
   '/comms': '3 CHANNELS · RESPONSE VIA EMAIL FASTEST',

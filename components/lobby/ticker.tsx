@@ -1,5 +1,6 @@
 import { getGitHubStats } from '@/lib/api/github';
 import { education } from '@/lib/data/experience';
+import { projects } from '@/lib/data/projects';
 
 /*
   INTEL ticker — the news wire above the hint bar (lobby only). Leads with
@@ -29,7 +30,7 @@ export async function Ticker() {
     'HEAD TA, CPSC 355',
     `${education.degree.toUpperCase()} + PHILOSOPHY MINOR, UCALGARY`,
     'TWO PURE RESEARCH AWARDS',
-    '8 OPS ON ROTATION',
+    `${projects.length} OPS ON ROTATION`,
   ];
   const line = facts.join(SEP);
   // One set = the line repeated until it outruns any viewport (~5.5k px);

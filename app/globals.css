@@ -398,6 +398,36 @@ body {
   }
 }
 
+/* Career promotion beat: one full-surface flash when a rank is earned.
+   Reduced motion drops the flash entirely — the PROMOTED line carries it. */
+.promo-flash {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    80% 80% at 50% 40%,
+    rgba(255, 156, 30, 0.5),
+    transparent 70%
+  );
+  opacity: 0;
+  animation: promo-flash 900ms var(--ease-tac) forwards;
+}
+
+@keyframes promo-flash {
+  0% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-flash {
+    animation: none;
+  }
+}
+
 /* Comms beacon: 2s blink, the only red on that screen. */
 .blink-beacon {
   animation: blink-beacon 2s step-end infinite;

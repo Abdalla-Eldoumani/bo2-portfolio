@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { CAREER_CHANGE_EVENT, loadCareer } from '@/lib/career';
+import { challengesForSim } from '@/lib/data/career';
+import type { CareerState } from '@/lib/types/career';
 import type { Project } from '@/lib/types/project';
 
 /*
@@ -27,7 +30,21 @@ export function FeaturedCarousel({
 }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [career, setCareer] = useState<CareerState | null>(null);
   const router = useRouter();
+
+  // Career whisper: only after the visitor has run at least one sim does
+  // the card start surfacing that op's next unearned challenge.
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setCareer(loadCareer()));
+    const onChange = (e: Event) =>
+      setCareer((e as CustomEvent<CareerState>).detail);
+    window.addEventListener(CAREER_CHANGE_EVENT, onChange);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener(CAREER_CHANGE_EVENT, onChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (paused) return;
@@ -40,6 +57,10 @@ export function FeaturedCarousel({
 
   const op = items[index];
   const live = op.live && op.live !== '#';
+  const nextChallenge =
+    career && career.plays > 0
+      ? challengesForSim(op.slug).find((c) => !career.challenges[c.id])
+      : undefined;
 
   const step = (delta: number) =>
     setIndex((i) => (i + delta + items.length) % items.length);
@@ -116,6 +137,12 @@ export function FeaturedCarousel({
               {live ? '● DEPLOYED' : '● STABLE'}
             </span>
           </div>
+          {nextChallenge && (
+            <div className="mt-1 truncate font-mono text-[9.5px] tracking-[0.06em] text-ink-3">
+              NEXT CHALLENGE: {nextChallenge.name}{' '}
+              {nextChallenge.tier.toUpperCase()}
+            </div>
+          )}
           {/* progress ticks */}
           <div className="mt-2.5 flex gap-1" aria-hidden="true">
             {items.map((p, i) => (
