@@ -17,6 +17,7 @@ let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 let lastMove = 0;
 let lastScore = 0;
+let lastNear = 0;
 
 function on(): boolean {
   if (typeof window === 'undefined') return false;
@@ -153,6 +154,43 @@ export function sfxEnd() {
   if (!on()) return;
   tone(660, 660, 0.09, 'square', 0.05);
   tone(440, 440, 0.12, 'square', 0.045, 0.09);
+}
+
+/** Dead-center action ("PERFECT") — bright ascending pair. */
+export function sfxPerfect() {
+  if (!on()) return;
+  tone(1180, 1180, 0.05, 'sine', 0.04);
+  tone(1760, 1760, 0.07, 'sine', 0.038, 0.05);
+}
+
+/** Grazed a hazard and lived — one soft shimmer. Own rate limit. */
+export function sfxNear() {
+  if (!on()) return;
+  const now = performance.now();
+  if (now - lastNear < 120) return;
+  lastNear = now;
+  tone(2100, 1500, 0.06, 'sine', 0.022);
+}
+
+/** Hazard tripped or survived — low warning thud. */
+export function sfxHazard() {
+  if (!on()) return;
+  tone(220, 130, 0.11, 'sawtooth', 0.05);
+  noiseBurst(0.07, 700, 0.03);
+}
+
+/** Streak lost — short falling chirp. */
+export function sfxComboBreak() {
+  if (!on()) return;
+  tone(760, 340, 0.1, 'square', 0.045);
+}
+
+/** Escalation beat (wave shift, overclock, scale-out) — announce sting. */
+export function sfxMilestone() {
+  if (!on()) return;
+  tone(520, 520, 0.06, 'square', 0.05);
+  tone(780, 780, 0.06, 'square', 0.048, 0.06);
+  tone(1040, 1040, 0.09, 'square', 0.04, 0.12);
 }
 
 export function sfxEnabled(): boolean {
