@@ -8,10 +8,56 @@
   games stay deterministic-simple and never touch the DOM.
 */
 
+import {
+  W,
+  H,
+  mono,
+  display,
+  INK,
+  INK2,
+  INK3,
+  OC,
+  OF,
+  FR,
+  GREEN,
+  RED,
+  BASE,
+  MID,
+  SHADOW,
+} from '@/components/missions/sim/fx';
+
 export type SimInput = {
   held: boolean; // primary held (Space / pointer down)
   pressed: string[]; // keys pressed this frame: 'Enter','ArrowLeft',… + 'Tap'
   tap: { x: number; y: number } | null; // canvas-space tap this frame
+};
+
+/*
+  Medal-worthy moments games report to the harness (drained per frame).
+  The harness turns them into SFX and career-meta tallies. Convention:
+  an event carrying x/y also gets default floating text from the harness;
+  a game that draws its own feedback emits the event without coordinates.
+*/
+export type SimEventKind =
+  | 'perfect' // dead-center / flawless action
+  | 'near-miss' // grazed a hazard or an edge and lived
+  | 'streak' // streak milestone reached (value = length)
+  | 'hazard' // hazard survived or cleared
+  | 'combo-break' // streak lost (value = length lost)
+  | 'milestone'; // escalation beat (wave, phase shift, scale-out)
+
+export type SimEvent = {
+  kind: SimEventKind;
+  label?: string;
+  value?: number;
+  x?: number;
+  y?: number;
+};
+
+/** Debrief payload: display lines for the human, tallies for the meta. */
+export type RoundStats = {
+  display: { label: string; value: string }[];
+  tallies: Record<string, number>;
 };
 
 export type Game = {
@@ -19,20 +65,9 @@ export type Game = {
   draw(ctx: CanvasRenderingContext2D): void;
   score(): number;
   hud(): string; // right-side HUD readout
+  events?(): SimEvent[]; // drained by the harness every frame
+  onRoundEnd?(): RoundStats; // richer debrief + meta-layer stats
 };
-
-// palette
-const INK = '#eef3f5';
-const INK2 = '#9db0ba';
-const INK3 = '#5f7280';
-const OC = '#ff9c1e';
-const OF = '#ff9600';
-const FR = '#e07f19';
-const GREEN = '#7bc24f';
-const RED = '#b03a30';
-const BASE = '#16212a';
-const MID = '#2b3d4a';
-const SHADOW = '#0a0f13';
 
 export const SIM_META: Record<
   string,
@@ -79,16 +114,6 @@ export const SIM_META: Record<
     controls: '↵ / TAP — BUY / SELL',
   },
 };
-
-const W = 720;
-const H = 380;
-
-function mono(ctx: CanvasRenderingContext2D, size: number) {
-  ctx.font = `${size}px "JetBrains Mono", monospace`;
-}
-function display(ctx: CanvasRenderingContext2D, size: number) {
-  ctx.font = `bold ${size}px Agdasima, sans-serif`;
-}
 
 /* ── PEREGRINE · FALCON DASH ─────────────────────────────────────────── */
 function falconDash(): Game {
