@@ -25,12 +25,18 @@ import type { CareerState } from '@/lib/types/career';
 const MAP_NAMES: Record<string, string> = {
   Peregrine: 'FALCON RIDGE',
   AEOS: 'BARE METAL',
+  Lattice: 'SEARCH SPACE',
   'AArch64 Playground': 'PROVING GROUND',
   Qala: 'THE FORGE',
+  'Regex FSM': 'AUTOMATA HALL',
+  Whittle: 'THE WORKSHOP',
   'Rust HTTP Server': 'SERVER HALL',
+  Credence: 'BELIEF BASIN',
   Dossier: 'ARCHIVE VAULT',
+  Qalam: 'FRAMEBUFFER',
   DUST: 'RUINED NET',
   'Budget Buddy': 'TRADING FLOOR',
+  'Cloud Practitioner Prep': 'EXAM HALL',
 };
 
 function MapArt({
