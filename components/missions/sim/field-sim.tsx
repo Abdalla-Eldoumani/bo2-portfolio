@@ -9,7 +9,24 @@ import {
   type Game,
   type SimInput,
 } from '@/components/missions/sim/games';
-import { sfxEnd, sfxScore, sfxSelect } from '@/lib/sfx';
+import {
+  createFx,
+  INK2,
+  OC,
+  OH,
+  RED,
+  type Fx,
+} from '@/components/missions/sim/fx';
+import {
+  sfxComboBreak,
+  sfxEnd,
+  sfxHazard,
+  sfxMilestone,
+  sfxNear,
+  sfxPerfect,
+  sfxScore,
+  sfxSelect,
+} from '@/lib/sfx';
 
 /*
   FIELD SIM harness — the combat-training modal. Owns the 20-second clock,
@@ -68,6 +85,9 @@ export function FieldSim({
   const noiseRef = useRef<HTMLCanvasElement | null>(null);
   const patternRef = useRef<CanvasPattern | null>(null);
   const stillRef = useRef(false);
+  const fxRef = useRef<Fx | null>(null);
+  // Per-round event tallies (kind and kind:label counts) for the meta-layer.
+  const tallyRef = useRef<Record<string, number>>({});
 
   const meta = SIM_META[slug];
 
@@ -124,9 +144,11 @@ export function FieldSim({
   }, [open, slug, setPhase]);
 
   const start = useCallback(() => {
+    fxRef.current = createFx(() => stillRef.current);
     gameRef.current = createGame(slug);
     timeRef.current = 0;
     scoreRef.current = 0;
+    tallyRef.current = {};
     sfxSelect();
     setPhase('running');
   }, [slug, setPhase]);
@@ -214,21 +236,58 @@ export function FieldSim({
       const ctx = canvas?.getContext('2d');
       if (!canvas || !ctx) return;
 
+      const fx = fxRef.current;
       if (phaseRef.current === 'running' && gameRef.current) {
         timeRef.current += dt;
-        const input: SimInput = {
-          held: heldRef.current,
-          pressed: keysRef.current,
-          tap: tapRef.current,
-        };
-        gameRef.current.update(dt, input);
-        keysRef.current = [];
-        tapRef.current = null;
+        // Hit-stop gates the game world, never the round clock; a frozen
+        // frame keeps its queued inputs so no press lands in the void.
+        const gdt = fx ? fx.tick(dt) : dt;
+        if (gdt > 0) {
+          const input: SimInput = {
+            held: heldRef.current,
+            pressed: keysRef.current,
+            tap: tapRef.current,
+          };
+          gameRef.current.update(gdt, input);
+          keysRef.current = [];
+          tapRef.current = null;
 
-        // Score feedback: one tiny blip per point gained.
-        const sNow = gameRef.current.score();
-        if (sNow > scoreRef.current) sfxScore();
-        scoreRef.current = sNow;
+          // Medal-worthy moments: tally for the career meta, cue the sfx,
+          // and float default combat text when the game supplies a spot.
+          const evs = gameRef.current.events?.();
+          if (evs) {
+            for (const ev of evs) {
+              const t = tallyRef.current;
+              t[ev.kind] = (t[ev.kind] ?? 0) + 1;
+              if (ev.label) {
+                const k = `${ev.kind}:${ev.label}`;
+                t[k] = (t[k] ?? 0) + 1;
+              }
+              switch (ev.kind) {
+                case 'perfect': sfxPerfect(); break;
+                case 'near-miss': sfxNear(); break;
+                case 'hazard': sfxHazard(); break;
+                case 'combo-break': sfxComboBreak(); break;
+                case 'streak':
+                case 'milestone': sfxMilestone(); break;
+              }
+              if (fx && ev.label && ev.x !== undefined && ev.y !== undefined) {
+                const color =
+                  ev.kind === 'perfect' ? OH
+                  : ev.kind === 'hazard' || ev.kind === 'combo-break' ? RED
+                  : ev.kind === 'near-miss' ? INK2
+                  : OC;
+                fx.text(ev.x, ev.y, ev.label, { color });
+              }
+            }
+            evs.length = 0;
+          }
+
+          // Score feedback: one tiny blip per point gained.
+          const sNow = gameRef.current.score();
+          if (sNow > scoreRef.current) sfxScore();
+          scoreRef.current = sNow;
+        }
 
         if (timeRef.current >= ROUND_S) {
           const score = gameRef.current.score();
@@ -249,13 +308,21 @@ export function FieldSim({
         }
       }
 
-      // draw
+      // draw — camera shake wraps the game world and fx overlays; the HUD
+      // and CRT pass stay pinned.
+      ctx.save();
+      fx?.applyShake(ctx);
       if (gameRef.current && phaseRef.current !== 'ready') {
         gameRef.current.draw(ctx);
+        if (fx) {
+          fx.update(dt);
+          fx.draw(ctx);
+        }
       } else {
         ctx.fillStyle = '#0a0f13';
         ctx.fillRect(0, 0, SIM_W, SIM_H);
       }
+      ctx.restore();
 
       // HUD overlay on canvas (timer)
       if (phaseRef.current === 'running' && gameRef.current) {
