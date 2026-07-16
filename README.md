@@ -17,11 +17,14 @@ menu UI; not affiliated with Activision or Treyarch.
 GitHub telemetry · `/comms` contact · `/about` why this exists ·
 `/resume` printable field dossier (one Letter page).
 
-Every mission carries a **FIELD SIM** - a 20-second canvas mini-game that
-symbolizes the project (the SIMD engine is a falcon dash, the educational
-OS boots a kernel, the HTTP server balances queues). Interface sounds are
-synthesized WebAudio cues - no audio assets, no music, and an SFX switch
-in the top bar.
+Every mission (fourteen ops) carries a **FIELD SIM** - a 20-25 second
+canvas mini-game that symbolizes the project (the SIMD engine is a falcon
+dash, the educational OS boots a kernel, the constraint solver collapses
+domains to fixpoint). Rounds feed a persistent career: XP, a ten-rank
+ladder, medals, per-sim challenges and prestige, all in localStorage with
+zero accounts - the rank shows on the top bar and Combat Record.
+Interface sounds are synthesized WebAudio cues - no audio assets, no
+music, and an SFX switch in the top bar.
 
 ## Navigation
 
