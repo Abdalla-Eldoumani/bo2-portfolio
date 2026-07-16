@@ -4,15 +4,21 @@ import type { Project } from '@/lib/types/project';
 // statically so a missing file fails `next build` instead of 404-ing.
 import peregrineArt from '@/public/art/maps/peregrine.svg';
 import aeosArt from '@/public/art/maps/aeos.svg';
+import latticeArt from '@/public/art/maps/lattice.svg';
 import playgroundArt from '@/public/art/maps/aarch64-playground.svg';
 import qalaArt from '@/public/art/maps/qala.svg';
+import regexFsmArt from '@/public/art/maps/regex-fsm.svg';
+import whittleArt from '@/public/art/maps/whittle.svg';
 import rustServerArt from '@/public/art/maps/rust-http-server.svg';
+import credenceArt from '@/public/art/maps/credence.svg';
 import dossierArt from '@/public/art/maps/dossier.svg';
+import qalamArt from '@/public/art/maps/qalam.svg';
 import dustArt from '@/public/art/maps/dust.svg';
 import budgetBuddyArt from '@/public/art/maps/budget-buddy.svg';
+import cloudPrepArt from '@/public/art/maps/cloud-practitioner-prep.svg';
 
 /**
- * The mission set — the eight showcased operations, strongest first. Every
+ * The mission set — fourteen showcased operations, strongest first. Every
  * factual claim traces to the July 2026 resume or the project's own README
  * (benchmark figures come from each project's harness); deployments were
  * verified against the author's portfolio data of the same date. Retired from
@@ -53,6 +59,20 @@ export const projects = [
     metrics: '4 cores · 100 Hz preemption · 30 FPS desktop',
   },
   {
+    name: 'Lattice',
+    slug: 'lattice',
+    description:
+      'A finite-domain constraint solver and a CDCL SAT solver, both written from scratch in Haskell, with a web front end that streams the search live so you can watch them think.',
+    fullDescription:
+      'Value-elimination propagators run to fixpoint over backtracking search with minimum-remaining-values ordering; the SAT side does watched-literal propagation, 1UIP clause learning, VSIDS and Luby restarts. One hot loop generic over the monad runs fast in ST or streams every decision over WebSocket in IO. Correctness is differential: CP, SAT and a brute-force oracle checked against each other.',
+    image: latticeArt,
+    tech: ['Haskell', 'Scotty', 'WebSockets', 'Next.js', 'QuickCheck'],
+    featured: true,
+    insigniaId: 'lattice',
+    category: 'systems',
+    metrics: 'CP + CDCL SAT from scratch · 4 animated puzzle types',
+  },
+  {
     name: 'AArch64 Playground',
     slug: 'aarch64-playground',
     description:
@@ -85,6 +105,35 @@ export const projects = [
     metrics: 'Language on crates.io · in-browser playground',
   },
   {
+    name: 'Regex FSM',
+    slug: 'regex-fsm',
+    description:
+      'A regex and finite-automata visualizer that runs the constructive procedures of formal language theory step by step — Thompson, subset construction, minimization, Brzozowski derivatives — with challenges graded by language equivalence.',
+    fullDescription:
+      'Built with a collaborator for CPSC 351 at the University of Calgary. A pure, fully unit-tested algorithm layer under a Cytoscape-rendered UI: 1181 unit, integration and property tests plus over 150 end-to-end and accessibility tests, property-checked against a brute-force language oracle.',
+    image: regexFsmArt,
+    live: 'https://regex-fsm.vercel.app',
+    tech: ['TypeScript', 'React 19', 'Vite', 'Cytoscape', 'fast-check'],
+    featured: true,
+    insigniaId: 'automaton',
+    category: 'education',
+    metrics: '1181 tests · 150+ E2E · language-equivalence grading',
+  },
+  {
+    name: 'Whittle',
+    slug: 'whittle',
+    description:
+      'Bottom-up enumerative program synthesis, live: give it a type signature and input/output examples and watch it consider millions of candidate programs and keep a few dozen.',
+    fullDescription:
+      'A typed DSL over integers, booleans and lists with five higher-order components; a fuel-bounded evaluator abandons runaway candidates and observational-equivalence pruning collapses programs with identical behavior. The search streams over server-sent events into a React visualizer; a 17-task gallery is tested in CI.',
+    image: whittleArt,
+    tech: ['Haskell', 'React', 'TypeScript', 'SSE', 'QuickCheck'],
+    featured: false,
+    insigniaId: 'chisel',
+    category: 'ai',
+    metrics: 'Millions considered, dozens kept · 17-task gallery',
+  },
+  {
     name: 'Rust HTTP Server',
     slug: 'rust-http-server',
     description:
@@ -99,6 +148,20 @@ export const projects = [
     insigniaId: 'server',
     category: 'performance',
     metrics: '10,000+ concurrent · sub-10ms · −60% DB load',
+  },
+  {
+    name: 'Credence',
+    slug: 'credence',
+    description:
+      'A small probabilistic programming language embedded in Haskell: models are draw-and-observe programs, and the same model runs under importance sampling, Metropolis-Hastings or a particle filter while a visualizer animates the inference live.',
+    fullDescription:
+      'Each inference backend is an interpreter of the model monad. The engine works in log-space with a seedable RNG and streams samples and running summaries to the front end; posteriors are checked against closed-form Beta-Bernoulli and Normal-Normal answers under fixed seeds.',
+    image: credenceArt,
+    tech: ['Haskell', 'Probabilistic PL', 'SMC', 'MCMC'],
+    featured: false,
+    insigniaId: 'dice',
+    category: 'ai',
+    metrics: '3 inference backends · checked against exact posteriors',
   },
   {
     name: 'Dossier',
@@ -116,6 +179,20 @@ export const projects = [
     insigniaId: 'vault',
     category: 'web',
     metrics: '42 operations · fully client-side',
+  },
+  {
+    name: 'Qalam',
+    slug: 'qalam',
+    description:
+      'A paint program written entirely in AArch64 assembly — no C, no libc, no operating system. It boots as its own bare-metal kernel on QEMU, drives a 1024×768 display through ramfb and reads the mouse over VirtIO, polling everything by hand.',
+    fullDescription:
+      'Ten drawing tools, a 32-color palette, single-step undo and BMP export, in a few thousand lines of readable assembly with no MMU and no interrupts. Every tool has a golden-image test: a Python harness drives synthetic input over QMP and asserts the framebuffer pixel by pixel.',
+    image: qalamArt,
+    tech: ['AArch64 Assembly', 'QEMU', 'VirtIO', 'ramfb', 'm4'],
+    featured: false,
+    insigniaId: 'easel',
+    category: 'systems',
+    metrics: 'Zero C · 1024×768 ramfb · golden-image tested',
   },
   {
     name: 'DUST',
@@ -149,6 +226,21 @@ export const projects = [
     insigniaId: 'ledger',
     category: 'web',
     metrics: 'CalgaryHacks 24 · live stock data',
+  },
+  {
+    name: 'Cloud Practitioner Prep',
+    slug: 'cloud-practitioner-prep',
+    description:
+      'A free, open-source study site for the AWS Cloud Practitioner exam: 22 lessons, 886 original practice questions drilled by domain, timed 65-question mock exams and a readiness dashboard — fully static, no accounts, progress stays in the browser.',
+    fullDescription:
+      'Astro with React islands for the quiz engine; adaptive drill weights toward weakest domains, spaced-repetition review, an offline-capable PWA and JSON progress export. Every question is original and every AWS fact links to its documentation.',
+    image: cloudPrepArt,
+    live: 'https://cloud-practitioner-prep.vercel.app',
+    tech: ['Astro', 'React', 'TypeScript', 'Tailwind v4', 'MDX'],
+    featured: false,
+    insigniaId: 'cloud',
+    category: 'education',
+    metrics: '886 original questions · 22 lessons · CLF-C02',
   },
 ] satisfies readonly Project[];
 
