@@ -17,16 +17,17 @@ menu UI; not affiliated with Activision or Treyarch.
 GitHub telemetry · `/comms` contact · `/about` why this exists ·
 `/resume` printable field dossier (one Letter page).
 
-Every mission (seventeen ops) carries a **FIELD SIM** - a 20-25 second
+Every mission (twenty ops) carries a **FIELD SIM** - a 20-25 second
 canvas mini-game that symbolizes the project (the SIMD engine is a falcon
 dash, the educational OS boots a kernel, the assembly horde game becomes
 an actual horde game). Rounds feed a persistent career: XP, a ten-rank
-ladder, medals, per-sim challenges, a rotating daily contract, and
-double-or-nothing wagers that can bust you down a rank - all in
-localStorage with zero accounts, worn on the top bar and Combat Record.
-Somewhere on Mission Select there is also a game the roster does not
-admit to. Interface sounds are synthesized WebAudio cues - no audio
-assets, no music, and an SFX switch in the top bar.
+ladder, medals, per-sim challenges, a rotating daily contract,
+double-or-nothing wagers that can bust you down a rank, and a veteran
+mode per sim once you have mastered it - all in localStorage with zero
+accounts, worn on the top bar and Combat Record. Somewhere on Mission
+Select there is also a game the roster does not admit to. Interface
+sounds are synthesized WebAudio cues - no audio assets, no music, and an
+SFX switch in the top bar.
 
 ## Navigation
 

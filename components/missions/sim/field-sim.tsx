@@ -32,10 +32,12 @@ import {
   sfxSelect,
 } from '@/lib/sfx';
 import {
+  canVeteran,
   canWager,
   contractDoneToday,
   dailyContract,
   enterPrestige,
+  loadCareer,
   recordRound,
   wagerStake,
   RANK_CAP_XP,
@@ -96,6 +98,17 @@ export function FieldSim({
   useEffect(() => {
     wagerRef.current = wagerOn;
   }, [wagerOn]);
+  // Veteran mode: unlocked per sim at its VETERAN band, pays xp at 1.5x.
+  const [vetUnlocked, setVetUnlocked] = useState(false);
+  const [vetOn, setVetOn] = useState(false);
+  const vetRef = useRef(false);
+  useEffect(() => {
+    vetRef.current = vetOn;
+  }, [vetOn]);
+  // Mid-round beats: all-time best crossing and the final-five call.
+  const bestAllTimeRef = useRef(0);
+  const bestCrossedRef = useRef(false);
+  const finalFiveRef = useRef(false);
   const onNextRef = useRef(onNext);
   useEffect(() => {
     onNextRef.current = onNext;
@@ -159,6 +172,8 @@ export function FieldSim({
       setWagerOn(false);
       setStake(canWager() ? wagerStake() : 0);
       setContract(contractDoneToday() ? null : dailyContract());
+      setVetOn(false);
+      setVetUnlocked(canVeteran(slug));
       setPhase('ready');
       try {
         setBest(Number(sessionStorage.getItem(`sim-${slug}`) ?? 0));
@@ -188,6 +203,8 @@ export function FieldSim({
         setWagerOn(false);
         setStake(canWager() ? wagerStake() : 0);
         setContract(contractDoneToday() ? null : dailyContract());
+        setVetOn(false);
+        setVetUnlocked(canVeteran(slug));
         try {
           setBest(Number(sessionStorage.getItem(`sim-${slug}`) ?? 0));
         } catch {
@@ -202,10 +219,13 @@ export function FieldSim({
   const start = useCallback(() => {
     const fx = createFx(() => stillRef.current);
     fxRef.current = fx;
-    gameRef.current = createGame(slug, fx);
+    gameRef.current = createGame(slug, fx, vetRef.current);
     timeRef.current = 0;
     scoreRef.current = 0;
     tallyRef.current = {};
+    bestAllTimeRef.current = loadCareer().bests[slug] ?? 0;
+    bestCrossedRef.current = false;
+    finalFiveRef.current = false;
     sfxSelect();
     setPhase('running');
   }, [slug, setPhase]);
@@ -247,6 +267,15 @@ export function FieldSim({
           canWager()
         ) {
           setWagerOn((v) => !v);
+          sfxMove();
+        }
+        // V toggles veteran mode once the sim has been mastered.
+        if (
+          phaseRef.current === 'ready' &&
+          (e.key === 'v' || e.key === 'V') &&
+          canVeteran(slug)
+        ) {
+          setVetOn((v) => !v);
           sfxMove();
         }
         // N from the debrief chains into the next op's sim.
@@ -319,7 +348,7 @@ export function FieldSim({
       downRef.current = [];
       cursorRef.current = null;
     };
-  }, [open, start]);
+  }, [open, slug, start]);
 
   // Debrief theater: count the score up and fill the XP bar a frame in.
   // Reduced motion lands both instantly.
@@ -414,6 +443,24 @@ export function FieldSim({
           const sNow = gameRef.current.score();
           if (sNow > scoreRef.current) sfxScore();
           scoreRef.current = sNow;
+
+          // Crossing the all-time best is worth calling mid-round.
+          if (
+            !bestCrossedRef.current &&
+            bestAllTimeRef.current > 0 &&
+            sNow > bestAllTimeRef.current
+          ) {
+            bestCrossedRef.current = true;
+            fx?.announce('NEW ALL-TIME BEST', `PAST ${bestAllTimeRef.current}`);
+            sfxMilestone();
+          }
+        }
+
+        // The last five seconds get called once, then the clock burns red.
+        const remainNow = (SIM_META[slug]?.roundS ?? 20) - timeRef.current;
+        if (!finalFiveRef.current && remainNow <= 5) {
+          finalFiveRef.current = true;
+          fx?.announce('FINAL FIVE');
         }
 
         if (timeRef.current >= (SIM_META[slug]?.roundS ?? 20)) {
@@ -443,6 +490,7 @@ export function FieldSim({
             stats.tallies,
             tallyRef.current,
             wagerRef.current,
+            vetRef.current,
           );
           setRoundStats(stats);
           setReport(rep);
@@ -582,25 +630,46 @@ export function FieldSim({
                 >
                   Start Sim ▸
                 </button>
-                {stake > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setWagerOn((v) => !v);
-                      sfxMove();
-                    }}
-                    aria-pressed={wagerOn}
-                    className={`confirm-punch border px-4 py-1 font-mono text-[10px] tracking-[0.08em] ${
-                      wagerOn
-                        ? 'border-gold bg-gold/10 text-gold'
-                        : 'border-white/[0.28] text-ink-3 hover:border-gold hover:text-gold'
-                    }`}
-                  >
-                    {wagerOn
-                      ? `WAGER STAKED — ${stake} XP RIDES ON VETERAN`
-                      : `W — WAGER: DOUBLE OR NOTHING (${stake} XP)`}
-                  </button>
-                )}
+                <span className="flex flex-wrap items-center justify-center gap-2">
+                  {vetUnlocked && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setVetOn((v) => !v);
+                        sfxMove();
+                      }}
+                      aria-pressed={vetOn}
+                      className={`confirm-punch border px-4 py-1 font-mono text-[10px] tracking-[0.08em] ${
+                        vetOn
+                          ? 'border-orange-frame bg-orange-fill/10 text-orange-hot'
+                          : 'border-white/[0.28] text-ink-3 hover:border-orange-frame hover:text-orange-core'
+                      }`}
+                    >
+                      {vetOn
+                        ? `VETERAN OP — ${meta.veteran} · XP ×1.5`
+                        : `V — VETERAN MODE: ${meta.veteran}`}
+                    </button>
+                  )}
+                  {stake > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setWagerOn((v) => !v);
+                        sfxMove();
+                      }}
+                      aria-pressed={wagerOn}
+                      className={`confirm-punch border px-4 py-1 font-mono text-[10px] tracking-[0.08em] ${
+                        wagerOn
+                          ? 'border-gold bg-gold/10 text-gold'
+                          : 'border-white/[0.28] text-ink-3 hover:border-gold hover:text-gold'
+                      }`}
+                    >
+                      {wagerOn
+                        ? `WAGER STAKED — ${stake} XP RIDES ON VETERAN`
+                        : `W — WAGER: DOUBLE OR NOTHING (${stake} XP)`}
+                    </button>
+                  )}
+                </span>
                 <p className="font-mono text-[10px] text-ink-3">
                   {meta.roundS} SECONDS ON THE CLOCK
                 </p>
@@ -617,6 +686,7 @@ export function FieldSim({
                   {shownScore}
                 </p>
                 <p className="font-mono text-[10px] tracking-[0.08em] text-ink-2">
+                  {report?.veteran ? 'VETERAN OP · ' : ''}
                   {rank(slug, finalScore)} · SESSION BEST {best}
                   {report ? ` · ALL-TIME ${report.allTimeBest}` : ''}
                   {report?.isNewBest ? ' · NEW BEST' : ''}

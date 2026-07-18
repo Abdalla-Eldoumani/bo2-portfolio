@@ -53,7 +53,7 @@ const USES = ['ADD X0, X1, #4', 'SUBS X4, X7, #1'];
 const SLOT_X = W / 2;
 const TOL = 34;
 
-export function singleStep(fx: Fx): Game {
+export function singleStep(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 10, step: 4, maxMult: 2 });
   const s = {
@@ -82,7 +82,7 @@ export function singleStep(fx: Fx): Game {
     if (s.dual) s.dualLane = s.dualLane === 0 ? 1 : 0;
     const x = s.dir === 1 ? W + 40 : -40;
     const r = Math.random();
-    if (!s.pairPending && r < 0.22) {
+    if (!s.pairPending && r < (veteran ? 0.32 : 0.22)) {
       // load-use dependent pair enters back to back on one lane
       s.pairPending = true;
       const li = Math.floor(Math.random() * LOADS.length);
@@ -190,10 +190,13 @@ export function singleStep(fx: Fx): Game {
   return {
     update(dt, input) {
       s.t += dt;
-      const speed = (120 + Math.min(s.retired * 5, 130)) * (s.dual ? 0.92 : 1);
+      // veteran mode runs the pipeline clock about 20% hotter
+      const speed =
+        (120 + Math.min(s.retired * 5, 130)) * (s.dual ? 0.92 : 1) * (veteran ? 1.2 : 1);
       s.next -= dt;
       if (s.next <= 0) {
-        s.next = Math.max(0.62, 1.1 - s.retired * 0.015) * (s.dual ? 0.62 : 1);
+        s.next =
+          Math.max(0.62, 1.1 - s.retired * 0.015) * (s.dual ? 0.62 : 1) * (veteran ? 0.85 : 1);
         spawn();
       }
       for (const it of s.items) {

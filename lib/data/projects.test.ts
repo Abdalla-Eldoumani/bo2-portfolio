@@ -6,8 +6,17 @@ import {
 } from '@/lib/data/projects';
 
 describe('projects data', () => {
-  it('holds the 17 showcased missions (2026-07 roster expansion)', () => {
-    expect(projects).toHaveLength(17);
+  it('holds the 20 showcased missions (2026-07 roster expansion)', () => {
+    expect(projects).toHaveLength(20);
+  });
+
+  it('carries the encore ops with README-traceable facts', () => {
+    expect(getProjectByName('DSAV')?.metrics).toContain('12,249 lines');
+    expect(getProjectByName('Termpilot')?.metrics).toContain('7 tools');
+    expect(getProjectByName('ARM String Ops')?.metrics).toContain('27-42 GB/s');
+    expect(getProjectByName('DSAV')?.github).toBeUndefined();
+    expect(getProjectByName('Termpilot')?.live).toBeUndefined();
+    expect(getProjectByName('ARM String Ops')?.github).toBeUndefined();
   });
 
   it('marks exactly 9 missions as featured', () => {

@@ -54,6 +54,9 @@ export const MISTAKES: Record<string, (t: RoundTallies) => number> = {
   'qemu-mcp-server': (t) => (t.corrupted ?? 0) + (t.crashesLost ?? 0),
   'bindiff-mcp': (t) => (t.falsePositives ?? 0) + (t.missed ?? 0),
   'worm-protocol': (t) => t.segfaults ?? 0,
+  dsav: (t) => t.wrong ?? 0,
+  termpilot: (t) => (t.missed ?? 0) + (t.falseTriggers ?? 0),
+  'arm-string-ops': (t) => (t.faults ?? 0) + (t.stalls ?? 0),
 };
 
 const streak = (t: RoundTallies) => t.bestStreak ?? t.bestChain ?? 0;
@@ -212,6 +215,27 @@ export const MEDALS: readonly MedalDef[] = [
     description: 'Eat 20 packets without a single segfault.',
     check: ({ stats }) => (stats.packets ?? 0) >= 20 && (stats.segfaults ?? 0) === 0,
   },
+  {
+    id: 'stable-sort',
+    name: 'STABLE SORT',
+    sim: 'dsav',
+    description: 'Sort three arrays with zero wrong calls.',
+    check: ({ stats }) => (stats.arrays ?? 0) >= 3 && (stats.wrong ?? 0) === 0,
+  },
+  {
+    id: 'exact-match',
+    name: 'EXACT MATCH',
+    sim: 'termpilot',
+    description: 'Catch 8 matches with zero false triggers.',
+    check: ({ stats }) => (stats.caught ?? 0) >= 8 && (stats.falseTriggers ?? 0) === 0,
+  },
+  {
+    id: 'full-throughput',
+    name: 'FULL THROUGHPUT',
+    sim: 'arm-string-ops',
+    description: 'Land three full vectors without a fault.',
+    check: ({ stats }) => (stats.fullVectors ?? 0) >= 3 && (stats.faults ?? 0) === 0,
+  },
 ] satisfies readonly MedalDef[];
 
 const tiers = (
@@ -249,6 +273,9 @@ export const CHALLENGES: readonly ChallengeDef[] = [
   ...tiers('deadzone', 'BODY COUNT', 'kills', (n) => `Drop ${n} walkers in one round.`, [18, 30, 45]),
   ...tiers('qemu-mcp-server', 'UPTIME', 'tasks', (n) => `Ship ${n} guest tasks in one round.`, [6, 10, 14]),
   ...tiers('bindiff-mcp', 'DRIFT HUNTER', 'caught', (n) => `Catch ${n} drifted lines in one round.`, [7, 11, 15]),
+  ...tiers('dsav', 'COMPARATOR', 'arrays', (n) => `Sort ${n} arrays in one round.`, [2, 3, 5]),
+  ...tiers('termpilot', 'PREDICATE', 'caught', (n) => `Catch ${n} matches in one round.`, [6, 10, 14]),
+  ...tiers('arm-string-ops', 'THROUGHPUT', 'flipped', (n) => `Flip ${n} bytes in one round.`, [50, 80, 110]),
 ] satisfies readonly ChallengeDef[];
 
 /** Per-sim band-rank labels, indexed by bandRank() in lib/career.ts. */

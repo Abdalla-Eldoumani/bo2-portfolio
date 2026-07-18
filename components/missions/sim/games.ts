@@ -5,8 +5,9 @@
 
   The contract lives in contract.ts, the game-feel toolkit in fx.ts and
   the games themselves in games/<slug>.ts. This module is the registry:
-  createGame(slug, fx) → Game, plus SIM_META (title, brief, control
-  legend, round length and rank bands per sim).
+  createGame(slug, fx, veteran) → Game, plus SIM_META (title, brief,
+  control legend, round length, rank bands and the veteran-mode line
+  per sim).
 */
 
 import { W, H, type Fx } from '@/components/missions/sim/fx';
@@ -29,6 +30,9 @@ import { hordeProtocol } from '@/components/missions/sim/games/deadzone';
 import { snapshot } from '@/components/missions/sim/games/qemu-mcp-server';
 import { binDiff } from '@/components/missions/sim/games/bindiff-mcp';
 import { wormProtocol } from '@/components/missions/sim/games/worm-protocol';
+import { sortSprint } from '@/components/missions/sim/games/dsav';
+import { waitFor } from '@/components/missions/sim/games/termpilot';
+import { vectorPass } from '@/components/missions/sim/games/arm-string-ops';
 
 export type {
   Game,
@@ -44,6 +48,8 @@ export type SimMeta = {
   controls: string;
   roundS: number; // round length in seconds
   bands: [number, number]; // [VETERAN, PRESTIGE] score thresholds
+  /** What veteran mode changes, shown on the ready-screen toggle. */
+  veteran: string;
 };
 
 export const SIM_META: Record<string, SimMeta> = {
@@ -54,6 +60,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: 'HOLD SPACE / HOLD POINTER — CLIMB',
     roundS: 25,
     bands: [18, 34],
+    veteran: 'TIGHTER GATES, FASTER AIR',
   },
   aeos: {
     title: 'KERNEL BOOT',
@@ -62,6 +69,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '↵ / TAP — COMMIT STAGE',
     roundS: 20,
     bands: [14, 28],
+    veteran: 'NARROW WINDOWS, HOT IRQS',
   },
   'aarch64-playground': {
     title: 'SINGLE STEP',
@@ -70,6 +78,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '↵ / TAP — RETIRE',
     roundS: 22,
     bands: [15, 30],
+    veteran: 'HOT PIPELINE, MORE HAZARDS',
   },
   qala: {
     title: 'EFFECT CHECK',
@@ -78,6 +87,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '← PURE · → IO (TAP LEFT / RIGHT)',
     roundS: 20,
     bands: [16, 30],
+    veteran: 'FAST CARDS, EARLY DECEPTION',
   },
   'rust-http-server': {
     title: 'LOAD BALANCER',
@@ -86,6 +96,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '← ↓ → (↑ NODE 4) / TAP A LANE — SERVE',
     roundS: 25,
     bands: [60, 100],
+    veteran: 'HEAVY TRAFFIC, TOUCHY BREAKERS',
   },
   dossier: {
     title: 'REDACTION PASS',
@@ -94,6 +105,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '↵ / TAP — STAMP · SPLIT: ← LEFT → RIGHT',
     roundS: 22,
     bands: [14, 26],
+    veteran: 'FAST SCANNER, THIN INK',
   },
   dust: {
     title: 'DIG SITE',
@@ -102,6 +114,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: 'ARROWS + ↵ / TAP A TILE — DIG',
     roundS: 22,
     bands: [9, 18],
+    veteran: 'FAST SILT, LONG JAMS',
   },
   'budget-buddy': {
     title: 'MARKET RUN',
@@ -110,6 +123,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '↵ / TAP — BUY / SELL · HOLD SPACE — LEV ×2',
     roundS: 25,
     bands: [15, 35],
+    veteran: 'WILD TAPE, FAT FEES',
   },
   lattice: {
     title: 'DOMAIN COLLAPSE',
@@ -118,6 +132,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '← → ↑ ↓ MOVE · ↵ / TAP — ELIMINATE',
     roundS: 25,
     bands: [28, 50],
+    veteran: 'SHORT SEARCH CLOCK',
   },
   whittle: {
     title: 'PRUNING PASS',
@@ -126,6 +141,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '↵ / TAP — KILL · LET IT RISE — KEEP',
     roundS: 24,
     bands: [18, 36],
+    veteran: 'HOT ENUMERATOR, BIG SURGES',
   },
   credence: {
     title: 'POSTERIOR HUNT',
@@ -134,6 +150,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '← → / TAP — MOVE BAND · HOLD SPACE / POINTER — TIGHTEN',
     roundS: 25,
     bands: [16, 30],
+    veteran: 'HEAVY TAILS, RESTLESS REGIMES',
   },
   'regex-fsm': {
     title: 'STATE RUNNER',
@@ -142,6 +159,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '↑ → ↓ / TAP AN ARC — TRANSITION',
     roundS: 22,
     bands: [18, 34],
+    veteran: 'THREE ARCS FROM THE START',
   },
   qalam: {
     title: 'FLOOD FILL',
@@ -150,6 +168,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: 'ARROWS + ↵ / TAP A CELL — SEED FILL',
     roundS: 24,
     bands: [16, 32],
+    veteran: 'INTERLACED FROM FRAME ONE',
   },
   'cloud-practitioner-prep': {
     title: 'CLOUD TRIAGE',
@@ -158,6 +177,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '← FALSE · → TRUE (TAP LEFT / RIGHT)',
     roundS: 22,
     bands: [16, 32],
+    veteran: 'EXAM TEMPO',
   },
   deadzone: {
     title: 'HORDE PROTOCOL',
@@ -166,6 +186,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: 'ARROWS / HOLD POINTER — MOVE · SPACE — BOMB · ↵ — FREEZE',
     roundS: 25,
     bands: [45, 90],
+    veteran: 'THICK TIDE, EARLY BRUTES',
   },
   'qemu-mcp-server': {
     title: 'SNAPSHOT',
@@ -174,6 +195,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '← → SELECT · ↵ SNAPSHOT · ↓ ROLLBACK (TAP TOP / BOTTOM OF A GUEST)',
     roundS: 24,
     bands: [18, 34],
+    veteran: 'FLAKY FLEET, SHORT TELEGRAPHS',
   },
   'bindiff-mcp': {
     title: 'BIN DIFF',
@@ -182,6 +204,7 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: '← SAME · → DRIFT (TAP LEFT / RIGHT)',
     roundS: 22,
     bands: [16, 30],
+    veteran: 'SURGICAL FROM LINE ONE',
   },
   'worm-protocol': {
     title: 'WORM PROTOCOL',
@@ -190,30 +213,61 @@ export const SIM_META: Record<string, SimMeta> = {
     controls: 'ARROWS / TAP A DIRECTION — STEER',
     roundS: 25,
     bands: [12, 24],
+    veteran: 'TWO LIVES, HOT WIRE',
+  },
+  dsav: {
+    title: 'SORT SPRINT',
+    brief:
+      'You are the comparator. The scan lights each adjacent pair — call KEEP or SWAP before the window closes, and a clean array locks green. Two arrays in, the MERGE WAVE deals sorted halves and your buttons become "take a head". Comparing, swapping, sorted: the visualizer colors, played live.',
+    controls: '← KEEP · → SWAP — MERGE: ← → TAKE A HEAD (TAP A SIDE)',
+    roundS: 24,
+    bands: [24, 45],
+    veteran: 'SHORT WINDOWS, BIGGER ARRAYS',
+  },
+  termpilot: {
+    title: 'WAIT FOR',
+    brief:
+      'A live terminal scrolls; the brief posts a wait_for pattern. Strike the instant a matching line appears — the lookalikes are bait and a false trigger costs. Six catches rotate the predicate; ten opens a second session, and now you are watching two screens.',
+    controls: '↵ / TAP — STRIKE · TWO PANES: ← LEFT · → RIGHT (TAP A SIDE)',
+    roundS: 22,
+    bands: [16, 32],
+    veteran: 'FAST SCROLL, HEAVY BAIT',
+  },
+  'arm-string-ops': {
+    title: 'VECTOR PASS',
+    brief:
+      'A sixteen-lane NEON register fills with bytes. One press uppercases every lowercase lane at once — the wider the pass, the bigger the payoff. Malformed UTF-8 poisons a vector pass: give those the scalar fix, then go wide. Overflow stalls the pipeline.',
+    controls: 'SPACE / TAP LOW — NEON PASS · ← → + ↓ / TAP A LANE — SCALAR FIX',
+    roundS: 22,
+    bands: [70, 130],
+    veteran: 'FAST FEED, DIRTY INPUT',
   },
 };
 
-export function createGame(slug: string, fx: Fx): Game {
+export function createGame(slug: string, fx: Fx, veteran = false): Game {
   switch (slug) {
-    case 'peregrine': return falconDash(fx);
-    case 'aeos': return kernelBoot(fx);
-    case 'aarch64-playground': return singleStep(fx);
-    case 'qala': return effectCheck(fx);
-    case 'rust-http-server': return loadBalancer(fx);
-    case 'dossier': return redactionPass(fx);
-    case 'dust': return digSite(fx);
-    case 'budget-buddy': return marketRun(fx);
-    case 'lattice': return domainCollapse(fx);
-    case 'whittle': return pruningPass(fx);
-    case 'credence': return posteriorHunt(fx);
-    case 'regex-fsm': return stateRunner(fx);
-    case 'qalam': return floodFill(fx);
-    case 'cloud-practitioner-prep': return cloudTriage(fx);
-    case 'deadzone': return hordeProtocol(fx);
-    case 'qemu-mcp-server': return snapshot(fx);
-    case 'bindiff-mcp': return binDiff(fx);
-    case 'worm-protocol': return wormProtocol(fx);
-    default: return falconDash(fx);
+    case 'peregrine': return falconDash(fx, veteran);
+    case 'aeos': return kernelBoot(fx, veteran);
+    case 'aarch64-playground': return singleStep(fx, veteran);
+    case 'qala': return effectCheck(fx, veteran);
+    case 'rust-http-server': return loadBalancer(fx, veteran);
+    case 'dossier': return redactionPass(fx, veteran);
+    case 'dust': return digSite(fx, veteran);
+    case 'budget-buddy': return marketRun(fx, veteran);
+    case 'lattice': return domainCollapse(fx, veteran);
+    case 'whittle': return pruningPass(fx, veteran);
+    case 'credence': return posteriorHunt(fx, veteran);
+    case 'regex-fsm': return stateRunner(fx, veteran);
+    case 'qalam': return floodFill(fx, veteran);
+    case 'cloud-practitioner-prep': return cloudTriage(fx, veteran);
+    case 'deadzone': return hordeProtocol(fx, veteran);
+    case 'qemu-mcp-server': return snapshot(fx, veteran);
+    case 'bindiff-mcp': return binDiff(fx, veteran);
+    case 'worm-protocol': return wormProtocol(fx, veteran);
+    case 'dsav': return sortSprint(fx, veteran);
+    case 'termpilot': return waitFor(fx, veteran);
+    case 'arm-string-ops': return vectorPass(fx, veteran);
+    default: return falconDash(fx, veteran);
   }
 }
 

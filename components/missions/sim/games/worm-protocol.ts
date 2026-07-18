@@ -35,7 +35,7 @@ const Y0 = 52;
 
 type Cell = { x: number; y: number };
 
-export function wormProtocol(fx: Fx): Game {
+export function wormProtocol(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 3.2, step: 3, maxMult: 3 });
 
@@ -44,7 +44,8 @@ export function wormProtocol(fx: Fx): Game {
     dir: { x: 1, y: 0 },
     nextDir: { x: 1, y: 0 },
     stepT: 0,
-    interval: 0.15,
+    // veteran mode runs hotter: two lives on a faster wire
+    interval: veteran ? 0.125 : 0.15,
     slowT: 0,
     food: { x: 0, y: 0 },
     power: null as null | { x: number; y: number; kind: 'slow' | 'shrink' },
@@ -52,7 +53,7 @@ export function wormProtocol(fx: Fx): Game {
     packets: 0,
     powerUps: 0,
     segfaults: 0,
-    lives: 3,
+    lives: veteran ? 2 : 3,
     deadT: 0,
   };
 
@@ -149,7 +150,7 @@ export function wormProtocol(fx: Fx): Game {
           fx.combo.add();
           const gained = fx.combo.mult();
           s.pts += gained;
-          s.interval = Math.max(0.085, s.interval - 0.0035);
+          s.interval = Math.max(veteran ? 0.075 : 0.085, s.interval - 0.0035);
           const p = cellPx(s.body[0]);
           fx.text(p.x + CELL / 2, p.y - 6, `+${gained}`, { color: OC });
           fx.burst(p.x + CELL / 2, p.y + CELL / 2, { color: OC, n: 7, speed: 110 });
@@ -236,7 +237,7 @@ export function wormProtocol(fx: Fx): Game {
       // lives + status
       mono(ctx, 10);
       ctx.fillStyle = INK2;
-      ctx.fillText(`LIVES ${'●'.repeat(Math.max(0, s.lives))}${'○'.repeat(3 - Math.max(0, s.lives))}`, 16, H - 14);
+      ctx.fillText(`LIVES ${'●'.repeat(Math.max(0, s.lives))}${'○'.repeat((veteran ? 2 : 3) - Math.max(0, s.lives))}`, 16, H - 14);
       if (s.slowT > 0) {
         ctx.fillStyle = TEAL;
         ctx.fillText('SLOW-MO', 120, H - 14);

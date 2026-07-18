@@ -50,9 +50,11 @@ const NEWS_DOWN = [
   'GUIDANCE SLASHED AT THE BELL',
 ];
 
-export function marketRun(fx: Fx): Game {
+export function marketRun(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 9, step: 2, maxMult: 3 });
+  // veteran mode runs hotter: wild tape, fat fees
+  const fee = veteran ? FEE * 1.5 : FEE;
   const s = {
     prices: [100] as number[],
     holding: false,
@@ -80,7 +82,8 @@ export function marketRun(fx: Fx): Game {
 
   const step = () => {
     const last = price();
-    let d = s.regime.drift + (Math.random() - 0.5) * 2 * s.regime.vol;
+    let d =
+      s.regime.drift + (Math.random() - 0.5) * 2 * s.regime.vol * (veteran ? 1.35 : 1);
     if (s.news && s.news.tele <= 0 && s.news.steps > 0) {
       d += s.news.move / 9;
       s.news.steps -= 1;
@@ -107,16 +110,16 @@ export function marketRun(fx: Fx): Game {
 
   const trade = () => {
     const p = price();
-    s.fees += FEE;
+    s.fees += fee;
     s.trades += 1;
     if (!s.holding) {
       s.holding = true;
       s.entry = p;
-      s.posPl = -FEE;
+      s.posPl = -fee;
       s.posLow = 0;
     } else {
       s.holding = false;
-      const net = s.posPl - FEE;
+      const net = s.posPl - fee;
       s.cash += net;
       s.bestTrade = Math.max(s.bestTrade, net);
       s.worstTrade = Math.min(s.worstTrade, net);
@@ -208,7 +211,7 @@ export function marketRun(fx: Fx): Game {
       } else {
         mono(ctx, 11);
         ctx.fillStyle = INK3;
-        ctx.fillText(`REGIME: ${s.regime.name} · TRADE FEE $${FEE.toFixed(2)}`, x0, 44);
+        ctx.fillText(`REGIME: ${s.regime.name} · TRADE FEE $${fee.toFixed(2)}`, x0, 44);
       }
 
       ctx.strokeStyle = OC;

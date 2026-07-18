@@ -48,7 +48,7 @@ type Vm = {
 const NAMES = ['vm0', 'vm1', 'vm2', 'vm3'];
 const ARCHES = ['aarch64', 'x86_64', 'aarch64', 'x86_64'];
 
-export function snapshot(fx: Fx): Game {
+export function snapshot(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 6, step: 2, maxMult: 3 });
 
@@ -58,7 +58,8 @@ export function snapshot(fx: Fx): Game {
     state: 'running',
     progress: 0,
     stateT: 0,
-    glitchT: 2.5 + Math.random() * 4,
+    // veteran mode runs a flakier fleet: glitches come 30% sooner
+    glitchT: (2.5 + Math.random() * 4) * (veteran ? 0.7 : 1),
     snap: null,
     snapDirty: false,
     graceT: 0,
@@ -123,7 +124,7 @@ export function snapshot(fx: Fx): Game {
     vm.state = 'running';
     vm.stateT = 0;
     vm.progress = vm.snap;
-    vm.glitchT = 3 + Math.random() * 4;
+    vm.glitchT = (3 + Math.random() * 4) * (veteran ? 0.7 : 1);
     s.restores += 1;
     s.pts += 2;
     fx.combo.add();
@@ -193,7 +194,7 @@ export function snapshot(fx: Fx): Game {
           vm.glitchT -= dt;
           if (vm.glitchT <= 0) {
             vm.state = 'glitch';
-            vm.stateT = 1.4;
+            vm.stateT = veteran ? 1.0 : 1.4;
             evs.push({ kind: 'hazard', label: 'GLITCH' });
           }
         } else if (vm.state === 'glitch') {
@@ -210,7 +211,7 @@ export function snapshot(fx: Fx): Game {
           vm.stateT -= dt;
           if (vm.stateT <= 0) {
             vm.state = 'running';
-            vm.glitchT = 3 + Math.random() * 4;
+            vm.glitchT = (3 + Math.random() * 4) * (veteran ? 0.7 : 1);
           }
         }
       }

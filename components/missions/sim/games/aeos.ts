@@ -56,7 +56,7 @@ const PANIC_TRACE = [
   '[ scheduler resumed ]',
 ];
 
-export function kernelBoot(fx: Fx): Game {
+export function kernelBoot(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 12, step: 3, maxMult: 3 });
   const s = {
@@ -73,13 +73,15 @@ export function kernelBoot(fx: Fx): Game {
     panic: 0,
     ok: 0,
     irq: null as null | { pos: number; w: number; life: number },
-    irqNext: 4.5,
+    irqNext: veteran ? 3 : 4.5,
     irqServiced: 0,
     irqDropped: 0,
     t: 0,
   };
+  // veteran mode runs hotter: narrower windows, hotter IRQ traffic
   const winW = () =>
-    Math.max(0.085, (s.userspace ? 0.2 : 0.24) - s.commits * 0.011);
+    Math.max(0.085, (s.userspace ? 0.2 : 0.24) - s.commits * 0.011) *
+    (veteran ? 0.7 : 1);
 
   const commit = () => {
     const half = winW() / 2;
@@ -159,7 +161,7 @@ export function kernelBoot(fx: Fx): Game {
       } else if (s.t > 4) {
         s.irqNext -= dt;
         if (s.irqNext <= 0) {
-          s.irqNext = 3 + Math.random() * 3;
+          s.irqNext = veteran ? 2 + Math.random() * 2 : 3 + Math.random() * 3;
           const side = Math.random() < 0.5;
           s.irq = { pos: side ? 0.12 + Math.random() * 0.2 : 0.68 + Math.random() * 0.2, w: 0.09, life: 1.7 };
         }

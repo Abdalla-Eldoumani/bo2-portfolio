@@ -43,9 +43,9 @@ type Zombie = {
 };
 type Bullet = { x: number; y: number; vx: number; vy: number; pierce: number; live: boolean };
 
-export function hordeProtocol(fx: Fx): Game {
+export function hordeProtocol(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
-  fx.combo.set({ window: 2.6, step: 6, maxMult: 3 });
+  fx.combo.set({ window: 2.6, step: 5, maxMult: 3 });
 
   const zombies: Zombie[] = Array.from({ length: ZMAX }, () => ({
     x: 0, y: 0, hp: 1, brute: false, live: false, grazed: 0,
@@ -105,7 +105,8 @@ export function hordeProtocol(fx: Fx): Game {
       z.x = edge === 0 ? -12 : edge === 1 ? W + 12 : Math.random() * W;
       z.y = edge === 2 ? -12 : edge === 3 ? H + 12 : Math.random() * H;
     }
-    z.brute = s.wave >= 3 && Math.random() < 0.18;
+    // veteran mode runs hotter: thicker tide, brutes a wave early
+    z.brute = s.wave >= (veteran ? 2 : 3) && Math.random() < 0.18;
     z.hp = z.brute ? 3 : 1;
     z.live = true;
     z.grazed = 0;
@@ -164,15 +165,15 @@ export function hordeProtocol(fx: Fx): Game {
         s.waveT = 0;
         s.wave += 1;
         s.freeze = 1;
-        fx.announce(`WAVE ${s.wave}`, s.wave >= 3 ? 'BRUTES IN THE TIDE' : undefined);
+        fx.announce(`WAVE ${s.wave}`, s.wave >= (veteran ? 2 : 3) ? 'BRUTES IN THE TIDE' : undefined);
         evs.push({ kind: 'milestone', label: `WAVE ${s.wave}` });
       }
       s.spawnT -= dt;
       if (s.spawnT <= 0) {
-        s.spawnT = Math.max(0.2, 0.68 - s.wave * 0.09);
+        s.spawnT = Math.max(0.28, 0.85 - s.wave * 0.09) * (veteran ? 0.8 : 1);
         spawn();
-        // late waves come two at a time
-        if (s.wave >= 4) spawn();
+        // veteran late waves come two at a time
+        if (veteran && s.wave >= 4) spawn();
       }
 
       // movement: held arrows, or steer toward the held pointer

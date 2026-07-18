@@ -73,6 +73,8 @@ export interface ContractDef {
 
 /** What one round did to the career; drives the debrief. */
 export interface RoundReport {
+  /** Whether the round ran in veteran mode (xp paid at 1.5x). */
+  veteran: boolean;
   /** Wager resolution when one was staked this round. */
   wager: { staked: number; won: boolean } | null;
   /** Set when this round completed the daily contract. */
