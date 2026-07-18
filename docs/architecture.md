@@ -74,6 +74,7 @@ lib/
   api/              GitHub fetch with committed fallback
   types/            content types
   utils/            small tested helpers (relative time, sync stamps)
+  career.ts         the field-sim career store (localStorage, tested)
   sfx.ts            the WebAudio cue synth
   site-config.ts    identity + canonical URL resolution
 public/art/         original SVG production art

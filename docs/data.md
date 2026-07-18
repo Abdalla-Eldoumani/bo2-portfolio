@@ -9,7 +9,9 @@ that shows it (screen, resume sheet, ticker, OG description) updates.
 
 | File | Owns |
 | --- | --- |
-| `projects.ts` | The 8 missions: slug, description, tech, metrics, links, art |
+| `projects.ts` | The 17 missions: slug, description, tech, metrics, links, art |
+| `career.ts` | The field-sim career: rank ladder, medals, challenges, mistake rules |
+| `cloud-triage.ts` | Original true/false AWS statements for the CLOUD TRIAGE sim |
 | `experience.ts` | Roles (newest first) + education |
 | `skills.ts` | The loadout: primary/secondary/tactical/wildcards |
 | `navigation.ts` | The 7 destinations + the lobby item |
@@ -24,10 +26,11 @@ cast - so a shape mistake is a compile error.
 ## The contract is tested
 
 `lib/data/*.test.ts` encode editorial rules as vitest assertions: exactly
-8 missions, unique slugs, retired projects stay absent, a project without
-a deployment has no live link, every op ships art, navigation order ends
-with About. Editing content and its test in the same change is the
-convention; the suite is the reviewer that never sleeps.
+17 missions, unique slugs, retired projects stay absent, a project without
+a deployment has no live link, every op ships art, every sim has a
+signature medal and three challenge tiers, navigation order ends with
+About. Editing content and its test in the same change is the convention;
+the suite is the reviewer that never sleeps.
 
 ## Live GitHub data
 
