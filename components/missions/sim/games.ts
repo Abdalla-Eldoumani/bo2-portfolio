@@ -25,6 +25,10 @@ import { posteriorHunt } from '@/components/missions/sim/games/credence';
 import { stateRunner } from '@/components/missions/sim/games/regex-fsm';
 import { floodFill } from '@/components/missions/sim/games/qalam';
 import { cloudTriage } from '@/components/missions/sim/games/cloud-practitioner-prep';
+import { hordeProtocol } from '@/components/missions/sim/games/deadzone';
+import { snapshot } from '@/components/missions/sim/games/qemu-mcp-server';
+import { binDiff } from '@/components/missions/sim/games/bindiff-mcp';
+import { wormProtocol } from '@/components/missions/sim/games/worm-protocol';
 
 export type {
   Game,
@@ -155,6 +159,38 @@ export const SIM_META: Record<string, SimMeta> = {
     roundS: 22,
     bands: [16, 32],
   },
+  deadzone: {
+    title: 'HORDE PROTOCOL',
+    brief:
+      'The weapon aims itself — the footwork is yours. Kills level the build (fire rate, twin shot, pierce), waves thicken the tide, brutes soak three rounds. SPACE spends the bomb, ↵ spends the freeze. Getting caught costs points and the chain.',
+    controls: 'ARROWS / HOLD POINTER — MOVE · SPACE — BOMB · ↵ — FREEZE',
+    roundS: 25,
+    bands: [45, 90],
+  },
+  'qemu-mcp-server': {
+    title: 'SNAPSHOT',
+    brief:
+      'Three guests grind tasks; all of them will glitch, crash and reboot from zero. Snapshot a clean state and a rollback saves the work — an image taken mid-glitch is corrupted and crashes the guest again. Watch the flicker.',
+    controls: '← → SELECT · ↵ SNAPSHOT · ↓ ROLLBACK (TAP TOP / BOTTOM OF A GUEST)',
+    roundS: 24,
+    bands: [18, 34],
+  },
+  'bindiff-mcp': {
+    title: 'BIN DIFF',
+    brief:
+      'Two builds, one symbol line. Call SAME or DRIFT before the window closes: sizes creep, addresses shift a nibble, symbols pick up lookalike glyphs — and the stripped wave takes the names away entirely. False positives cost.',
+    controls: '← SAME · → DRIFT (TAP LEFT / RIGHT)',
+    roundS: 22,
+    bands: [16, 30],
+  },
+  'worm-protocol': {
+    title: 'WORM PROTOCOL',
+    brief:
+      'Recovered from a classified archive: an ARM64 worm loose on a wrapped network. Eat the data packets, take the slow-mo and shrink pickups, and mind your own tail — the edges forgive, the tail never does. Three lives.',
+    controls: 'ARROWS / TAP A DIRECTION — STEER',
+    roundS: 25,
+    bands: [12, 24],
+  },
 };
 
 export function createGame(slug: string, fx: Fx): Game {
@@ -173,6 +209,10 @@ export function createGame(slug: string, fx: Fx): Game {
     case 'regex-fsm': return stateRunner(fx);
     case 'qalam': return floodFill(fx);
     case 'cloud-practitioner-prep': return cloudTriage(fx);
+    case 'deadzone': return hordeProtocol(fx);
+    case 'qemu-mcp-server': return snapshot(fx);
+    case 'bindiff-mcp': return binDiff(fx);
+    case 'worm-protocol': return wormProtocol(fx);
     default: return falconDash(fx);
   }
 }
