@@ -160,6 +160,11 @@ export function contractDoneToday(state: CareerState = loadCareer()): boolean {
   return state.contract?.date === todayKey() && state.contract.done;
 }
 
+/** Veteran mode unlocks per sim once its VETERAN band has been reached. */
+export function canVeteran(slug: string, state: CareerState = loadCareer()): boolean {
+  return (state.bestRanks[slug] ?? 0) >= 2;
+}
+
 /** The classified arcade: once found, it stays on the board. */
 export function unlockArcade(): CareerState {
   const state = loadCareer();
@@ -181,6 +186,7 @@ export function recordRound(
   stats: RoundTallies,
   events: RoundTallies,
   wagered = false,
+  veteran = false,
 ): RoundReport {
   const state = loadCareer();
   const mistakes = MISTAKES[slug]?.(stats) ?? 0;
@@ -200,10 +206,12 @@ export function recordRound(
   // score → XP normalized against the sim's PRESTIGE band, so a great
   // round is worth ~100 XP on any sim regardless of its score scale
   const base = Math.round(Math.min(1.5, Math.max(0, score / bands[1])) * 100);
-  const xpGained =
+  const earned =
     base +
     newMedals.length * XP_PER_MEDAL +
     newChallenges.reduce((sum, c) => sum + XP_PER_CHALLENGE[c.tier], 0);
+  // veteran ops run harder and pay half again
+  const xpGained = veteran ? Math.round(earned * 1.5) : earned;
 
   // daily contract: pays its bounty once per calendar day, on its sim
   const today = todayKey();
@@ -253,6 +261,7 @@ export function recordRound(
   const nextDef = challengesForSim(slug).find((c) => !state.challenges[c.id]);
   return {
     score,
+    veteran,
     wager: wagerResult,
     contract: contractResult,
     xpGained,

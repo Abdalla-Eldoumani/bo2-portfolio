@@ -3,6 +3,7 @@ import {
   CONTRACT_BOUNTY,
   RANK_CAP_XP,
   bandRank,
+  canVeteran,
   canWager,
   careerTotals,
   dailyContract,
@@ -94,7 +95,7 @@ describe('recordRound', () => {
   it('summarizes totals for the record panel', () => {
     const totals = careerTotals(loadCareer());
     expect(totals.rank.level).toBeGreaterThanOrEqual(1);
-    expect(totals.challengeTotal).toBe(51);
+    expect(totals.challengeTotal).toBe(60);
     expect(totals.medalCount).toBeGreaterThan(0);
   });
 });
@@ -173,6 +174,18 @@ describe('daily contract', () => {
     const second = recordRound(c.sim, 1, [10, 20], stats, {});
     expect(second.contract).toBeNull();
     expect(loadCareer().contract).toEqual({ date: todayKey(), done: true });
+  });
+});
+
+describe('veteran mode', () => {
+  it('unlocks at the veteran band and pays xp at 1.5x', () => {
+    expect(canVeteran('qala', { ...loadCareer(), bestRanks: { qala: 2 } })).toBe(true);
+    expect(canVeteran('qala', { ...loadCareer(), bestRanks: { qala: 1 } })).toBe(false);
+    const plain = recordRound('qala', 10, [16, 30], {}, {});
+    const vet = recordRound('qala', 10, [16, 30], {}, {}, false, true);
+    expect(vet.veteran).toBe(true);
+    expect(plain.veteran).toBe(false);
+    expect(vet.xpGained).toBe(Math.round(plain.xpGained * 1.5));
   });
 });
 
