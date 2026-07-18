@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { projects } from '@/lib/data/projects';
 import { FieldSim } from '@/components/missions/sim/field-sim';
 import { sfxClose, sfxMove, sfxOpen } from '@/lib/sfx';
-import { CAREER_CHANGE_EVENT, loadCareer } from '@/lib/career';
+import { CAREER_CHANGE_EVENT, loadCareer, unlockArcade } from '@/lib/career';
 import { BAND_RANKS, challengesForSim } from '@/lib/data/career';
 import type { CareerState } from '@/lib/types/career';
 
@@ -28,6 +28,9 @@ const MAP_NAMES: Record<string, string> = {
   Lattice: 'SEARCH SPACE',
   'AArch64 Playground': 'PROVING GROUND',
   Qala: 'THE FORGE',
+  Deadzone: 'THE DEADZONE',
+  'QEMU MCP Server': 'GUEST QUARTERS',
+  'BinDiff MCP': 'MIRROR BUILD',
   'Regex FSM': 'AUTOMATA HALL',
   Whittle: 'THE WORKSHOP',
   'Rust HTTP Server': 'SERVER HALL',
@@ -195,6 +198,8 @@ export function MissionSelect() {
   );
   const [selected, setSelected] = useState(initial);
   const [simOpen, setSimOpen] = useState(false);
+  const [wormOpen, setWormOpen] = useState(false);
+  const [decrypt, setDecrypt] = useState(0);
   const [career, setCareer] = useState<CareerState | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const selRef = useRef(initial);
@@ -341,15 +346,60 @@ export function MissionSelect() {
           );
         })}
 
-        {/* Empty slot */}
-        <div
-          aria-hidden="true"
-          className="hidden min-h-[150px] items-center justify-center border border-dashed border-white/[0.14] sm:flex"
-        >
-          <span className="font-mono text-[10px] tracking-[0.1em] text-ink-3">
-            NEXT OP IN DEVELOPMENT
-          </span>
-        </div>
+        {/* The last slot: a dead placeholder, unless you keep pushing on it.
+            Three clicks decrypt the classified arcade; the unlock persists
+            in the career profile. */}
+        {career?.arcade ? (
+          <button
+            type="button"
+            onClick={() => {
+              sfxOpen();
+              setWormOpen(true);
+            }}
+            title="Run the classified arcade"
+            className="tile confirm-punch corner-tick flex min-h-[150px] w-full flex-col items-start justify-between p-3 text-left"
+          >
+            <span className="font-mono text-[9px] tracking-[0.2em] text-red">
+              ▮ CLASSIFIED
+            </span>
+            <span>
+              <span className="glow-text block font-display text-[18px] font-bold uppercase leading-tight text-orange-core">
+                Worm Protocol
+              </span>
+              <span className="mt-0.5 block font-mono text-[9px] tracking-[0.08em] text-ink-3">
+                ARCADE INTERCEPT · SIGNAL DECRYPTED
+              </span>
+            </span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label="Next op in development"
+            onClick={() => {
+              sfxMove();
+              if (decrypt >= 2) {
+                unlockArcade();
+                sfxOpen();
+                setDecrypt(0);
+              } else {
+                setDecrypt(decrypt + 1);
+              }
+            }}
+            className="flex min-h-[150px] w-full items-center justify-center border border-dashed border-white/[0.14]"
+          >
+            <span
+              className={`font-mono text-[10px] tracking-[0.1em] ${
+                decrypt > 0 ? 'text-orange-core' : 'text-ink-3'
+              }`}
+            >
+              {decrypt === 0
+                ? 'NEXT OP IN DEVELOPMENT'
+                : decrypt === 1
+                  ? '…SIGNAL DETECTED'
+                  : 'DECRYPTING ARCHIVE…'}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Brief rail (desktop) */}
@@ -374,6 +424,17 @@ export function MissionSelect() {
           setSimOpen(false);
         }}
         onNext={nextSim}
+      />
+
+      {/* The classified arcade rides its own dialog, outside the roster. */}
+      <FieldSim
+        slug="worm-protocol"
+        name="CLASSIFIED"
+        open={wormOpen}
+        onClose={() => {
+          sfxClose();
+          setWormOpen(false);
+        }}
       />
     </div>
   );
