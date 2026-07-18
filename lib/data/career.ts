@@ -50,6 +50,10 @@ export const MISTAKES: Record<string, (t: RoundTallies) => number> = {
   'regex-fsm': (t) => t.rejects ?? 0,
   qalam: (t) => t.wipes ?? 0,
   'cloud-practitioner-prep': (t) => (t.judged ?? 0) - (t.correct ?? 0),
+  deadzone: (t) => t.hitsTaken ?? 0,
+  'qemu-mcp-server': (t) => (t.corrupted ?? 0) + (t.crashesLost ?? 0),
+  'bindiff-mcp': (t) => (t.falsePositives ?? 0) + (t.missed ?? 0),
+  'worm-protocol': (t) => t.segfaults ?? 0,
 };
 
 const streak = (t: RoundTallies) => t.bestStreak ?? t.bestChain ?? 0;
@@ -180,6 +184,34 @@ export const MEDALS: readonly MedalDef[] = [
     description: 'Master all four exam domains in one round.',
     check: ({ stats }) => (stats.readySignal ?? 0) >= 1,
   },
+  {
+    id: 'untouchable',
+    name: 'UNTOUCHABLE',
+    sim: 'deadzone',
+    description: 'Survive three waves without getting caught once.',
+    check: ({ stats }) => (stats.waves ?? 0) >= 3 && (stats.hitsTaken ?? 0) === 0,
+  },
+  {
+    id: 'clean-image',
+    name: 'CLEAN IMAGE',
+    sim: 'qemu-mcp-server',
+    description: 'Restore three snapshots without a single corrupted image.',
+    check: ({ stats }) => (stats.restores ?? 0) >= 3 && (stats.corrupted ?? 0) === 0,
+  },
+  {
+    id: 'clean-diff',
+    name: 'CLEAN DIFF',
+    sim: 'bindiff-mcp',
+    description: 'Catch 8 drifts with zero false positives.',
+    check: ({ stats }) => (stats.caught ?? 0) >= 8 && (stats.falsePositives ?? 0) === 0,
+  },
+  {
+    id: 'worm-protocol',
+    name: 'WORM PROTOCOL',
+    sim: 'worm-protocol',
+    description: 'Eat 20 packets without a single segfault.',
+    check: ({ stats }) => (stats.packets ?? 0) >= 20 && (stats.segfaults ?? 0) === 0,
+  },
 ] satisfies readonly MedalDef[];
 
 const tiers = (
@@ -214,6 +246,9 @@ export const CHALLENGES: readonly ChallengeDef[] = [
   ...tiers('regex-fsm', 'RUN LENGTH', 'transitions', (n) => `Take ${n} transitions in one round.`, [14, 24, 34]),
   ...tiers('qalam', 'FRAME BUDGET', 'regions', (n) => `Lock ${n} regions in one round.`, [3, 5, 7]),
   ...tiers('cloud-practitioner-prep', 'MOCK EXAM', 'correct', (n) => `Judge ${n} statements correctly in one round.`, [10, 16, 22]),
+  ...tiers('deadzone', 'BODY COUNT', 'kills', (n) => `Drop ${n} walkers in one round.`, [18, 30, 45]),
+  ...tiers('qemu-mcp-server', 'UPTIME', 'tasks', (n) => `Ship ${n} guest tasks in one round.`, [6, 10, 14]),
+  ...tiers('bindiff-mcp', 'DRIFT HUNTER', 'caught', (n) => `Catch ${n} drifted lines in one round.`, [7, 11, 15]),
 ] satisfies readonly ChallengeDef[];
 
 /** Per-sim band-rank labels, indexed by bandRank() in lib/career.ts. */

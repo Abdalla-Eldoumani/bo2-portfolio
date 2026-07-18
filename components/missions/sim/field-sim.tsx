@@ -24,15 +24,24 @@ import {
   sfxHazard,
   sfxMedal,
   sfxMilestone,
+  sfxMove,
   sfxNear,
   sfxPerfect,
   sfxRankUp,
   sfxScore,
   sfxSelect,
 } from '@/lib/sfx';
-import { enterPrestige, recordRound, RANK_CAP_XP } from '@/lib/career';
+import {
+  canWager,
+  contractDoneToday,
+  dailyContract,
+  enterPrestige,
+  recordRound,
+  wagerStake,
+  RANK_CAP_XP,
+} from '@/lib/career';
 import { RANKS } from '@/lib/data/career';
-import type { RoundReport } from '@/lib/types/career';
+import type { ContractDef, RoundReport } from '@/lib/types/career';
 
 /*
   FIELD SIM harness — the combat-training modal. Owns the 20-second clock,
@@ -79,6 +88,14 @@ export function FieldSim({
   const [shownScore, setShownScore] = useState(0);
   const [xpAnim, setXpAnim] = useState(false);
   const [prestiged, setPrestiged] = useState(false);
+  // Wager match: staked on the ready screen, settled at the debrief.
+  const [wagerOn, setWagerOn] = useState(false);
+  const [stake, setStake] = useState(0);
+  const [contract, setContract] = useState<ContractDef | null>(null);
+  const wagerRef = useRef(false);
+  useEffect(() => {
+    wagerRef.current = wagerOn;
+  }, [wagerOn]);
   const onNextRef = useRef(onNext);
   useEffect(() => {
     onNextRef.current = onNext;
@@ -86,6 +103,8 @@ export function FieldSim({
   const timeRef = useRef(0);
   const keysRef = useRef<string[]>([]);
   const heldRef = useRef(false);
+  const downRef = useRef<string[]>([]);
+  const cursorRef = useRef<{ x: number; y: number } | null>(null);
   const tapRef = useRef<{ x: number; y: number } | null>(null);
   const scoreRef = useRef(0);
   const noiseRef = useRef<HTMLCanvasElement | null>(null);
@@ -137,6 +156,9 @@ export function FieldSim({
       setReport(null);
       setRoundStats(null);
       setPrestiged(false);
+      setWagerOn(false);
+      setStake(canWager() ? wagerStake() : 0);
+      setContract(contractDoneToday() ? null : dailyContract());
       setPhase('ready');
       try {
         setBest(Number(sessionStorage.getItem(`sim-${slug}`) ?? 0));
@@ -163,6 +185,9 @@ export function FieldSim({
         setReport(null);
         setRoundStats(null);
         setPrestiged(false);
+        setWagerOn(false);
+        setStake(canWager() ? wagerStake() : 0);
+        setContract(contractDoneToday() ? null : dailyContract());
         try {
           setBest(Number(sessionStorage.getItem(`sim-${slug}`) ?? 0));
         } catch {
@@ -215,6 +240,15 @@ export function FieldSim({
           if (phaseRef.current === 'ready') start();
           else if (phaseRef.current === 'debrief') start();
         }
+        // W on the ready screen stakes / clears the wager.
+        if (
+          phaseRef.current === 'ready' &&
+          (e.key === 'w' || e.key === 'W') &&
+          canWager()
+        ) {
+          setWagerOn((v) => !v);
+          sfxMove();
+        }
         // N from the debrief chains into the next op's sim.
         if (
           phaseRef.current === 'debrief' &&
@@ -224,40 +258,66 @@ export function FieldSim({
         }
         return;
       }
-      if (!e.repeat) keysRef.current.push(e.key);
+      if (!e.repeat) {
+        keysRef.current.push(e.key);
+        if (e.key.startsWith('Arrow') && !downRef.current.includes(e.key)) {
+          downRef.current.push(e.key);
+        }
+      }
     };
     const onKeyUp = (e: KeyboardEvent) => {
       if (e.key === ' ') heldRef.current = false;
+      const i = downRef.current.indexOf(e.key);
+      if (i >= 0) downRef.current.splice(i, 1);
+    };
+    const canvasPoint = (e: PointerEvent) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return null;
+      const r = canvas.getBoundingClientRect();
+      if (
+        e.clientX < r.left || e.clientX > r.right ||
+        e.clientY < r.top || e.clientY > r.bottom
+      ) {
+        return null;
+      }
+      return {
+        x: ((e.clientX - r.left) / r.width) * SIM_W,
+        y: ((e.clientY - r.top) / r.height) * SIM_H,
+      };
     };
     const onPointerDown = (e: PointerEvent) => {
       heldRef.current = true;
-      const canvas = canvasRef.current;
-      if (canvas && phaseRef.current === 'running') {
-        const r = canvas.getBoundingClientRect();
-        if (
-          e.clientX >= r.left && e.clientX <= r.right &&
-          e.clientY >= r.top && e.clientY <= r.bottom
-        ) {
-          tapRef.current = {
-            x: ((e.clientX - r.left) / r.width) * SIM_W,
-            y: ((e.clientY - r.top) / r.height) * SIM_H,
-          };
+      if (phaseRef.current === 'running') {
+        const p = canvasPoint(e);
+        if (p) {
+          tapRef.current = p;
+          cursorRef.current = p;
         }
+      }
+    };
+    const onPointerMove = (e: PointerEvent) => {
+      if (heldRef.current && phaseRef.current === 'running') {
+        cursorRef.current = canvasPoint(e) ?? cursorRef.current;
       }
     };
     const onPointerUp = () => {
       heldRef.current = false;
+      cursorRef.current = null;
     };
 
     window.addEventListener('keydown', onKeyDown, { capture: true });
     window.addEventListener('keyup', onKeyUp, { capture: true });
     d.addEventListener('pointerdown', onPointerDown);
+    d.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
     return () => {
       window.removeEventListener('keydown', onKeyDown, { capture: true });
       window.removeEventListener('keyup', onKeyUp, { capture: true });
       d.removeEventListener('pointerdown', onPointerDown);
+      d.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      downRef.current = [];
+      cursorRef.current = null;
     };
   }, [open, start]);
 
@@ -312,6 +372,8 @@ export function FieldSim({
             held: heldRef.current,
             pressed: keysRef.current,
             tap: tapRef.current,
+            down: downRef.current,
+            cursor: cursorRef.current,
           };
           gameRef.current.update(gdt, input);
           keysRef.current = [];
@@ -380,13 +442,19 @@ export function FieldSim({
             SIM_META[slug]?.bands ?? [10, 20],
             stats.tallies,
             tallyRef.current,
+            wagerRef.current,
           );
           setRoundStats(stats);
           setReport(rep);
+          setWagerOn(false);
           setPhase('debrief');
           sfxEnd();
           if (rep.rankedUp) sfxRankUp();
-          else if (rep.newMedals.length > 0) sfxMedal();
+          else if (rep.newMedals.length > 0 || rep.contract) sfxMedal();
+          if (rep.wager) {
+            if (rep.wager.won) sfxMilestone();
+            else sfxComboBreak();
+          }
         }
       }
 
@@ -500,6 +568,12 @@ export function FieldSim({
                 <p className="font-mono text-[11px] tracking-[0.08em] text-ink-3">
                   {meta.controls}
                 </p>
+                {contract?.sim === slug && (
+                  <p className="max-w-[52ch] font-mono text-[10px] tracking-[0.06em] text-gold">
+                    DAILY CONTRACT: {contract.challenge.detail} (+
+                    {contract.bounty} XP)
+                  </p>
+                )}
                 <button
                   type="button"
                   onClick={start}
@@ -508,6 +582,25 @@ export function FieldSim({
                 >
                   Start Sim ▸
                 </button>
+                {stake > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWagerOn((v) => !v);
+                      sfxMove();
+                    }}
+                    aria-pressed={wagerOn}
+                    className={`confirm-punch border px-4 py-1 font-mono text-[10px] tracking-[0.08em] ${
+                      wagerOn
+                        ? 'border-gold bg-gold/10 text-gold'
+                        : 'border-white/[0.28] text-ink-3 hover:border-gold hover:text-gold'
+                    }`}
+                  >
+                    {wagerOn
+                      ? `WAGER STAKED — ${stake} XP RIDES ON VETERAN`
+                      : `W — WAGER: DOUBLE OR NOTHING (${stake} XP)`}
+                  </button>
+                )}
                 <p className="font-mono text-[10px] text-ink-3">
                   {meta.roundS} SECONDS ON THE CLOCK
                 </p>
@@ -591,7 +684,28 @@ export function FieldSim({
                     Promoted — {report.rankAfter.name}
                   </p>
                 )}
+                {report && report.rankAfter.level < report.rankBefore.level && (
+                  <p className="font-display text-[17px] font-bold uppercase leading-none text-red">
+                    Busted down — {report.rankAfter.name}
+                  </p>
+                )}
 
+                {report?.wager && (
+                  <p
+                    className={`font-mono text-[10px] tracking-[0.08em] ${
+                      report.wager.won ? 'text-gold' : 'text-red'
+                    }`}
+                  >
+                    {report.wager.won
+                      ? `WAGER PAID — +${report.wager.staked} XP`
+                      : `HOUSE TAKES IT — −${report.wager.staked} XP`}
+                  </p>
+                )}
+                {report?.contract && (
+                  <p className="font-mono text-[10px] tracking-[0.08em] text-gold">
+                    DAILY CONTRACT COMPLETE — +{report.contract.bounty} XP
+                  </p>
+                )}
                 {report && report.newChallenges.length > 0 && (
                   <p className="font-mono text-[9px] tracking-[0.06em] text-green">
                     {report.newChallenges

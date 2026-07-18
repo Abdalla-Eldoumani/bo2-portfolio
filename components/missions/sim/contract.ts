@@ -9,6 +9,10 @@ export type SimInput = {
   held: boolean; // primary held (Space / pointer down)
   pressed: string[]; // keys pressed this frame: 'Enter','ArrowLeft',…
   tap: { x: number; y: number } | null; // canvas-space tap this frame
+  /** Keys currently held down (movement games); arrows only. */
+  down: string[];
+  /** Canvas-space pointer position while held (touch steering). */
+  cursor: { x: number; y: number } | null;
 };
 
 /*

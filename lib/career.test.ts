@@ -1,11 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import {
+  CONTRACT_BOUNTY,
   RANK_CAP_XP,
   bandRank,
+  canWager,
   careerTotals,
+  dailyContract,
+  enterPrestige,
   loadCareer,
   rankForXp,
   recordRound,
+  todayKey,
+  unlockArcade,
+  wagerStake,
 } from '@/lib/career';
 import { XP_PER_CHALLENGE, XP_PER_MEDAL } from '@/lib/data/career';
 
@@ -87,7 +94,92 @@ describe('recordRound', () => {
   it('summarizes totals for the record panel', () => {
     const totals = careerTotals(loadCareer());
     expect(totals.rank.level).toBeGreaterThanOrEqual(1);
-    expect(totals.challengeTotal).toBe(42);
+    expect(totals.challengeTotal).toBe(51);
     expect(totals.medalCount).toBeGreaterThan(0);
+  });
+});
+
+describe('wager match', () => {
+  it('scales the stake with xp inside 15..60', () => {
+    expect(wagerStake({ ...loadCareer(), xp: 0 })).toBe(15);
+    expect(wagerStake({ ...loadCareer(), xp: 200 })).toBe(24);
+    expect(wagerStake({ ...loadCareer(), xp: 5000 })).toBe(60);
+  });
+
+  it('refuses a stake the ladder cannot cover', () => {
+    expect(canWager({ ...loadCareer(), xp: 0 })).toBe(false);
+    expect(canWager({ ...loadCareer(), xp: 20 })).toBe(true);
+  });
+
+  it('pays a won wager and lets a lost one bust you down', () => {
+    // grind to a coverable position (prestige past the cap if needed)
+    for (let i = 0; i < 30 && !canWager(); i++) {
+      if (loadCareer().xp >= RANK_CAP_XP) enterPrestige();
+      recordRound('dust', 5, [9, 18], {}, {});
+    }
+    expect(canWager()).toBe(true);
+
+    const before = loadCareer().xp;
+    const stake = wagerStake(loadCareer());
+    const win = recordRound('dust', 18, [9, 18], { artifacts: 6 }, {}, true);
+    expect(win.wager).toEqual({ staked: stake, won: true });
+    expect(win.xpAfter).toBe(Math.min(RANK_CAP_XP, before + win.xpGained + stake));
+
+    if (loadCareer().xp >= RANK_CAP_XP) enterPrestige();
+    // primitives only: in the memory fallback loadCareer() returns the
+    // live object, which the next recordRound mutates in place
+    const midXp = loadCareer().xp;
+    const loss = recordRound('dust', 0, [9, 18], {}, {}, true);
+    expect(loss.wager?.won).toBe(false);
+    expect(loss.xpBefore).toBe(midXp);
+    // an idle round earns nothing, so the house takes the whole stake —
+    // straight through a rank floor if that is where the xp sits
+    expect(loss.xpAfter).toBe(
+      Math.max(
+        0,
+        loss.xpBefore +
+          loss.xpGained +
+          (loss.contract?.bounty ?? 0) -
+          (loss.wager?.staked ?? 0),
+      ),
+    );
+    expect(loss.rankAfter.level).toBeLessThanOrEqual(loss.rankBefore.level);
+  });
+
+  it('ignores the flag when the wager is not coverable', () => {
+    const broke = recordRound('qala', 0, [10, 20], {}, {}, true);
+    // either coverable (wager recorded) or silently no wager — never a crash
+    expect(broke.wager === null || typeof broke.wager.staked === 'number').toBe(true);
+  });
+});
+
+describe('daily contract', () => {
+  it('derives one deterministic contract per local day', () => {
+    const a = dailyContract();
+    const b = dailyContract();
+    expect(a).not.toBeNull();
+    expect(a).toEqual(b);
+    expect(a?.date).toBe(todayKey());
+    expect(a?.challenge.tier).toBe('silver');
+    expect(a?.bounty).toBe(CONTRACT_BOUNTY);
+  });
+
+  it('pays the bounty once per day on the contract sim', () => {
+    const c = dailyContract();
+    if (!c) return;
+    const stats = { [c.challenge.metric]: c.challenge.target };
+    const first = recordRound(c.sim, 1, [10, 20], stats, {});
+    expect(first.contract).toEqual({ name: c.challenge.name, bounty: c.bounty });
+    const second = recordRound(c.sim, 1, [10, 20], stats, {});
+    expect(second.contract).toBeNull();
+    expect(loadCareer().contract).toEqual({ date: todayKey(), done: true });
+  });
+});
+
+describe('classified arcade', () => {
+  it('unlocks once and stays unlocked', () => {
+    expect(loadCareer().arcade).toBe(false);
+    expect(unlockArcade().arcade).toBe(true);
+    expect(loadCareer().arcade).toBe(true);
   });
 });
