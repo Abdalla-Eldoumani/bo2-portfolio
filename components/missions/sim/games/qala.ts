@@ -65,7 +65,7 @@ const SNIPPETS: Snip[] = [
   { code: 'quiet_calc(x)', io: true, tier: 3, hint: 'fn quiet_calc(x) { net.send(x); x }' },
 ];
 
-export function effectCheck(fx: Fx): Game {
+export function effectCheck(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 5, step: 3, maxMult: 3 });
   const s = {
@@ -83,9 +83,10 @@ export function effectCheck(fx: Fx): Game {
     tierPeak: 1,
   };
 
+  // veteran mode runs hotter: the tier gates arrive sooner
   const pool = (): Snip[] => {
-    if (s.ok < 6) return SNIPPETS.filter((c) => c.tier === 1);
-    if (s.ok < 14) return SNIPPETS.filter((c) => c.tier <= 2);
+    if (s.ok < (veteran ? 4 : 6)) return SNIPPETS.filter((c) => c.tier === 1);
+    if (s.ok < (veteran ? 10 : 14)) return SNIPPETS.filter((c) => c.tier <= 2);
     return SNIPPETS.filter((c) => c.tier >= 2);
   };
 
@@ -105,7 +106,9 @@ export function effectCheck(fx: Fx): Game {
 
   const speed = () => {
     const base = 58 + Math.min(s.ok * 4.5, 110);
-    return base * (s.optimizer > 0 ? 1.65 : 1) * (s.card?.recovery ? 0.7 : 1);
+    return (
+      base * (s.optimizer > 0 ? 1.65 : 1) * (s.card?.recovery ? 0.7 : 1) * (veteran ? 1.25 : 1)
+    );
   };
 
   const judge = (io: boolean) => {

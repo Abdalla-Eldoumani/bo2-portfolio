@@ -40,9 +40,11 @@ const REFILL_S = 6;
 
 type Ring = { x: number; y: number; r: number; speed: number; life: number; d: number };
 
-export function digSite(fx: Fx): Game {
+export function digSite(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 9, step: 1, maxMult: 3 });
+  // veteran mode runs hotter: fast silt, long jams
+  const refillS = veteran ? REFILL_S / 1.4 : REFILL_S;
   const s = {
     artifacts: [] as { x: number; y: number }[],
     dug: new Map<string, { d: number; t: number }>(),
@@ -135,7 +137,7 @@ export function digSite(fx: Fx): Game {
 
       for (const [k, v] of s.dug) {
         v.t += dt;
-        if (v.t >= REFILL_S) s.dug.delete(k);
+        if (v.t >= refillS) s.dug.delete(k);
       }
       for (let i = s.rings.length - 1; i >= 0; i--) {
         const r = s.rings[i];
@@ -150,7 +152,7 @@ export function digSite(fx: Fx): Game {
         s.jamNext -= dt;
         if (s.jamNext <= 0) {
           s.jamNext = 7 + Math.random() * 3;
-          s.jam = 3;
+          s.jam = veteran ? 4.5 : 3;
           s.jams += 1;
           fx.announce('SIGNAL JAM', 'HEAT MASKED — DIG FROM MEMORY');
           evs.push({ kind: 'milestone', label: 'JAM' });
@@ -190,7 +192,7 @@ export function digSite(fx: Fx): Game {
             }
             ctx.fillRect(px + 2, py + 2, TILE - 4, TILE - 4);
             // collapse: the pit silts back up as it ages
-            const age = entry.t / REFILL_S;
+            const age = entry.t / refillS;
             if (age > 0.4) {
               ctx.globalAlpha = (age - 0.4) / 0.6;
               ctx.fillStyle = SOIL;

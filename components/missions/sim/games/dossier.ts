@@ -36,7 +36,7 @@ type Line = { kind: 'secret' | 'decoy' | 'plain'; redacted: boolean; declassed: 
 const INK_START = 10;
 const INK_MAX = 16;
 
-export function redactionPass(fx: Fx): Game {
+export function redactionPass(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 5, step: 3, maxMult: 3 });
 
@@ -57,7 +57,8 @@ export function redactionPass(fx: Fx): Game {
     cols: [mkColumn(9)] as Line[][],
     cursor: 0,
     speed: 58,
-    ink: INK_START,
+    // veteran mode runs hotter: fast scanner, thin ink
+    ink: veteran ? 7 : INK_START,
     pts: 0,
     done: 0,
     leaks: 0,
@@ -89,12 +90,12 @@ export function redactionPass(fx: Fx): Game {
     if (clean) {
       s.cleanPages += 1;
       s.pts += 3;
-      s.ink = Math.min(INK_MAX, s.ink + 4);
+      s.ink = Math.min(INK_MAX, s.ink + (veteran ? 3 : 4));
       evs.push({ kind: 'perfect', label: 'ZERO LEAKS' });
-      fx.announce('ZERO LEAKS', '+3 · INK +4');
+      fx.announce('ZERO LEAKS', veteran ? '+3 · INK +3' : '+3 · INK +4');
       fx.burst(W / 2, H / 2, { color: GREEN, n: 16, speed: 180 });
     } else {
-      s.ink = Math.min(INK_MAX, s.ink + 2);
+      s.ink = Math.min(INK_MAX, s.ink + (veteran ? 1 : 2));
       fx.text(W / 2, H / 2, `${s.auditLeaks} LEAKED`, { color: RED, size: 15, big: true });
       const broken = fx.combo.break();
       if (broken >= 3) evs.push({ kind: 'combo-break', value: broken });
@@ -161,7 +162,7 @@ export function redactionPass(fx: Fx): Game {
         s.audit = Math.max(0, s.audit - dt);
         return;
       }
-      s.cursor += s.speed * dt;
+      s.cursor += s.speed * (veteran ? 1.25 : 1) * dt;
       if (input.pressed.includes('Enter')) stamp(0);
       if (input.pressed.includes('ArrowLeft')) stamp(0);
       if (input.pressed.includes('ArrowRight')) stamp(split() ? 1 : 0);

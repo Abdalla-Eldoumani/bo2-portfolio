@@ -31,9 +31,11 @@ import type {
 type Gate = { x: number; cy: number; r: number; state: 0 | 1 | 2 | 3 };
 type Wind = { x: number; w: number; dir: -1 | 1 };
 
-export function falconDash(fx: Fx): Game {
+export function falconDash(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 3.4, step: 3, maxMult: 4 });
+  // veteran mode runs hotter: tighter rings, faster air
+  const fusedR = veteran ? 10 : 13;
   const s = {
     y: H / 2,
     vy: 0,
@@ -87,7 +89,8 @@ export function falconDash(fx: Fx): Game {
       s.t += dt;
       const boosting = s.boost > 0;
       s.boost = Math.max(0, s.boost - dt);
-      const speed = (150 + Math.min(s.t * 15, 170)) * (boosting ? 1.35 : 1);
+      const speed =
+        (150 + Math.min(s.t * 15, 170)) * (boosting ? 1.35 : 1) * (veteran ? 1.2 : 1);
 
       // thermals and downdrafts bend the path while you are inside them
       let windAcc = 0;
@@ -135,7 +138,7 @@ export function falconDash(fx: Fx): Game {
         s.gatesArr.push({
           x: W + 30,
           cy: 46 + Math.random() * (H - 165),
-          r: 34,
+          r: veteran ? 27 : 34,
           state: 0,
         });
       }
@@ -143,7 +146,7 @@ export function falconDash(fx: Fx): Game {
         g.x -= speed * dt;
         if (g.state === 0 && g.x <= 120) {
           const dy = Math.abs(s.y - g.cy);
-          if (dy < 13) {
+          if (dy < fusedR) {
             g.state = 2;
             gateScored(g, true);
           } else if (dy < g.r) {
@@ -225,7 +228,7 @@ export function falconDash(fx: Fx): Game {
         ctx.strokeStyle = g.state === 2 ? OH : scored ? GREEN : g.state === 3 ? INK3 : OH;
         ctx.lineWidth = g.state === 2 ? 2.5 : 1.2;
         ctx.beginPath();
-        ctx.arc(g.x, g.cy, 13, 0, Math.PI * 2);
+        ctx.arc(g.x, g.cy, fusedR, 0, Math.PI * 2);
         ctx.stroke();
         ctx.globalAlpha = 1;
       }

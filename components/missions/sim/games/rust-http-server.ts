@@ -39,9 +39,11 @@ type Lane = {
   armed: boolean; // near-miss tracking above 20
 };
 
-export function loadBalancer(fx: Fx): Game {
+export function loadBalancer(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 2.2, step: 2, maxMult: 4 });
+  // veteran mode runs hotter: touchier breakers under heavier traffic
+  const breakAt = veteran ? 18 : BREAK_AT;
   const s = {
     lanes: [
       { q: 0, lock: 0, lastServe: -9, armed: false },
@@ -115,7 +117,8 @@ export function loadBalancer(fx: Fx): Game {
     update(dt, input) {
       s.t += dt;
       s.next -= dt;
-      const rate = Math.max(0.24, 0.5 - s.t * 0.011) * (s.n === 4 ? 0.8 : 1);
+      const rate =
+        Math.max(0.24, 0.5 - s.t * 0.011) * (s.n === 4 ? 0.8 : 1) * (veteran ? 0.8 : 1);
       if (s.next <= 0) {
         s.next = rate;
         // breaker-locked lanes shed inbound work instead of queueing it
@@ -161,7 +164,7 @@ export function loadBalancer(fx: Fx): Game {
         lane.lock = Math.max(0, lane.lock - dt);
         // reclose: the breaker sheds half the queue on the way back in
         if (wasLocked && lane.lock === 0) lane.q = Math.min(lane.q, 12);
-        if (lane.lock === 0 && lane.q >= BREAK_AT) trip(lane, i);
+        if (lane.lock === 0 && lane.q >= breakAt) trip(lane, i);
         if (!lane.armed && lane.lock <= 0 && lane.q >= 20) lane.armed = true;
         if (lane.armed && lane.q <= 15) {
           lane.armed = false;
@@ -215,7 +218,7 @@ export function loadBalancer(fx: Fx): Game {
         }
         const cols = s.n === 3 ? 4 : 3;
         const dotGap = s.n === 3 ? 30 : 32;
-        for (let d = 0; d < Math.min(lane.q, BREAK_AT); d++) {
+        for (let d = 0; d < Math.min(lane.q, breakAt); d++) {
           ctx.fillStyle = d > 16 ? RED : d > 8 ? OC : INK2;
           const col = d % cols;
           const row = Math.floor(d / cols);

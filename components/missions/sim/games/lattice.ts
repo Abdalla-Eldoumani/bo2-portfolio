@@ -43,7 +43,7 @@ type Row = {
   locked: boolean;
 };
 
-export function domainCollapse(fx: Fx): Game {
+export function domainCollapse(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 5, step: 4, maxMult: 3 });
   const s = {
@@ -87,7 +87,8 @@ export function domainCollapse(fx: Fx): Game {
     });
     s.rows = rows;
     s.cur = { r: 0, c: 0 };
-    s.clockMax = Math.max(6.5, 11 - (s.grid - 1));
+    // veteran mode runs the search clock about 25% shorter
+    s.clockMax = Math.max(6.5, 11 - (s.grid - 1)) * (veteran ? 0.75 : 1);
     s.clock = s.clockMax;
     s.gridConflict = false;
     if (s.grid > 1) {
