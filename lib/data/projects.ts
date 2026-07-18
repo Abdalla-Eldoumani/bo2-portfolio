@@ -16,6 +16,9 @@ import qalamArt from '@/public/art/maps/qalam.svg';
 import dustArt from '@/public/art/maps/dust.svg';
 import budgetBuddyArt from '@/public/art/maps/budget-buddy.svg';
 import cloudPrepArt from '@/public/art/maps/cloud-practitioner-prep.svg';
+import deadzoneArt from '@/public/art/maps/deadzone.svg';
+import qemuMcpArt from '@/public/art/maps/qemu-mcp-server.svg';
+import bindiffArt from '@/public/art/maps/bindiff-mcp.svg';
 
 /**
  * The mission set — fourteen showcased operations, strongest first. Every
@@ -105,6 +108,20 @@ export const projects = [
     metrics: 'Language on crates.io · in-browser playground',
   },
   {
+    name: 'Deadzone',
+    slug: 'deadzone',
+    description:
+      'A Vampire Survivors-style horde game written in ARMv8 AArch64 assembly and rendered entirely in the terminal with ANSI escape codes: the weapons fire themselves, you do the dodging.',
+    fullDescription:
+      'Survive waves of zombies, collect XP and level up; SPACE spends a screen-clearing bomb and F freezes the horde. Particles, screen shake and boss fights, all hand-rolled in assembly — player, enemies, effects and boss logic each live in their own module.',
+    image: deadzoneArt,
+    tech: ['AArch64 Assembly', 'ANSI Terminal', 'QEMU', 'm4', 'Make'],
+    featured: true,
+    insigniaId: 'horde',
+    category: 'systems',
+    metrics: 'Horde survival in pure ARM64 asm · terminal-rendered',
+  },
+  {
     name: 'Regex FSM',
     slug: 'regex-fsm',
     description:
@@ -150,6 +167,20 @@ export const projects = [
     metrics: '10,000+ concurrent · sub-10ms · −60% DB load',
   },
   {
+    name: 'QEMU MCP Server',
+    slug: 'qemu-mcp-server',
+    description:
+      'An MCP server that gives AI agents direct control over QEMU virtual machines: create, boot, snapshot, inspect and destroy VMs through standard tool calls, speaking QMP over Unix sockets.',
+    fullDescription:
+      'Published to npm with stdio and HTTP transports and setup docs for Claude Desktop, Cursor and Claude Code. Seventeen tools cover VM lifecycle, execution control, qcow2 snapshots, console I/O and memory dumps across aarch64 and x86_64 guests.',
+    image: qemuMcpArt,
+    tech: ['TypeScript', 'MCP', 'QEMU', 'QMP', 'npm'],
+    featured: false,
+    insigniaId: 'hypervisor',
+    category: 'ai',
+    metrics: '17 MCP tools · npm-published · aarch64 + x86_64',
+  },
+  {
     name: 'Credence',
     slug: 'credence',
     description:
@@ -193,6 +224,20 @@ export const projects = [
     insigniaId: 'easel',
     category: 'systems',
     metrics: 'Zero C · 1024×768 ramfb · golden-image tested',
+  },
+  {
+    name: 'BinDiff MCP',
+    slug: 'bindiff-mcp',
+    description:
+      'An MCP server for AI-powered binary analysis: it wraps GNU binutils so an agent can read ELF sections and symbols, disassemble functions, and semantically compare two builds of the same binary.',
+    fullDescription:
+      'Ten tools — six for analysis and four for comparison — with C++ demangling, size breakdowns, symbol and section diffs, and cross-toolchain support through a configurable prefix. Pairs naturally with the assembly projects: analyze and diff the binaries they produce.',
+    image: bindiffArt,
+    tech: ['TypeScript', 'MCP', 'GNU Binutils', 'ELF'],
+    featured: false,
+    insigniaId: 'lens',
+    category: 'ai',
+    metrics: '10 tools · symbol + section diffs · cross-toolchain',
   },
   {
     name: 'DUST',

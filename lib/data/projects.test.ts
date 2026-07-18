@@ -6,12 +6,12 @@ import {
 } from '@/lib/data/projects';
 
 describe('projects data', () => {
-  it('holds the 14 showcased missions (2026-07 roster expansion)', () => {
-    expect(projects).toHaveLength(14);
+  it('holds the 17 showcased missions (2026-07 roster expansion)', () => {
+    expect(projects).toHaveLength(17);
   });
 
-  it('marks exactly 8 missions as featured', () => {
-    expect(getFeaturedProjects()).toHaveLength(8);
+  it('marks exactly 9 missions as featured', () => {
+    expect(getFeaturedProjects()).toHaveLength(9);
   });
 
   it('carries the current rotation and none of the retired ops', () => {
@@ -40,6 +40,17 @@ describe('projects data', () => {
     expect(getProjectByName('Lattice')?.github).toBeUndefined();
     expect(getProjectByName('Whittle')?.github).toBeUndefined();
     expect(getProjectByName('Qalam')?.github).toBeUndefined();
+  });
+
+  it('carries the arcade-drop ops with README-traceable facts', () => {
+    expect(getProjectByName('Deadzone')?.tech).toContain('AArch64 Assembly');
+    expect(getProjectByName('Deadzone')?.featured).toBe(true);
+    expect(getProjectByName('QEMU MCP Server')?.metrics).toContain('17 MCP tools');
+    expect(getProjectByName('BinDiff MCP')?.metrics).toContain('10 tools');
+    // no invented links here either
+    expect(getProjectByName('Deadzone')?.github).toBeUndefined();
+    expect(getProjectByName('QEMU MCP Server')?.live).toBeUndefined();
+    expect(getProjectByName('BinDiff MCP')?.github).toBeUndefined();
   });
 
   it('gives every mission a unique url-stable slug', () => {
