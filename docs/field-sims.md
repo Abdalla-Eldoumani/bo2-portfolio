@@ -27,6 +27,8 @@ One component owns everything game-independent:
   career state through `lib/career.ts`,
 - ranks: FNG → RECRUIT → VETERAN → PRESTIGE against per-sim bands
   (`SIM_META[slug].bands`),
+- mid-round beats: crossing your all-time best is announced the moment
+  it happens, and the last five seconds get a FINAL FIVE call,
 - the debrief: score count-up, round stats, medals, XP bar with rank
   carry-over, next-challenge hint, and Run It Back / Next Sim / Exit.
   Next Sim cycles to the next op's sim without leaving the dialog
@@ -102,7 +104,13 @@ degrades to an in-memory session. The top bar wears the rank, Combat
 Record shows the full panel, and Mission Select whispers best ranks and
 the next unearned challenge.
 
-Two systems keep the ladder tense:
+Three systems keep the ladder tense:
+
+- **Veteran mode.** Reach a sim's VETERAN band once and its ready screen
+  grows a second toggle (V key or the chip): a genuinely harder variant
+  of that game - tighter windows, thicker tides, earlier deceptions,
+  whatever fits - for 1.5x XP. Every sim defines its own veteran twist
+  in `SIM_META.veteran`.
 
 - **Wager match.** The ready screen offers DOUBLE OR NOTHING (W key or
   the chip) once the ladder can cover the stake, which scales with XP.
@@ -118,7 +126,7 @@ There is also one thing the roster does not list. The dead
 looks; a persistent unlock (`arcade` in the career profile) marks the
 find forever.
 
-## The seventeen sims
+## The twenty sims
 
 | Slug | Game | Seconds |
 | --- | --- | --- |
@@ -139,6 +147,9 @@ find forever.
 | `deadzone` | Horde protocol - auto-fire, footwork, bombs and freezes | 25 |
 | `qemu-mcp-server` | Snapshot - keep the guests earning, roll back the crashes | 24 |
 | `bindiff-mcp` | Bin diff - call SAME or DRIFT on two builds of a line | 22 |
+| `dsav` | Sort sprint - you are the comparator; bad calls break the sort | 24 |
+| `termpilot` | Wait for - strike the pattern the instant it scrolls past | 22 |
+| `arm-string-ops` | Vector pass - wide SIMD flips, scalar fixes, stall pressure | 22 |
 
 Plus one that the table refuses to acknowledge.
 
