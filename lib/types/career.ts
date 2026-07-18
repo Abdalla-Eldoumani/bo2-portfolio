@@ -57,10 +57,26 @@ export interface CareerState {
   medals: Record<string, number>;
   /** Challenge ids completed (once ever). */
   challenges: Record<string, true>;
+  /** Latest daily-contract resolution; only the current day matters. */
+  contract: { date: string; done: boolean } | null;
+  /** The classified arcade stays unlocked once found. */
+  arcade: boolean;
+}
+
+/** The day's rotating contract: one sim, one target, one bounty. */
+export interface ContractDef {
+  date: string;
+  sim: string;
+  challenge: ChallengeDef;
+  bounty: number;
 }
 
 /** What one round did to the career; drives the debrief. */
 export interface RoundReport {
+  /** Wager resolution when one was staked this round. */
+  wager: { staked: number; won: boolean } | null;
+  /** Set when this round completed the daily contract. */
+  contract: { name: string; bounty: number } | null;
   score: number;
   xpGained: number;
   xpBefore: number;
