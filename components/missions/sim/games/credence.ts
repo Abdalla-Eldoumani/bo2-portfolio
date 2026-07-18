@@ -37,7 +37,7 @@ const BUCKETS = 44;
 const DOTS = 48;
 const TICK_S = 1.9;
 
-export function posteriorHunt(fx: Fx): Game {
+export function posteriorHunt(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: TICK_S * 2.2, step: 2, maxMult: 3 });
 
@@ -76,7 +76,7 @@ export function posteriorHunt(fx: Fx): Game {
     const slot = dots.find((d) => !d.live);
     if (!slot) return;
     // heavy tail: a slice of samples land far off the true value
-    const outlier = Math.random() < 0.12;
+    const outlier = Math.random() < (veteran ? 0.2 : 0.12);
     const off = outlier
       ? (Math.random() < 0.5 ? -1 : 1) * (150 + Math.random() * 100)
       : gauss() * s.sigma;
@@ -142,10 +142,11 @@ export function posteriorHunt(fx: Fx): Game {
         evs.push({ kind: 'milestone', label: 'DRIFT' });
       }
       if (s.t >= s.nextJump) {
-        s.nextJump += 6 + Math.random() * 3;
+        // veteran mode runs hotter: restless regimes, a wider noise floor
+        s.nextJump += veteran ? 4.5 + Math.random() * 2 : 6 + Math.random() * 3;
         jump();
       }
-      s.sigma = Math.max(24, s.sigma - dt * 8);
+      s.sigma = Math.max(veteran ? 30 : 24, s.sigma - dt * 8);
       if (s.phase >= 2) {
         s.theta += s.drift * dt;
         if (s.theta < X0 + 60 || s.theta > X1 - 60) s.drift *= -1;

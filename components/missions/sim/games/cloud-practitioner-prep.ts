@@ -39,7 +39,7 @@ import {
 const DOMAINS: TriageDomain[] = ['concepts', 'security', 'technology', 'billing'];
 const MASTERY = 3;
 
-export function cloudTriage(fx: Fx): Game {
+export function cloudTriage(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 4.5, step: 3, maxMult: 3 });
   const s = {
@@ -70,7 +70,9 @@ export function cloudTriage(fx: Fx): Game {
       s.idx += 1;
       if (s.exam || !domainDone(c.domain)) {
         s.card = c;
-        s.clockMax = Math.max(1.7, 3.4 - s.judged * 0.09) * (s.exam ? 0.8 : 1);
+        // veteran mode runs at exam tempo: the per-card clock is 25% shorter
+        s.clockMax =
+          Math.max(1.7, 3.4 - s.judged * 0.09) * (s.exam ? 0.8 : 1) * (veteran ? 0.75 : 1);
         s.clock = s.clockMax;
         return;
       }

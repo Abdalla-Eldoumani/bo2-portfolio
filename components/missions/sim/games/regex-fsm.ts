@@ -36,7 +36,7 @@ const LAMBDA = 'λ';
 
 type Arc = { label: string; correct: boolean };
 
-export function stateRunner(fx: Fx): Game {
+export function stateRunner(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 4, step: 4, maxMult: 4 });
   const s = {
@@ -50,7 +50,8 @@ export function stateRunner(fx: Fx): Game {
     accepts: 0,
     rejects: 0,
     lambdaMoves: 0,
-    tier: 1,
+    // veteran mode starts in NFA mode: three arcs and λ live from word one
+    tier: veteran ? 2 : 1,
     pause: 0, // dead time after accept/reject
     flash: 0,
     flashGood: true,

@@ -47,7 +47,7 @@ type Card = {
 
 const hex = (n: number) => n.toString(16);
 
-export function binDiff(fx: Fx): Game {
+export function binDiff(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 4.5, step: 3, maxMult: 3 });
 
@@ -62,7 +62,8 @@ export function binDiff(fx: Fx): Game {
     missed: 0,
     stripped: 0,
     strippedCaught: 0,
-    tier: 1,
+    // veteran mode opens surgical: tier 2 mutations from line one
+    tier: veteran ? 2 : 1,
     feedback: 0,
     feedbackGood: true,
     feedbackHint: '',
@@ -132,7 +133,7 @@ export function binDiff(fx: Fx): Game {
       }
     }
     s.card = { a, b, differs, hint };
-    s.clockMax = Math.max(1.8, 3.6 - s.judged * 0.09);
+    s.clockMax = Math.max(1.8, 3.6 - s.judged * 0.09) * (veteran ? 0.85 : 1);
     s.clock = s.clockMax;
   };
   deal();

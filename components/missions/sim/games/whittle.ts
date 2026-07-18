@@ -106,7 +106,7 @@ const SPECS: Spec[] = [
   },
 ];
 
-export function pruningPass(fx: Fx): Game {
+export function pruningPass(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 5, step: 3, maxMult: 3 });
   const order = [...SPECS].sort(() => Math.random() - 0.5);
@@ -140,8 +140,8 @@ export function pruningPass(fx: Fx): Game {
     s.card = { ...spec().cands[s.candIdx], y: H - 44 };
     s.candIdx += 1;
     if (s.judged > 0 && s.judged % 12 === 0 && s.surge <= 0) {
-      s.surge = 3;
-      fx.announce('ENUMERATOR SURGE', 'THREE FAST CANDIDATES');
+      s.surge = veteran ? 4 : 3;
+      fx.announce('ENUMERATOR SURGE', veteran ? 'FOUR FAST CANDIDATES' : 'THREE FAST CANDIDATES');
       evs.push({ kind: 'hazard', label: 'SURGE' });
     }
   };
@@ -149,7 +149,7 @@ export function pruningPass(fx: Fx): Game {
 
   const riseSpeed = () => {
     const base = 80 + Math.min(s.judged * 4, 90);
-    return base * (s.surge > 0 ? 1.45 : 1);
+    return base * (s.surge > 0 ? 1.45 : 1) * (veteran ? 1.2 : 1);
   };
 
   const settle = (killed: boolean) => {

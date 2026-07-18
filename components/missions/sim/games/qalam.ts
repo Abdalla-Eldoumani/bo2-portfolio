@@ -48,7 +48,7 @@ type Region = {
   r1: number; // row bounds for the locked outline
 };
 
-export function floodFill(fx: Fx): Game {
+export function floodFill(fx: Fx, veteran = false): Game {
   const evs: SimEvent[] = [];
   fx.combo.set({ window: 9, step: 2, maxMult: 3 });
   const s = {
@@ -56,7 +56,8 @@ export function floodFill(fx: Fx): Game {
     cur: { r: 5, c: 11 },
     beam: 0, // in columns, fractional
     beamSpeed: COLS / 7, // columns per second
-    beam2: -1, // interlaced beam (tier 3), -1 = off
+    // interlaced beam (tier 3), -1 = off; veteran mode interlaces from frame one
+    beam2: veteran ? COLS - 1 : -1,
     fillT: 0,
     pts: 0,
     cellsFilled: 0,
