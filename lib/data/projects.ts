@@ -72,6 +72,8 @@ export const projects = [
     fullDescription:
       'Value-elimination propagators run to fixpoint over backtracking search with minimum-remaining-values ordering; the SAT side does watched-literal propagation, 1UIP clause learning, VSIDS and Luby restarts. One hot loop generic over the monad runs fast in ST or streams every decision over WebSocket in IO. Correctness is differential: CP, SAT and a brute-force oracle checked against each other.',
     image: latticeArt,
+    github: 'https://github.com/Abdalla-Eldoumani/lattice',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'lattice' },
     tech: ['Haskell', 'Scotty', 'WebSockets', 'Next.js', 'QuickCheck'],
     featured: true,
     insigniaId: 'lattice',
@@ -101,6 +103,8 @@ export const projects = [
     fullDescription:
       '12,249 lines of assembly across 11 modules on the low road, with feature parity across the complete versions — array operations through red-black tree fixups with animated rotations, five invariants verified on screen and NIL leaves drawn as real nodes.',
     image: dsavArt,
+    github: 'https://github.com/Abdalla-Eldoumani/dsav',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'dsav' },
     tech: ['AArch64 Assembly', 'C++17', 'OpenGL', 'Rust', 'egui'],
     featured: false,
     insigniaId: 'prism',
@@ -132,6 +136,8 @@ export const projects = [
     fullDescription:
       'Survive waves of zombies, collect XP and level up; SPACE spends a screen-clearing bomb and F freezes the horde. Particles, screen shake and boss fights, all hand-rolled in assembly — player, enemies, effects and boss logic each live in their own module.',
     image: deadzoneArt,
+    github: 'https://github.com/Abdalla-Eldoumani/deadzone',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'deadzone' },
     tech: ['AArch64 Assembly', 'ANSI Terminal', 'QEMU', 'm4', 'Make'],
     featured: true,
     insigniaId: 'horde',
@@ -146,6 +152,8 @@ export const projects = [
     fullDescription:
       'Built with a collaborator for CPSC 351 at the University of Calgary. A pure, fully unit-tested algorithm layer under a Cytoscape-rendered UI: 1181 unit, integration and property tests plus over 150 end-to-end and accessibility tests, property-checked against a brute-force language oracle.',
     image: regexFsmArt,
+    github: 'https://github.com/Abdalla-Eldoumani/regex-fsm',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'regex-fsm' },
     live: 'https://regex-fsm.vercel.app',
     tech: ['TypeScript', 'React 19', 'Vite', 'Cytoscape', 'fast-check'],
     featured: true,
@@ -191,6 +199,8 @@ export const projects = [
     fullDescription:
       'Published to npm with stdio and HTTP transports and setup docs for Claude Desktop, Cursor and Claude Code. Seventeen tools cover VM lifecycle, execution control, qcow2 snapshots, console I/O and memory dumps across aarch64 and x86_64 guests.',
     image: qemuMcpArt,
+    github: 'https://github.com/Abdalla-Eldoumani/qemu-mcp-server',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'qemu-mcp-server' },
     tech: ['TypeScript', 'MCP', 'QEMU', 'QMP', 'npm'],
     featured: false,
     insigniaId: 'hypervisor',
@@ -205,6 +215,8 @@ export const projects = [
     fullDescription:
       'Seven tools over node-pty with a security layer that refuses dangerous commands, blocks path traversal and can audit every action to JSONL. Published to npm, with recipes for driving REPLs, watching builds, stepping gdb and booting kernels under QEMU.',
     image: termpilotArt,
+    github: 'https://github.com/Abdalla-Eldoumani/termpilot',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'termpilot' },
     tech: ['TypeScript', 'MCP', 'node-pty', 'Vitest', 'npm'],
     featured: false,
     insigniaId: 'cockpit',
@@ -219,6 +231,8 @@ export const projects = [
     fullDescription:
       'Each inference backend is an interpreter of the model monad. The engine works in log-space with a seedable RNG and streams samples and running summaries to the front end; posteriors are checked against closed-form Beta-Bernoulli and Normal-Normal answers under fixed seeds.',
     image: credenceArt,
+    github: 'https://github.com/Abdalla-Eldoumani/credence',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'credence' },
     tech: ['Haskell', 'Probabilistic PL', 'SMC', 'MCMC'],
     featured: false,
     insigniaId: 'dice',
@@ -233,6 +247,8 @@ export const projects = [
     fullDescription:
       'Vectorized 64-byte sweeps with a scalar fallback for short and unaligned input. On native hardware: 27-42 GB/s UTF-8 validation and 7-8x the standard library on case conversion, with the benchmark suites committed alongside the tests.',
     image: armStringOpsArt,
+    github: 'https://github.com/Abdalla-Eldoumani/arm-string-ops',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'arm-string-ops' },
     tech: ['AArch64 Assembly', 'NEON SIMD', 'C', 'Rust FFI'],
     featured: false,
     insigniaId: 'lanes',
@@ -264,6 +280,8 @@ export const projects = [
     fullDescription:
       'Ten drawing tools, a 32-color palette, single-step undo and BMP export, in a few thousand lines of readable assembly with no MMU and no interrupts. Every tool has a golden-image test: a Python harness drives synthetic input over QMP and asserts the framebuffer pixel by pixel.',
     image: qalamArt,
+    github: 'https://github.com/Abdalla-Eldoumani/qalam',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'qalam' },
     tech: ['AArch64 Assembly', 'QEMU', 'VirtIO', 'ramfb', 'm4'],
     featured: false,
     insigniaId: 'easel',
@@ -278,6 +296,8 @@ export const projects = [
     fullDescription:
       'Ten tools — six for analysis and four for comparison — with C++ demangling, size breakdowns, symbol and section diffs, and cross-toolchain support through a configurable prefix. Pairs naturally with the assembly projects: analyze and diff the binaries they produce.',
     image: bindiffArt,
+    github: 'https://github.com/Abdalla-Eldoumani/bindiff-mcp',
+    githubRepo: { owner: 'Abdalla-Eldoumani', repo: 'bindiff-mcp' },
     tech: ['TypeScript', 'MCP', 'GNU Binutils', 'ELF'],
     featured: false,
     insigniaId: 'lens',
