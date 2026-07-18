@@ -19,6 +19,9 @@ import cloudPrepArt from '@/public/art/maps/cloud-practitioner-prep.svg';
 import deadzoneArt from '@/public/art/maps/deadzone.svg';
 import qemuMcpArt from '@/public/art/maps/qemu-mcp-server.svg';
 import bindiffArt from '@/public/art/maps/bindiff-mcp.svg';
+import dsavArt from '@/public/art/maps/dsav.svg';
+import termpilotArt from '@/public/art/maps/termpilot.svg';
+import armStringOpsArt from '@/public/art/maps/arm-string-ops.svg';
 
 /**
  * The mission set — fourteen showcased operations, strongest first. Every
@@ -89,6 +92,20 @@ export const projects = [
     insigniaId: 'scope',
     category: 'education',
     metrics: '790+ automated tests · CPSC 355 teaching aid',
+  },
+  {
+    name: 'DSAV',
+    slug: 'dsav',
+    description:
+      'A data structures and algorithms visualizer built three times over: the same six structures and five sorting algorithms animated in ARMv8 assembly in the terminal, in C++ with OpenGL and Dear ImGui, and in Rust with egui.',
+    fullDescription:
+      '12,249 lines of assembly across 11 modules on the low road, with feature parity across the complete versions — array operations through red-black tree fixups with animated rotations, five invariants verified on screen and NIL leaves drawn as real nodes.',
+    image: dsavArt,
+    tech: ['AArch64 Assembly', 'C++17', 'OpenGL', 'Rust', 'egui'],
+    featured: false,
+    insigniaId: 'prism',
+    category: 'education',
+    metrics: '12,249 lines of asm · 6 structures · 5 sorts · 3 builds',
   },
   {
     name: 'Qala',
@@ -181,6 +198,20 @@ export const projects = [
     metrics: '17 MCP tools · npm-published · aarch64 + x86_64',
   },
   {
+    name: 'Termpilot',
+    slug: 'termpilot',
+    description:
+      'An MCP server that drives terminal sessions the way Playwright drives browsers: open a real PTY, type, press keys, snapshot the screen with stable line references, and wait on predicates instead of polling.',
+    fullDescription:
+      'Seven tools over node-pty with a security layer that refuses dangerous commands, blocks path traversal and can audit every action to JSONL. Published to npm, with recipes for driving REPLs, watching builds, stepping gdb and booting kernels under QEMU.',
+    image: termpilotArt,
+    tech: ['TypeScript', 'MCP', 'node-pty', 'Vitest', 'npm'],
+    featured: false,
+    insigniaId: 'cockpit',
+    category: 'ai',
+    metrics: '7 tools · npm-published · Playwright for terminals',
+  },
+  {
     name: 'Credence',
     slug: 'credence',
     description:
@@ -193,6 +224,20 @@ export const projects = [
     insigniaId: 'dice',
     category: 'ai',
     metrics: '3 inference backends · checked against exact posteriors',
+  },
+  {
+    name: 'ARM String Ops',
+    slug: 'arm-string-ops',
+    description:
+      'A high-performance string library in ARMv8 NEON assembly: uppercase, lowercase, UTF-8 validation and character count behind a C API with Rust bindings, processing up to 64 bytes per cycle.',
+    fullDescription:
+      'Vectorized 64-byte sweeps with a scalar fallback for short and unaligned input. On native hardware: 27-42 GB/s UTF-8 validation and 7-8x the standard library on case conversion, with the benchmark suites committed alongside the tests.',
+    image: armStringOpsArt,
+    tech: ['AArch64 Assembly', 'NEON SIMD', 'C', 'Rust FFI'],
+    featured: false,
+    insigniaId: 'lanes',
+    category: 'performance',
+    metrics: '27-42 GB/s UTF-8 validation · 7-8x libc case flips',
   },
   {
     name: 'Dossier',
