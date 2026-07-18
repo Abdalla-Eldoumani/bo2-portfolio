@@ -14,9 +14,10 @@ describe('projects data', () => {
     expect(getProjectByName('DSAV')?.metrics).toContain('12,249 lines');
     expect(getProjectByName('Termpilot')?.metrics).toContain('7 tools');
     expect(getProjectByName('ARM String Ops')?.metrics).toContain('27-42 GB/s');
-    expect(getProjectByName('DSAV')?.github).toBeUndefined();
+    expect(getProjectByName('DSAV')?.github).toContain('github.com/Abdalla-Eldoumani/dsav');
+    expect(getProjectByName('Termpilot')?.github).toContain('termpilot');
     expect(getProjectByName('Termpilot')?.live).toBeUndefined();
-    expect(getProjectByName('ARM String Ops')?.github).toBeUndefined();
+    expect(getProjectByName('ARM String Ops')?.github).toContain('arm-string-ops');
   });
 
   it('marks exactly 9 missions as featured', () => {
@@ -44,11 +45,16 @@ describe('projects data', () => {
     expect(getProjectByName('Regex FSM')?.metrics).toContain('1181 tests');
     expect(getProjectByName('Qalam')?.tech).toContain('AArch64 Assembly');
     expect(getProjectByName('Cloud Practitioner Prep')?.metrics).toContain('886 original questions');
-    // No invented repo links: the six new ops only claim deployments the
-    // READMEs state.
-    expect(getProjectByName('Lattice')?.github).toBeUndefined();
+    // Source links follow repo visibility (verified against GitHub
+    // 2026-07-18): public repos link source, private ones never do.
+    expect(getProjectByName('Lattice')?.github).toContain('github.com/Abdalla-Eldoumani/lattice');
+    expect(getProjectByName('Qalam')?.github).toContain('github.com/Abdalla-Eldoumani/qalam');
+    expect(getProjectByName('Regex FSM')?.github).toContain('github.com/Abdalla-Eldoumani/regex-fsm');
+    // whittle and the playground are private; cloud-prep is private but deployed
     expect(getProjectByName('Whittle')?.github).toBeUndefined();
-    expect(getProjectByName('Qalam')?.github).toBeUndefined();
+    expect(getProjectByName('AArch64 Playground')?.github).toBeUndefined();
+    expect(getProjectByName('Cloud Practitioner Prep')?.github).toBeUndefined();
+    expect(getProjectByName('Cloud Practitioner Prep')?.live).toContain('vercel.app');
   });
 
   it('carries the arcade-drop ops with README-traceable facts', () => {
@@ -56,10 +62,11 @@ describe('projects data', () => {
     expect(getProjectByName('Deadzone')?.featured).toBe(true);
     expect(getProjectByName('QEMU MCP Server')?.metrics).toContain('17 MCP tools');
     expect(getProjectByName('BinDiff MCP')?.metrics).toContain('10 tools');
-    // no invented links here either
-    expect(getProjectByName('Deadzone')?.github).toBeUndefined();
+    // public repos, no deployments
+    expect(getProjectByName('Deadzone')?.github).toContain('github.com/Abdalla-Eldoumani/deadzone');
+    expect(getProjectByName('QEMU MCP Server')?.github).toContain('qemu-mcp-server');
     expect(getProjectByName('QEMU MCP Server')?.live).toBeUndefined();
-    expect(getProjectByName('BinDiff MCP')?.github).toBeUndefined();
+    expect(getProjectByName('BinDiff MCP')?.github).toContain('bindiff-mcp');
   });
 
   it('gives every mission a unique url-stable slug', () => {
