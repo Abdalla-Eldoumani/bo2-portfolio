@@ -51,6 +51,8 @@ type SimInput = {
   held: boolean;                        // space / pointer held
   pressed: string[];                    // keys pressed this frame
   tap: { x: number; y: number } | null; // canvas-space tap
+  down: string[];                       // arrows currently held
+  cursor: { x: number; y: number } | null; // pointer position while held
 };
 
 type SimEvent = {
@@ -100,7 +102,23 @@ degrades to an in-memory session. The top bar wears the rank, Combat
 Record shows the full panel, and Mission Select whispers best ranks and
 the next unearned challenge.
 
-## The fourteen sims
+Two systems keep the ladder tense:
+
+- **Wager match.** The ready screen offers DOUBLE OR NOTHING (W key or
+  the chip) once the ladder can cover the stake, which scales with XP.
+  Hitting the sim's VETERAN band pays the stake back doubled; missing
+  hands it to the house - and a bad enough loss busts you down a rank.
+  Only the prestige glyph is untouchable.
+- **Daily contract.** One sim per local calendar day carries a bounty:
+  hit that sim's silver-challenge target and collect 40 XP, once per
+  day. The ready screen and the debrief both carry the contract line.
+
+There is also one thing the roster does not list. The dead
+"NEXT OP IN DEVELOPMENT" tile on Mission Select is not as dead as it
+looks; a persistent unlock (`arcade` in the career profile) marks the
+find forever.
+
+## The seventeen sims
 
 | Slug | Game | Seconds |
 | --- | --- | --- |
@@ -118,6 +136,11 @@ the next unearned challenge.
 | `regex-fsm` | State runner - consume the tape, cash the accept state | 22 |
 | `qalam` | Flood fill - finish regions before the scanline repaints | 24 |
 | `cloud-practitioner-prep` | Cloud triage - true/false drill to the ready signal | 22 |
+| `deadzone` | Horde protocol - auto-fire, footwork, bombs and freezes | 25 |
+| `qemu-mcp-server` | Snapshot - keep the guests earning, roll back the crashes | 24 |
+| `bindiff-mcp` | Bin diff - call SAME or DRIFT on two builds of a line | 22 |
+
+Plus one that the table refuses to acknowledge.
 
 ## Adding a game
 
