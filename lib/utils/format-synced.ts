@@ -2,9 +2,9 @@
 // derives only from the passed ISO timestamp (no clock read, no I/O), so it is
 // trivially testable and cache-safe.
 //
-// `locale` is a parameter because the server has no visitor locale; Phase 8
-// supplies one (from params / Accept-Language / client render). Passing
-// `undefined` uses the runtime default locale as a placeholder.
+// `locale` is a parameter because the server has no visitor locale; a caller
+// that knows one (from params, Accept-Language, or a client render) passes it.
+// Passing `undefined` uses the runtime default locale.
 export function formatSynced(iso: string, locale?: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return 'Unknown';
@@ -12,7 +12,7 @@ export function formatSynced(iso: string, locale?: string): string {
     dateStyle: 'medium',
     timeStyle: 'short',
   };
-  // A malformed locale (e.g. an untrusted Accept-Language value in Phase 8) makes
+  // A malformed locale (e.g. an untrusted Accept-Language value) makes
   // Intl.DateTimeFormat throw RangeError; fall back to the runtime default rather
   // than crash the render this stamp is meant to keep alive.
   try {
