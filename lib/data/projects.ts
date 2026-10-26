@@ -88,7 +88,7 @@ export const projects = [
     fullDescription:
       'Rust compiled to WebAssembly does the emulation; Next.js renders the debugger. Validated by 790+ automated tests and used as a teaching aid for computer architecture at the University of Calgary.',
     image: playgroundArt,
-    live: 'https://aarch64-playground.vercel.app',
+    live: 'https://aarch64-playground.com',
     tech: ['Rust', 'WebAssembly', 'Next.js', 'ARMv8'],
     featured: true,
     insigniaId: 'scope',
