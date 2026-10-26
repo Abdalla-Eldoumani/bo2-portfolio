@@ -20,7 +20,7 @@ export interface Project {
   description: string;
   fullDescription?: string;
   // Static import (StaticImageData), never a string path: a missing image file
-  // becomes a build error instead of a silent runtime 404 (DATA-03).
+  // becomes a build error instead of a silent runtime 404.
   // Optional: a mission without captured art renders the designed hatched
   // "AWAITING VISUAL FEED" placeholder instead of invented artwork.
   image?: StaticImageData;
