@@ -85,7 +85,7 @@ describe('projects data', () => {
   it('resolves every image to a static art import, not a bare path', () => {
     for (const project of projects) {
       // A StaticImageData object exposes a `src` string; a bare path string
-      // would not — this proves the DATA-03 static-import contract.
+      // would not, so this proves every image is a static import.
       if (project.image === undefined) continue;
       expect(project.image).toBeTypeOf('object');
       expect(typeof project.image.src).toBe('string');
