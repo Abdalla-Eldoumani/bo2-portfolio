@@ -1,4 +1,4 @@
-// Skills modeled as a BO2 "create-a-class" loadout (Phase 5). The 37 technical
+// Skills modeled as a BO2 "create-a-class" loadout. The 37 technical
 // skill names distribute across primary/secondary/perks; wildcards carry the
 // non-technical differentiators.
 
