@@ -1,4 +1,4 @@
-// GitHub scoreboard shapes (Phase 8). The server-only module in lib/api resolves
+// GitHub scoreboard shapes. The server-only module in lib/api resolves
 // to GitHubStats and never throws to the client; `source` lets the UI show live
 // vs cached data without a separate flag.
 
