@@ -1,4 +1,4 @@
-// Experience (role) + education shapes for the Phase 7 rank ladder. The old
+// Experience (role) + education shapes for the record page's rank ladder. The old
 // per-entry presentational palette fields are intentionally absent: BO2 styling
 // derives from `type`/`rank`, not stored color strings.
 
