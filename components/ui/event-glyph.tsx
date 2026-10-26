@@ -11,7 +11,7 @@ import type { Ref } from "react";
 // actor/verb/repo text carries the meaning. An unknown `type` degrades to the
 // neutral dash: the resolver never throws and never renders blank.
 //
-// Original geometry only (QUAL-04) on the 0 0 16 16 grid: no traced game emblem,
+// Original geometry only, on the 0 0 16 16 grid: no traced game emblem,
 // no icon-library path data, no emoji. Several event types share one glyph where
 // they share a means (both PR events -> merge-arrows, both issue events ->
 // dot-square, Create/Public -> plus-in-hex) — the verb, not the glyph, separates
