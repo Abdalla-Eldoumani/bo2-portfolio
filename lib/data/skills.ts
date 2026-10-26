@@ -1,7 +1,8 @@
 import type { Loadout } from '@/lib/types/skills';
 
 /**
- * The create-a-class loadout — the single skills source Phase 5 renders. The 37
+ * The create-a-class loadout: the single skills source the loadout and resume
+ * pages render. The 37
  * technical skill names (content unchanged) split across primary/secondary/perks;
  * wildcards carry the non-technical differentiators and are NOT counted among the
  * 37. Names only — no icon-library import, no per-skill proficiency.
@@ -46,7 +47,7 @@ export const loadout = {
     'Jira',
     'Kotlin',
   ],
-  // Wildcards: non-technical differentiators (CLASS-03), factual, off the count of 37.
+  // Wildcards: non-technical differentiators, factual, off the count of 37.
   wildcards: [
     {
       name: 'Philosophy Minor',
