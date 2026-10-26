@@ -3,9 +3,9 @@ import { getGitHubStats } from './github';
 import { githubFallback } from '@/lib/data/github-fallback';
 
 // The network is always mocked: these tests exercise the guard/fallback branches
-// in isolation and must never hit the real GitHub API (that path is verified end
-// to end in Phase 8). `server-only` is neutralized by the vitest.config alias, so
-// importing the server-only module here does not throw.
+// in isolation and must never hit the real GitHub API. `server-only` is
+// neutralized by the vitest.config alias, so importing the server-only module
+// here does not throw.
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
