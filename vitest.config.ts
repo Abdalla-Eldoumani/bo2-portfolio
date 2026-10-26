@@ -12,7 +12,7 @@ export default defineConfig({
     // data layer's `project.image.src` is undefined in tests only, even though
     // the production build yields the object. This `pre` plugin mirrors Next so
     // image-consuming modules present the same shape under test as in the build.
-    // The real DATA-03 fail-loud guarantee still lives in `next build` (a
+    // The real fail-loud guarantee for images still lives in `next build` (a
     // missing file breaks the build) and in typecheck (StaticImageData typing);
     // this only lets the runtime smoke test assert that shape.
     {
